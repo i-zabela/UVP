@@ -1,102 +1,57 @@
 # =============================================================================
-# Rezine in rekurzija
-# =====================================================================@027486=
+# Primerjanje
+#
+# Pri reševanju nalog ne uporabljajte funkcij, kot sta `min` in `max`.
+# =====================================================================@013128=
 # 1. podnaloga
-# Sestavite funkcijo `filtriraj`, ki sprejme dva niza in vrne nov niz sestavljen
-# zgolj iz znakov prvega niza, ki so hkrati tudi v drugem nizu, preostale znake
-# pa zamenja z _
-# Velikost črk je nepomembna.
+# Definirajte funkcijo `vecji_element`, ki sprejme seznam in število ter kot
+# rezultat vrne, ali seznam vsebuje število strogo večje od podanega.
 # 
-#     >>> filtriraj("Ne gremo še domov", "ngm")
-#     "N__g__m_______m__"
+#     >>> vecji_element([3, 6, 2], 5)
+#     True
+#     >>> vecji_element([7, 5, 1], 8)
+#     False
+#     >>> vecji_element([3], 3)
+#     False
 # =============================================================================
-def filtriraj(niz1, niz2):
-    if niz1 == "":
-        return ""
-    elif niz1[0].lower() in niz2.lower():
-        return niz1[0] + filtriraj(niz1[1:], niz2)
-    else :
-        return "_" + filtriraj(niz1[1:], niz2)
-#def filtriraj(s, f):
-#    if not s:
-#        return s
-#    if s[0].lower() in f.lower():
-#        return s[0] + filtriraj(s[1:], f)
-#    else:
-#        return "_" + filtriraj(s[1:], f)
-# =====================================================================@027490=
+def vecji_element(seznam, število):
+    for element in seznam:
+        if element > število:
+            return True
+    return False
+# =====================================================================@013129=
 # 2. podnaloga
-# Sestavite funkcijo `pretvori`, ki sprejme niz in bazo ter vrne podano število
-# v desetiškem zapisu. Ko zmanjka števil si znaki sledijo po angleški abecedi
-# `0123456789ABC...`. Primer vrstnega reda lahko najdete v
-# `string.ascii_uppercase`. Lahko predpostavite, da bo baza vedno med 2 in 36.
+# Definirajte funkcijo `prvi_najvecji`, ki kot rezultat vrne `True`, če je prvi
+# element seznama večji ali enak preostalim elementom seznama, in `False`
+# sicer.
 # 
-#     >>> pretvori("10001", 2)
-#     17
-#     >>> pretvori("2ACBD04", 36)
-#     4978911892
+#     >>> prvi_najvecji([5, 3, 6, 2])
+#     False
+#     >>> prvi_najvecji([8, 7, 5, 1])
+#     True
 # =============================================================================
-def pretvori(niz, baza):
-    import string
-    znaki = "0123456789" + string.ascii_uppercase 
-    if niz == "":
-        return 0
-    else:
-        return znaki.index(niz[-1].upper()) + baza * pretvori(niz[:-1], baza)
-
-#def pretvori_leno(s, b):
-#    return int(s, b)
-# =====================================================================@027489=
+def prvi_najvecji(seznam):
+    for i in seznam[1:]:
+        if i > seznam[0]:
+            return False
+    return True
+# =====================================================================@013132=
 # 3. podnaloga
-# Sestavite funkcijo `izbrisi_podvojene`, ki sprejme niz in odstrani vse
-# zaporedno enake znake, kjer velikost črk ni pomembna. Če se po izbrisu pojavijo
-# nove podvojitve, naj jih funkcija ne izbriše.
+# Definirajte funkcijo `vsi_vecji(sez1, sez2)`, ki sprejme dva seznama, `sez1`
+# in `sez2`, ter preveri ali je vsak element seznama `sez1` večji ali enak
+# elementom seznama `sez2`.
 # 
-#     >>> izbrisi_podvojene("aaab")
-#     "b"
-#     >>> izbrisi_podvojene("abaab")
-#     "abb"
+#     >>> vsi_vecji([2, 4], [1, 3])
+#     False
+#     >>> vsi_vecji([5, 8], [1, 2, 4])
+#     True
 # =============================================================================
-def izbrisi_podvojene(s, last=None):
-    if s == "":
-        return ""
-    elif s[0] == last:
-        return izbrisi_podvojene(s[1:], last)
-    elif len(s) >= 2 and s[0] == s[1]:
-        return izbrisi_podvojene(s[2:], s[0])
-    else:
-        return s[0] + izbrisi_podvojene(s[1:], None)
-# =====================================================================@027487=
-# 4. podnaloga
-# Sestavite funkcijo `vsak_k_ti`, ki sprejme niz in parameter `k` ter vrne nov
-# niz, kjer iz vhodnega niza vzame vsak `k`-ti znak. Za nesmiselne parametre
-# naj funkcija vrne prazen niz
-# 
-#     >>> vsak_k_ti("abcdefghijk", 3)
-#     "adgj"
-#     >>> vsak_k_ti("abcdefghijk", 0)
-#     ""
-# =============================================================================
-def vsak_k_ti(s, k):
-    if k <= 0:
-        return ""
-    else:
-        return s[::k]
-# =====================================================================@027488=
-# 5. podnaloga
-# Sestavitev funkcijo `zaporedje`, ki sprejme niz in vrne nov niz sestavljen iz
-# znakov na indeksih 0, 1, 3, 6, 10, ...
-# Namig: Ali razlike med indeksi sledijo kakemu preprostemu zaporedju?
-# 
-#     >>> zaporedje("0123456789X")
-#     "0136X"
-# =============================================================================
-def zaporedje(niz, indeks=0, korak=1):
-    if indeks >= len(niz):
-        return ""
-    else:
-        return niz[indeks] + zaporedje(niz, indeks + korak, korak + 1)
-
+def vsi_vecji(sez1, sez2):
+    for element1 in sez1:
+        for element2 in sez2:
+            if element1 < element2:
+                return False
+    return True
 
 
 
@@ -713,13 +668,20 @@ def _validate_current_file():
     if Check.part():
         Check.current_part[
             "token"
-        ] = "eyJwYXJ0IjoyNzQ4NiwidXNlciI6MTE1MTR9:1vyvM1:ZP-3bADoPBCX6zzIdOTYLTFaaf1zM6e8xzd7bgfdLTc"
+        ] = "eyJwYXJ0IjoxMzEyOCwidXNlciI6MTE1MTR9:1wyX5Y:bG8ockxIpKS4kDyqvZg5kgrXlX3NTDGMFQer60rKKWU"
         try:
-            Check.equal('filtriraj("Ne gremo še domov", "ngm")', "N__g__m_______m__")
-            Check.secret(filtriraj("Planica!! planica!!, snežena kraljica", "Planica!"))
+            Check.equal('vecji_element([3, 6, 2], 5)', True)
+            Check.equal('vecji_element([7, 5, 1], 8)', False)
+            Check.equal('vecji_element([3], 3)', False)
+            Check.equal('vecji_element([], 8)', False)
             
-            # =============================================================================
-            # Nizi
+            
+            import random
+            for i in range(20):
+                x = random.randint(5, 35)
+                l = list(range(random.randint(1, 30)))
+                random.shuffle(l)
+                Check.equal('vecji_element({}, {})'.format(l, x), max(l) > x)
         except TimeoutError:
             Check.error("Dovoljen čas izvajanja presežen")
         except Exception:
@@ -731,17 +693,18 @@ def _validate_current_file():
     if Check.part():
         Check.current_part[
             "token"
-        ] = "eyJwYXJ0IjoyNzQ5MCwidXNlciI6MTE1MTR9:1vyvM1:bMGuujGfsq216TWS4TLE1ss1xGJJQQ8Dr4AN_qYhHSc"
+        ] = "eyJwYXJ0IjoxMzEyOSwidXNlciI6MTE1MTR9:1wyX5Y:VLqS10ryxksidBsGbO7rbGoXvNhQl24ZJTs4DI9ztRo"
         try:
-            Check.equal('pretvori("10001", 2)', 17)
-            Check.equal('pretvori("2ACBD04", 36)', 4978911892)
-            Check.equal('pretvori("AB", 30)', 311)
-            Check.equal('pretvori("101", 30)', 901)
-            for b in range(3, 36 + 1):
-                Check.secret(pretvori("101010111101", b))
-            for b in range(30, 36 + 1):
-                Check.secret(pretvori("PLANICA", b))
-                Check.secret(pretvori("MIHEC01267", b))
+            Check.equal('prvi_najvecji([])', True)
+            Check.equal('prvi_najvecji([5, 3, 6, 2])', False)
+            Check.equal('prvi_najvecji([8, 7, 5, 1])', True)
+            Check.equal('prvi_najvecji([9, 9])', True)
+            
+            import random
+            for i in range(20):
+                l = list(range(random.randint(1, 20)))
+                random.shuffle(l)
+                Check.equal('prvi_najvecji({})'.format(l), max(l) == l[0])
         except TimeoutError:
             Check.error("Dovoljen čas izvajanja presežen")
         except Exception:
@@ -753,49 +716,17 @@ def _validate_current_file():
     if Check.part():
         Check.current_part[
             "token"
-        ] = "eyJwYXJ0IjoyNzQ4OSwidXNlciI6MTE1MTR9:1vyvM1:n1MMq81P4jTF4uex_QcxyhWLj6eo_6V08O6CGiiG9e0"
+        ] = "eyJwYXJ0IjoxMzEzMiwidXNlciI6MTE1MTR9:1wyX5Y:MWGTX4346wXKSWOPxSbZ8_iTK5gLkLrO50PKOeuzTrA"
         try:
-            Check.equal('izbrisi_podvojene("abaab")', "abb")
-            Check.equal('izbrisi_podvojene("abab")', "abab")
-            Check.equal('izbrisi_podvojene("aaaabaaaa")', "b")
-            Check.secret(izbrisi_podvojene("10000010001010101010002"))
-            Check.secret(izbrisi_podvojene("10000010sxsXXXs01010101010002"))
-            Check.secret(izbrisi_podvojene("asdhaskbbbsna,,sjnansd"))
-        except TimeoutError:
-            Check.error("Dovoljen čas izvajanja presežen")
-        except Exception:
-            Check.error(
-                "Testi sprožijo izjemo\n  {0}",
-                "\n  ".join(traceback.format_exc().split("\n"))[:-2],
-            )
-
-    if Check.part():
-        Check.current_part[
-            "token"
-        ] = "eyJwYXJ0IjoyNzQ4NywidXNlciI6MTE1MTR9:1vyvM1:zNYPMeryVTY25sHdGtiqAZ5uj9KlH4aeZPYHdRLxrTU"
-        try:
-            Check.equal('vsak_k_ti("abcdefghijk", 0)', "")
-            Check.equal('vsak_k_ti("abcdefghijk", 3)', "adgj")
-            Check.secret(vsak_k_ti("abcdefghijk", 5))
-            Check.secret(vsak_k_ti("abcdefghijk", -3))
-            Check.secret(vsak_k_ti("abcdefghihvjdksa s asčdhaglsda saasč jk", 5))
-            Check.secret(vsak_k_ti("abcdefghihvjdksa s asčdhaglsda saasč jk", 8))
-        except TimeoutError:
-            Check.error("Dovoljen čas izvajanja presežen")
-        except Exception:
-            Check.error(
-                "Testi sprožijo izjemo\n  {0}",
-                "\n  ".join(traceback.format_exc().split("\n"))[:-2],
-            )
-
-    if Check.part():
-        Check.current_part[
-            "token"
-        ] = "eyJwYXJ0IjoyNzQ4OCwidXNlciI6MTE1MTR9:1vyvM1:8yq1knvHM8e3xEKzbsW73dGKVe4kdV86HjPSKZx3QH8"
-        try:
-            Check.equal('zaporedje("0123456789X")', "0136X")
-            Check.secret(zaporedje("".join([str(x) for x in range(100)])))
-            Check.secret(zaporedje("".join([str(x) for x in range(150)])))
+            Check.equal('vsi_vecji([2, 4], [1, 3])', False)
+            Check.equal('vsi_vecji([5, 8], [1, 2, 4])', True)
+            Check.equal('vsi_vecji([8, 5], [1, 2, 7])', False)
+            Check.equal('vsi_vecji([6], [2, 6, 3])', True)
+            Check.equal('vsi_vecji([7, 3, 5], [3])', True)
+            Check.equal('vsi_vecji([6, 5, 4, 3], [2, 1, 0])', True)
+            Check.equal('vsi_vecji([], [])', True)
+            Check.equal('vsi_vecji([0, 1, 2], [])', True)
+            Check.equal('vsi_vecji([], [0, 1, 2])', True)
         except TimeoutError:
             Check.error("Dovoljen čas izvajanja presežen")
         except Exception:

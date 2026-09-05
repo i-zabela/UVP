@@ -1,101 +1,71 @@
 # =============================================================================
-# Rezine in rekurzija
-# =====================================================================@027486=
+# Ogrevanje
+# =====================================================================@020346=
 # 1. podnaloga
-# Sestavite funkcijo `filtriraj`, ki sprejme dva niza in vrne nov niz sestavljen
-# zgolj iz znakov prvega niza, ki so hkrati tudi v drugem nizu, preostale znake
-# pa zamenja z _
-# Velikost črk je nepomembna.
+# Ker študirate v Ljubljani, ste se preselili v bližnji študentski dom. Žal pa
+# ob izpolnjevanju vloge niste bili dovolj pozorni, zato ste pristali v eni
+# najbolj hrupnih sob na kampusu. Vaše živce kravžljajo študenti FDVja iz
+# sosednjega stanovanja, saj zaradi manjka študijskih obveznosti v času vašega
+# počitka na veliko razgrajajo. Odločili ste se, da jim napišete grozilno
+# pismo, a kaj ko se ga vedno spravite pisati podnevi, ko niste dovolj
+# razburjeni.
 # 
-#     >>> filtriraj("Ne gremo še domov", "ngm")
-#     "N__g__m_______m__"
+# Sestavite funkcijo `prepisi_in_zagrozi`, ki sprejme ime vhodne datoteke in
+# ime izhodne datoteke, ter vsebino vhodne datoteke prepiše v izhodno datoteko,
+# pri tem pa spremeni vse črke v velike in vse pike v klicaje.
+# 
+# Denimo, da imamo v datoteki `diplomatsko.txt` zapisano naslednje besedilo
+# 
+#     "Prosim, da študentje ponoči utihnejo.
+#      Sicer bo red naredila policija."
+# 
+# Tedaj klic funkcije `prepisi_in_zagrozi("diplomatsko.txt","groznja.txt")` v
+# datoteko `groznja.txt` zapiše naslednjo vsebino:
+# 
+#     'PROSIM, DA ŠTUDENTJE PONOČI UTIHNEJO!
+#      SICER BO RED NAREDILA POLICIJA!'
 # =============================================================================
-def filtriraj(niz1, niz2):
-    if niz1 == "":
-        return ""
-    elif niz1[0].lower() in niz2.lower():
-        return niz1[0] + filtriraj(niz1[1:], niz2)
-    else :
-        return "_" + filtriraj(niz1[1:], niz2)
-#def filtriraj(s, f):
-#    if not s:
-#        return s
-#    if s[0].lower() in f.lower():
-#        return s[0] + filtriraj(s[1:], f)
-#    else:
-#        return "_" + filtriraj(s[1:], f)
-# =====================================================================@027490=
+def prepisi_in_zagrozi(vhodna, izhodna):
+    with open(vhodna, encoding='utf-8') as dat1:
+        with open(izhodna, 'w', encoding='utf-8') as dat2:
+            for vrstica in dat1:
+                nova_vrstica = vrstica.replace('.', '!').upper()
+                dat2.write(nova_vrstica)
+# =====================================================================@020347=
 # 2. podnaloga
-# Sestavite funkcijo `pretvori`, ki sprejme niz in bazo ter vrne podano število
-# v desetiškem zapisu. Ko zmanjka števil si znaki sledijo po angleški abecedi
-# `0123456789ABC...`. Primer vrstnega reda lahko najdete v
-# `string.ascii_uppercase`. Lahko predpostavite, da bo baza vedno med 2 in 36.
+# Ker želite, da bodo sosedje vašo grožnjo vzeli resno, ste si pripravili več
+# osnutkov besedila. Še vedno pa niste povsem odločeni, katero grožnjo bi
+# najprej poslali. En izmed možnih kriterijev je, da mora besedilo vsebovati
+# vsaj tri klicaje.
 # 
-#     >>> pretvori("10001", 2)
-#     17
-#     >>> pretvori("2ACBD04", 36)
-#     4978911892
-# =============================================================================
-def pretvori(niz, baza):
-    import string
-    znaki = "0123456789" + string.ascii_uppercase 
-    if niz == "":
-        return 0
-    else:
-        return znaki.index(niz[-1].upper()) + baza * pretvori(niz[:-1], baza)
-
-#def pretvori_leno(s, b):
-#    return int(s, b)
-# =====================================================================@027489=
-# 3. podnaloga
-# Sestavite funkcijo `izbrisi_podvojene`, ki sprejme niz in odstrani vse
-# zaporedno enake znake, kjer velikost črk ni pomembna. Če se po izbrisu pojavijo
-# nove podvojitve, naj jih funkcija ne izbriše.
+# Sestavite funkcijo `groznje_z_dovolj_klicaji`, ki iz seznama imen vhodnih
+# datotek izbere tiste datoteke, ki vsebujejo vsaj tri klicaje.
 # 
-#     >>> izbrisi_podvojene("aaab")
-#     "b"
-#     >>> izbrisi_podvojene("abaab")
-#     "abb"
-# =============================================================================
-def izbrisi_podvojene(s, last=None):
-    if s == "":
-        return ""
-    elif s[0] == last:
-        return izbrisi_podvojene(s[1:], last)
-    elif len(s) >= 2 and s[0] == s[1]:
-        return izbrisi_podvojene(s[2:], s[0])
-    else:
-        return s[0] + izbrisi_podvojene(s[1:], None)
-# =====================================================================@027487=
-# 4. podnaloga
-# Sestavite funkcijo `vsak_k_ti`, ki sprejme niz in parameter `k` ter vrne nov
-# niz, kjer iz vhodnega niza vzame vsak `k`-ti znak. Za nesmiselne parametre
-# naj funkcija vrne prazen niz
+# Denimo, da imamo v datoteki `diplomatsko.txt` zapisano naslednje besedilo
 # 
-#     >>> vsak_k_ti("abcdefghijk", 3)
-#     "adgj"
-#     >>> vsak_k_ti("abcdefghijk", 0)
-#     ""
-# =============================================================================
-def vsak_k_ti(s, k):
-    if k <= 0:
-        return ""
-    else:
-        return s[::k]
-# =====================================================================@027488=
-# 5. podnaloga
-# Sestavitev funkcijo `zaporedje`, ki sprejme niz in vrne nov niz sestavljen iz
-# znakov na indeksih 0, 1, 3, 6, 10, ...
-# Namig: Ali razlike med indeksi sledijo kakemu preprostemu zaporedju?
+#     'PROSIM, DA ŠTUDENTJE PONOČI UTIHNEJO!
+#      SICER BO RED NAREDILA POLICIJA!'
 # 
-#     >>> zaporedje("0123456789X")
-#     "0136X"
+# in v datoteki `nepoliticno.txt` zapisano naslednje besedilo
+# 
+#     'Nehajte mi težit!!!!'
+# 
+# Tedaj klic funkcije `groznje_z_dovolj_klicaji` vrne naslednje:
+# 
+#     >>> groznje_z_dovolj_klicaji(["diplomatsko.txt", "nepoliticno.txt"])
+#     ['nepoliticno.txt']
 # =============================================================================
-def zaporedje(niz, indeks=0, korak=1):
-    if indeks >= len(niz):
-        return ""
-    else:
-        return niz[indeks] + zaporedje(niz, indeks + korak, korak + 1)
+def groznje_z_dovolj_klicaji(seznam):
+    nov = []
+    for datoteka in seznam:
+        with open(datoteka, encoding='UTF-8') as dat:
+            klicaji = 0
+            for vrstice in dat:
+                št = vrstice.count('!')
+                klicaji += št
+            if klicaji >= 3:
+                nov.append(datoteka)
+    return nov
 
 
 
@@ -713,13 +683,21 @@ def _validate_current_file():
     if Check.part():
         Check.current_part[
             "token"
-        ] = "eyJwYXJ0IjoyNzQ4NiwidXNlciI6MTE1MTR9:1vyvM1:ZP-3bADoPBCX6zzIdOTYLTFaaf1zM6e8xzd7bgfdLTc"
+        ] = "eyJwYXJ0IjoyMDM0NiwidXNlciI6MTE1MTR9:1x2TfE:HhWojUblcglsDmGt730pzGZf2IeZI6ymbW-y2LEIXZ4"
         try:
-            Check.equal('filtriraj("Ne gremo še domov", "ngm")', "N__g__m_______m__")
-            Check.secret(filtriraj("Planica!! planica!!, snežena kraljica", "Planica!"))
-            
-            # =============================================================================
-            # Nizi
+            test_cases = [
+                ("diplomatsko.txt", ["Prosim, da študentje ponoči utihnejo.","Sicer bo red naredila policija."],  "groznja.txt", 
+                ["PROSIM, DA ŠTUDENTJE PONOČI UTIHNEJO!","SICER BO RED NAREDILA POLICIJA!"]),
+                ("vhodna.txt", ["nehajte", "mi", "težit."],  "izhodna.txt", ["NEHAJTE", "MI", "TEŽIT!"]),
+            ]
+            napaka = False
+            for in_name, vhod, out_name, izhod in test_cases:
+                if napaka:
+                    break
+                with Check.in_file(in_name, vhod, encoding='utf-8'):
+                    prepisi_in_zagrozi(in_name, out_name)
+                    if not Check.out_file(out_name, izhod, encoding='utf-8'):
+                        napaka = True
         except TimeoutError:
             Check.error("Dovoljen čas izvajanja presežen")
         except Exception:
@@ -731,71 +709,23 @@ def _validate_current_file():
     if Check.part():
         Check.current_part[
             "token"
-        ] = "eyJwYXJ0IjoyNzQ5MCwidXNlciI6MTE1MTR9:1vyvM1:bMGuujGfsq216TWS4TLE1ss1xGJJQQ8Dr4AN_qYhHSc"
+        ] = "eyJwYXJ0IjoyMDM0NywidXNlciI6MTE1MTR9:1x2TfE:urY54VkxMcpzJTsTyjOvKpYdovctM8uf3UmJcyP-_qE"
         try:
-            Check.equal('pretvori("10001", 2)', 17)
-            Check.equal('pretvori("2ACBD04", 36)', 4978911892)
-            Check.equal('pretvori("AB", 30)', 311)
-            Check.equal('pretvori("101", 30)', 901)
-            for b in range(3, 36 + 1):
-                Check.secret(pretvori("101010111101", b))
-            for b in range(30, 36 + 1):
-                Check.secret(pretvori("PLANICA", b))
-                Check.secret(pretvori("MIHEC01267", b))
-        except TimeoutError:
-            Check.error("Dovoljen čas izvajanja presežen")
-        except Exception:
-            Check.error(
-                "Testi sprožijo izjemo\n  {0}",
-                "\n  ".join(traceback.format_exc().split("\n"))[:-2],
-            )
-
-    if Check.part():
-        Check.current_part[
-            "token"
-        ] = "eyJwYXJ0IjoyNzQ4OSwidXNlciI6MTE1MTR9:1vyvM1:n1MMq81P4jTF4uex_QcxyhWLj6eo_6V08O6CGiiG9e0"
-        try:
-            Check.equal('izbrisi_podvojene("abaab")', "abb")
-            Check.equal('izbrisi_podvojene("abab")', "abab")
-            Check.equal('izbrisi_podvojene("aaaabaaaa")', "b")
-            Check.secret(izbrisi_podvojene("10000010001010101010002"))
-            Check.secret(izbrisi_podvojene("10000010sxsXXXs01010101010002"))
-            Check.secret(izbrisi_podvojene("asdhaskbbbsna,,sjnansd"))
-        except TimeoutError:
-            Check.error("Dovoljen čas izvajanja presežen")
-        except Exception:
-            Check.error(
-                "Testi sprožijo izjemo\n  {0}",
-                "\n  ".join(traceback.format_exc().split("\n"))[:-2],
-            )
-
-    if Check.part():
-        Check.current_part[
-            "token"
-        ] = "eyJwYXJ0IjoyNzQ4NywidXNlciI6MTE1MTR9:1vyvM1:zNYPMeryVTY25sHdGtiqAZ5uj9KlH4aeZPYHdRLxrTU"
-        try:
-            Check.equal('vsak_k_ti("abcdefghijk", 0)', "")
-            Check.equal('vsak_k_ti("abcdefghijk", 3)', "adgj")
-            Check.secret(vsak_k_ti("abcdefghijk", 5))
-            Check.secret(vsak_k_ti("abcdefghijk", -3))
-            Check.secret(vsak_k_ti("abcdefghihvjdksa s asčdhaglsda saasč jk", 5))
-            Check.secret(vsak_k_ti("abcdefghihvjdksa s asčdhaglsda saasč jk", 8))
-        except TimeoutError:
-            Check.error("Dovoljen čas izvajanja presežen")
-        except Exception:
-            Check.error(
-                "Testi sprožijo izjemo\n  {0}",
-                "\n  ".join(traceback.format_exc().split("\n"))[:-2],
-            )
-
-    if Check.part():
-        Check.current_part[
-            "token"
-        ] = "eyJwYXJ0IjoyNzQ4OCwidXNlciI6MTE1MTR9:1vyvM1:8yq1knvHM8e3xEKzbsW73dGKVe4kdV86HjPSKZx3QH8"
-        try:
-            Check.equal('zaporedje("0123456789X")', "0136X")
-            Check.secret(zaporedje("".join([str(x) for x in range(100)])))
-            Check.secret(zaporedje("".join([str(x) for x in range(150)])))
+            test_cases = [
+                ({"diplomatsko.txt": "PROSIM, DA ŠTUDENTJE PONOČI UTIHNEJO! SICER BO RED NAREDILA POLICIJA!",
+                  "nepoliticno.txt": "Nehajte mi težit!!!!"},
+                 ["nepoliticno.txt"]),
+                ({"prva.txt": "!!!!!", "druga.txt": "!"},
+                 ["prva.txt"]),
+                ({"g1.txt": "!!", "g2.txt": "!"},
+                 [])
+            ]
+            for files, result in test_cases:
+                filenames = list(files.keys())
+                with Check.in_file(filenames[0], files[filenames[0]], encoding='utf-8'):
+                    with Check.in_file(filenames[1], files[filenames[1]], encoding='utf-8'):
+                        if not Check.equal('groznje_z_dovolj_klicaji({0})'.format(filenames), result):
+                            break  # test had failed
         except TimeoutError:
             Check.error("Dovoljen čas izvajanja presežen")
         except Exception:

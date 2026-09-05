@@ -1,101 +1,161 @@
 # =============================================================================
-# Rezine in rekurzija
-# =====================================================================@027486=
+# Ulomki
+# =====================================================================@001731=
 # 1. podnaloga
-# Sestavite funkcijo `filtriraj`, ki sprejme dva niza in vrne nov niz sestavljen
-# zgolj iz znakov prvega niza, ki so hkrati tudi v drugem nizu, preostale znake
-# pa zamenja z _
-# Velikost črk je nepomembna.
+# Izven razreda sestavite funkcijo `gcd(m, n)`, ki izračuna največji skupni
+# delitelj števil `m` in `n`. Zgled:
 # 
-#     >>> filtriraj("Ne gremo še domov", "ngm")
-#     "N__g__m_______m__"
+#     >>> gcd(35, 63)
+#     7
 # =============================================================================
-def filtriraj(niz1, niz2):
-    if niz1 == "":
-        return ""
-    elif niz1[0].lower() in niz2.lower():
-        return niz1[0] + filtriraj(niz1[1:], niz2)
-    else :
-        return "_" + filtriraj(niz1[1:], niz2)
-#def filtriraj(s, f):
-#    if not s:
-#        return s
-#    if s[0].lower() in f.lower():
-#        return s[0] + filtriraj(s[1:], f)
-#    else:
-#        return "_" + filtriraj(s[1:], f)
-# =====================================================================@027490=
+def gcd(m, n):
+    while n != 0:
+        m, n = n, m % n
+    return m
+# =====================================================================@001732=
 # 2. podnaloga
-# Sestavite funkcijo `pretvori`, ki sprejme niz in bazo ter vrne podano število
-# v desetiškem zapisu. Ko zmanjka števil si znaki sledijo po angleški abecedi
-# `0123456789ABC...`. Primer vrstnega reda lahko najdete v
-# `string.ascii_uppercase`. Lahko predpostavite, da bo baza vedno med 2 in 36.
+# Definirajte razred `Ulomek`, s katerim predstavimo ulomek. Števec in
+# imenovalec sta celi števili, pri čemer je morebiten negativen predznak
+# vedno v števcu. Ulomki naj bodo vedno okrajšani. Atributa naj se
+# imenujeta `st` in `im`.
 # 
-#     >>> pretvori("10001", 2)
-#     17
-#     >>> pretvori("2ACBD04", 36)
-#     4978911892
+# Najprej definirajte konstruktor `__init__(self, st, im)`. Zgled:
+# 
+#     >>> u = Ulomek(5, 20)
+#     >>> u.st
+#     1
+#     >>> u.im
+#     4
 # =============================================================================
-def pretvori(niz, baza):
-    import string
-    znaki = "0123456789" + string.ascii_uppercase 
-    if niz == "":
-        return 0
-    else:
-        return znaki.index(niz[-1].upper()) + baza * pretvori(niz[:-1], baza)
+class Ulomek:
 
-#def pretvori_leno(s, b):
-#    return int(s, b)
-# =====================================================================@027489=
+    def __init__(self, st, im):
+        if im < 0:
+            st, im = -st, -im
+        d = gcd(st, im)
+        self.st = st // d
+        self.im = im // d
+
+# =====================================================================@001733=
 # 3. podnaloga
-# Sestavite funkcijo `izbrisi_podvojene`, ki sprejme niz in odstrani vse
-# zaporedno enake znake, kjer velikost črk ni pomembna. Če se po izbrisu pojavijo
-# nove podvojitve, naj jih funkcija ne izbriše.
+# Definirajte metodo  `__str__`, ki predstavi ulomek z nizom
+# oblike `'st/im'`. Zgled:
 # 
-#     >>> izbrisi_podvojene("aaab")
-#     "b"
-#     >>> izbrisi_podvojene("abaab")
-#     "abb"
+#     >>> u = Ulomek(5, 20)
+#     >>> print(u)
+#     1/4
 # =============================================================================
-def izbrisi_podvojene(s, last=None):
-    if s == "":
-        return ""
-    elif s[0] == last:
-        return izbrisi_podvojene(s[1:], last)
-    elif len(s) >= 2 and s[0] == s[1]:
-        return izbrisi_podvojene(s[2:], s[0])
-    else:
-        return s[0] + izbrisi_podvojene(s[1:], None)
-# =====================================================================@027487=
+class Ulomek(Ulomek):
+
+    def __str__(self):
+        return f'{self.st}/{self.im}'
+# =====================================================================@001734=
 # 4. podnaloga
-# Sestavite funkcijo `vsak_k_ti`, ki sprejme niz in parameter `k` ter vrne nov
-# niz, kjer iz vhodnega niza vzame vsak `k`-ti znak. Za nesmiselne parametre
-# naj funkcija vrne prazen niz
+# Definirajte še metodo  `__repr__`, ki predstavi ulomek z nizom
+# oblike `'Ulomek(st, im)'`. Zgled:
 # 
-#     >>> vsak_k_ti("abcdefghijk", 3)
-#     "adgj"
-#     >>> vsak_k_ti("abcdefghijk", 0)
-#     ""
+#     >>> u = Ulomek(5, 20)
+#     >>> u
+#     Ulomek(1, 4)
 # =============================================================================
-def vsak_k_ti(s, k):
-    if k <= 0:
-        return ""
-    else:
-        return s[::k]
-# =====================================================================@027488=
+class Ulomek(Ulomek):
+
+    def __repr__(self):
+        return f'Ulomek({self.st}, {self.im})'
+# =====================================================================@001735=
 # 5. podnaloga
-# Sestavitev funkcijo `zaporedje`, ki sprejme niz in vrne nov niz sestavljen iz
-# znakov na indeksih 0, 1, 3, 6, 10, ...
-# Namig: Ali razlike med indeksi sledijo kakemu preprostemu zaporedju?
+# Definirajte metodo  `__eq__(self, other)`, ki vrne `True` če sta dva
+# ulomka enaka, in `False` sicer. Zgled:
 # 
-#     >>> zaporedje("0123456789X")
-#     "0136X"
+#     >>> Ulomek(1, 3) == Ulomek(2, 3)
+#     False
+#     >>> Ulomek(2, 3) == Ulomek(10, 15)
+#     True
 # =============================================================================
-def zaporedje(niz, indeks=0, korak=1):
-    if indeks >= len(niz):
-        return ""
-    else:
-        return niz[indeks] + zaporedje(niz, indeks + korak, korak + 1)
+class Ulomek(Ulomek):
+
+    def __eq__(self, other):
+        return self.st == other.st and self.im == other.im
+
+    def __eq__(self, other):
+        return self.__repr__() == other.__repr__()
+# =====================================================================@001736=
+# 6. podnaloga
+# Definirajte metodo  `__add__(self, other)`, ki vrne vsoto dveh ulomkov.
+# Ko definirate to metodo, lahko ulomke seštevate kar z operatorjem `+`.
+# Na primer:
+# 
+#     >>> Ulomek(1, 6) + Ulomek(1, 4)
+#     Ulomek(5, 12)
+# =============================================================================
+class Ulomek(Ulomek):
+
+    def __add__(self, other):
+        st = self.st * other.im + other.st * self.im 
+        im = self.im * other.im
+        return Ulomek(st, im)
+# =====================================================================@001737=
+# 7. podnaloga
+# Definirajte metodo  `__sub__`, ki vrne razliko dveh ulomkov.
+# Ko definirate to metodo, lahko ulomke odštevate kar z operatorjem `-`.
+# Na primer:
+# 
+#     >>> Ulomek(1, 4) - Ulomek(1, 6)
+#     Ulomek(1, 12)
+# =============================================================================
+class Ulomek(Ulomek):
+
+    def __sub__(self, other):
+        return Ulomek(self.st * other.im - other.st * self.im, self.im * other.im)
+# =====================================================================@001738=
+# 8. podnaloga
+# Definirajte metodo  `__mul__`, ki vrne zmnožek dveh ulomkov.
+# Ko definirate to metodo, lahko ulomke množite kar z operatorjem `*`.
+# Na primer:
+# 
+#     >>> Ulomek(1, 3) * Ulomek(1, 2)
+#     Ulomek(1, 6)
+# =============================================================================
+class Ulomek(Ulomek):
+
+    def __mul__(self, other):
+        return Ulomek(self.st * other.st, self.im * other.im)
+# =====================================================================@001739=
+# 9. podnaloga
+# Definirajte metodo  `__truediv__`, ki vrne kvocient dveh
+# ulomkov. Ko definirate to metodo, lahko ulomke delite kar z operatorjem
+# `/`. Na primer:
+# 
+#     >>> Ulomek(1, 6) / Ulomek(1, 4)
+#     Ulomek(2, 3)
+# =============================================================================
+class Ulomek(Ulomek):
+
+    def __truediv__(self, other):
+        return Ulomek(self.st * other.im, self.im * other.st)
+# =====================================================================@001740=
+# 10. podnaloga
+# Izven razreda `Ulomek` definirajte funkcijo `priblizek(n)`, ki vrne
+# vsoto $$\frac{1}{0!} + \frac{1}{1!} + \frac{1}{2!} + … + \frac{1}{n!}.$$
+# Funkcija naj uporablja razred `Ulomek`. Zgled:
+# 
+#     >>> priblizek(5)
+#     Ulomek(163, 60)
+# 
+# Ali je izračunana vrednost blizu števila $e$?
+# =============================================================================
+def priblizek(n):
+
+    def fakulteta(i):
+        if i == 0:
+            return 1
+        else:
+            return i * fakulteta(i - 1)
+
+    vsota = Ulomek(0, 1)
+    for x in range(n + 1):
+        vsota = vsota + Ulomek(1, fakulteta(x))
+    return vsota
 
 
 
@@ -713,13 +773,18 @@ def _validate_current_file():
     if Check.part():
         Check.current_part[
             "token"
-        ] = "eyJwYXJ0IjoyNzQ4NiwidXNlciI6MTE1MTR9:1vyvM1:ZP-3bADoPBCX6zzIdOTYLTFaaf1zM6e8xzd7bgfdLTc"
+        ] = "eyJwYXJ0IjoxNzMxLCJ1c2VyIjoxMTUxNH0:1x1L4S:RSnZXnC1mIYTB6133VVdGYd7CrOWaj2SBbB3xNRJVKc"
         try:
-            Check.equal('filtriraj("Ne gremo še domov", "ngm")', "N__g__m_______m__")
-            Check.secret(filtriraj("Planica!! planica!!, snežena kraljica", "Planica!"))
-            
-            # =============================================================================
-            # Nizi
+            test_data = [
+                ('gcd(63, 35)', 7),
+                ('gcd(40, 35)', 5),
+                ('gcd(40, 19)', 1),
+                ('gcd(15, 69)', 3),
+                ('gcd(12345, 6789)', 3),
+            ]
+            for td in test_data:
+                if not Check.equal(*td):
+                    break
         except TimeoutError:
             Check.error("Dovoljen čas izvajanja presežen")
         except Exception:
@@ -731,17 +796,31 @@ def _validate_current_file():
     if Check.part():
         Check.current_part[
             "token"
-        ] = "eyJwYXJ0IjoyNzQ5MCwidXNlciI6MTE1MTR9:1vyvM1:bMGuujGfsq216TWS4TLE1ss1xGJJQQ8Dr4AN_qYhHSc"
+        ] = "eyJwYXJ0IjoxNzMyLCJ1c2VyIjoxMTUxNH0:1x1L4S:k5iTslJKMtoFtC-beANixoCCQ4YY-zqWZdJtuHayUlA"
         try:
-            Check.equal('pretvori("10001", 2)', 17)
-            Check.equal('pretvori("2ACBD04", 36)', 4978911892)
-            Check.equal('pretvori("AB", 30)', 311)
-            Check.equal('pretvori("101", 30)', 901)
-            for b in range(3, 36 + 1):
-                Check.secret(pretvori("101010111101", b))
-            for b in range(30, 36 + 1):
-                Check.secret(pretvori("PLANICA", b))
-                Check.secret(pretvori("MIHEC01267", b))
+            test_data = [
+                ('Ulomek(5, 1).st', 5),
+                ('Ulomek(5, 1).im', 1),
+                ('Ulomek(5, 20).st', 1),
+                ('Ulomek(5, 20).im', 4),
+                ('Ulomek(20, 6).st', 10),
+                ('Ulomek(20, 6).im', 3),
+                ('Ulomek(5, 7).st', 5),
+                ('Ulomek(5, 7).im', 7),
+                ('Ulomek(7, 5).st', 7),
+                ('Ulomek(7, 5).im', 5),
+                ('Ulomek(-7, 5).st', -7),
+                ('Ulomek(-7, 5).im', 5),
+                ('Ulomek(-7, -5).st', 7),
+                ('Ulomek(-7, -5).im', 5),
+                ('Ulomek(0, 7).st', 0),
+                ('Ulomek(0, 7).im', 1),
+                ('Ulomek(40, -60).im', 3),
+                ('Ulomek(40, -60).st', -2),
+            ]
+            for td in test_data:
+                if not Check.equal(*td):
+                    break
         except TimeoutError:
             Check.error("Dovoljen čas izvajanja presežen")
         except Exception:
@@ -753,14 +832,22 @@ def _validate_current_file():
     if Check.part():
         Check.current_part[
             "token"
-        ] = "eyJwYXJ0IjoyNzQ4OSwidXNlciI6MTE1MTR9:1vyvM1:n1MMq81P4jTF4uex_QcxyhWLj6eo_6V08O6CGiiG9e0"
+        ] = "eyJwYXJ0IjoxNzMzLCJ1c2VyIjoxMTUxNH0:1x1L4S:6RQ4AJ92ByRB-HmlowHFyxGdalICuUC4P6-EWMsdf-8"
         try:
-            Check.equal('izbrisi_podvojene("abaab")', "abb")
-            Check.equal('izbrisi_podvojene("abab")', "abab")
-            Check.equal('izbrisi_podvojene("aaaabaaaa")', "b")
-            Check.secret(izbrisi_podvojene("10000010001010101010002"))
-            Check.secret(izbrisi_podvojene("10000010sxsXXXs01010101010002"))
-            Check.secret(izbrisi_podvojene("asdhaskbbbsna,,sjnansd"))
+            test_data = [
+                ('str(Ulomek(20, 6))', '10/3'),
+                ('str(Ulomek(0, 113))', '0/1'),
+                ('str(Ulomek(40, -60))', '-2/3'),
+                ('str(Ulomek(5, 20))', '1/4'),
+                ('str(Ulomek(5, 7))', '5/7'),
+                ('str(Ulomek(7, 5))', '7/5'),
+                ('str(Ulomek(-7, 5))', '-7/5'),
+                ('str(Ulomek(7, -5))', '-7/5'),
+                ('str(Ulomek(-7, -5))', '7/5'),
+            ]
+            for td in test_data:
+                if not Check.equal(*td):
+                    break
         except TimeoutError:
             Check.error("Dovoljen čas izvajanja presežen")
         except Exception:
@@ -772,14 +859,22 @@ def _validate_current_file():
     if Check.part():
         Check.current_part[
             "token"
-        ] = "eyJwYXJ0IjoyNzQ4NywidXNlciI6MTE1MTR9:1vyvM1:zNYPMeryVTY25sHdGtiqAZ5uj9KlH4aeZPYHdRLxrTU"
+        ] = "eyJwYXJ0IjoxNzM0LCJ1c2VyIjoxMTUxNH0:1x1L4S:1diJW89e6OuLhy-HI6F8R3TYGLLGn2MHIDMUCmgA3D8"
         try:
-            Check.equal('vsak_k_ti("abcdefghijk", 0)', "")
-            Check.equal('vsak_k_ti("abcdefghijk", 3)', "adgj")
-            Check.secret(vsak_k_ti("abcdefghijk", 5))
-            Check.secret(vsak_k_ti("abcdefghijk", -3))
-            Check.secret(vsak_k_ti("abcdefghihvjdksa s asčdhaglsda saasč jk", 5))
-            Check.secret(vsak_k_ti("abcdefghihvjdksa s asčdhaglsda saasč jk", 8))
+            test_data = [
+                ('repr(Ulomek(20, 6))', 'Ulomek(10, 3)'),
+                ('repr(Ulomek(0, 226))', 'Ulomek(0, 1)'),
+                ('repr(Ulomek(40, -60))', 'Ulomek(-2, 3)'),
+                ('repr(Ulomek(5, 20))', 'Ulomek(1, 4)'),
+                ('repr(Ulomek(5, 7))', 'Ulomek(5, 7)'),
+                ('repr(Ulomek(7, 5))', 'Ulomek(7, 5)'),
+                ('repr(Ulomek(-7, 5))', 'Ulomek(-7, 5)'),
+                ('repr(Ulomek(7, -5))', 'Ulomek(-7, 5)'),
+                ('repr(Ulomek(-7, -5))', 'Ulomek(7, 5)'),
+            ]
+            for td in test_data:
+                if not Check.equal(*td):
+                    break
         except TimeoutError:
             Check.error("Dovoljen čas izvajanja presežen")
         except Exception:
@@ -791,11 +886,170 @@ def _validate_current_file():
     if Check.part():
         Check.current_part[
             "token"
-        ] = "eyJwYXJ0IjoyNzQ4OCwidXNlciI6MTE1MTR9:1vyvM1:8yq1knvHM8e3xEKzbsW73dGKVe4kdV86HjPSKZx3QH8"
+        ] = "eyJwYXJ0IjoxNzM1LCJ1c2VyIjoxMTUxNH0:1x1L4S:tzjI15tzgof8h2i0PQfAEXS7lGzyHaWDRU78wgEkluM"
         try:
-            Check.equal('zaporedje("0123456789X")', "0136X")
-            Check.secret(zaporedje("".join([str(x) for x in range(100)])))
-            Check.secret(zaporedje("".join([str(x) for x in range(150)])))
+            test_data = [
+                ('Ulomek(1, 3) == Ulomek(2, 3)', False),
+                ('Ulomek(2, 3) == Ulomek(10, 15)', True),
+                ('Ulomek(0, 3) == Ulomek(0, 2215)', True),
+                ('Ulomek(20, 6) == Ulomek(10, 3)', True),
+                ('Ulomek(-10, 3) == Ulomek(10, 3)', False),
+                ('Ulomek(10, -3) == Ulomek(10, 3)', False),
+                ('Ulomek(1, 4) == Ulomek(4, 1)', False),
+                ('Ulomek(20, 6) == Ulomek(10, 3)', True),
+                ('Ulomek(40, -60) == Ulomek(-2, 3)', True),
+                ('Ulomek(5, 20) == Ulomek(1, 4)', True),
+                ('Ulomek(5, 7) == Ulomek(5, 7)', True),
+                ('Ulomek(7, 5) == Ulomek(7, 5)', True),
+                ('Ulomek(-7, 5) == Ulomek(-7, 5)', True),
+                ('Ulomek(7, -5) == Ulomek(-7, 5)', True),
+                ('Ulomek(-7, -5) == Ulomek(7, 5)', True),
+                ('Ulomek(999999999, 1000000000) == Ulomek(999999998, 999999999)', False),
+            ]
+            for td in test_data:
+                if not Check.equal(*td):
+                    break
+        except TimeoutError:
+            Check.error("Dovoljen čas izvajanja presežen")
+        except Exception:
+            Check.error(
+                "Testi sprožijo izjemo\n  {0}",
+                "\n  ".join(traceback.format_exc().split("\n"))[:-2],
+            )
+
+    if Check.part():
+        Check.current_part[
+            "token"
+        ] = "eyJwYXJ0IjoxNzM2LCJ1c2VyIjoxMTUxNH0:1x1L4S:1qdxw3Rt7jKDMzFM1ndyRu1YW4rCpYCjpGWy73STN6s"
+        try:
+            test_data = [
+                ('Ulomek(1, 6) + Ulomek(1, 4)', Ulomek(5, 12)),
+                ('Ulomek(1, -6) + Ulomek(-1, 4)', Ulomek(-5, 12)),
+                ('Ulomek(1, 6) + Ulomek(-1, 4)', Ulomek(-1, 12)),
+                ('Ulomek(1, -6) + Ulomek(1, 4)', Ulomek(1, 12)),
+                ('Ulomek(1, 6) + Ulomek(1, 6)', Ulomek(1, 3)),
+                ('Ulomek(1, 6) + Ulomek(-1, 6)', Ulomek(0, 1)),
+                ('Ulomek(60, 1) + Ulomek(-1, 60)', Ulomek(3599, 60)),
+                ('Ulomek(1, 2014) + Ulomek(1, 2015)', Ulomek(4029, 4058210)),
+                ('Ulomek(1, 2014) + Ulomek(1, -2015)', Ulomek(1, 4058210)),
+                ('Ulomek(757, 3000) + Ulomek(743, 3000)', Ulomek(1, 2)),
+                ('Ulomek(1009, 2022) + Ulomek(1013, 2022)', Ulomek(1, 1)),
+            ]
+            for td in test_data:
+                if not Check.equal(*td):
+                    break
+        except TimeoutError:
+            Check.error("Dovoljen čas izvajanja presežen")
+        except Exception:
+            Check.error(
+                "Testi sprožijo izjemo\n  {0}",
+                "\n  ".join(traceback.format_exc().split("\n"))[:-2],
+            )
+
+    if Check.part():
+        Check.current_part[
+            "token"
+        ] = "eyJwYXJ0IjoxNzM3LCJ1c2VyIjoxMTUxNH0:1x1L4S:JtVJDhDxjKm-8vM6YLqYNG3Bi05A8aRNJCtN6bLcH50"
+        try:
+            test_data = [
+                ('Ulomek(1, 6) - Ulomek(1, 4)', Ulomek(-1, 12)),
+                ('Ulomek(1, 4) - Ulomek(1, 6)', Ulomek(1, 12)),
+                ('Ulomek(3, 6) - Ulomek(1, 6)', Ulomek(1, 3)),
+                ('Ulomek(1, -6) - Ulomek(-1, 4)', Ulomek(1, 12)),
+                ('Ulomek(1, 6) - Ulomek(-1, 4)', Ulomek(5, 12)),
+                ('Ulomek(1, -6) - Ulomek(1, 4)', Ulomek(-5, 12)),
+                ('Ulomek(1, 6) - Ulomek(1, 6)', Ulomek(0, 1)),
+                ('Ulomek(1, 6) - Ulomek(-1, 6)', Ulomek(1, 3)),
+                ('Ulomek(60, 1) - Ulomek(-1, 60)', Ulomek(3601, 60)),
+                ('Ulomek(1, 2014) - Ulomek(1, 2015)', Ulomek(1, 4058210)),
+                ('Ulomek(1, 2014) - Ulomek(1, -2015)', Ulomek(4029, 4058210)),
+                ('Ulomek(757, 3000) - Ulomek(743, 3000)', Ulomek(7, 1500)),
+                ('Ulomek(2003, 1980) - Ulomek(1013, 1980)', Ulomek(1, 2)),
+            ]
+            for td in test_data:
+                if not Check.equal(*td):
+                    break
+        except TimeoutError:
+            Check.error("Dovoljen čas izvajanja presežen")
+        except Exception:
+            Check.error(
+                "Testi sprožijo izjemo\n  {0}",
+                "\n  ".join(traceback.format_exc().split("\n"))[:-2],
+            )
+
+    if Check.part():
+        Check.current_part[
+            "token"
+        ] = "eyJwYXJ0IjoxNzM4LCJ1c2VyIjoxMTUxNH0:1x1L4S:dZq4bNsoSXNmjDKPhuVtapWvhANlZua4Fg91BdwhxfI"
+        try:
+            test_data = [
+                ('Ulomek(1, 3) * Ulomek(1, 2)', Ulomek(1, 6)),
+                ('Ulomek(1, 6) * Ulomek(1, 4)', Ulomek(1, 24)),
+                ('Ulomek(4, 9) * Ulomek(3, 2)', Ulomek(2, 3)),
+                ('Ulomek(1, -6) * Ulomek(-1, 4)', Ulomek(1, 24)),
+                ('Ulomek(1, 6) * Ulomek(-1, 4)', Ulomek(-1, 24)),
+                ('Ulomek(1, -6) * Ulomek(1, 4)', Ulomek(-1, 24)),
+                ('Ulomek(757, 3000) * Ulomek(743, 3000)', Ulomek(562451, 9000000)),
+                ('Ulomek(60, 1) * Ulomek(-1, 60)', Ulomek(-1, 1)),
+                ('Ulomek(25857, 160930) * Ulomek(277970, 33813)', Ulomek(247, 187)),
+                ('Ulomek(25857, 1) * Ulomek(277970, 1)', Ulomek(7187470290, 1)),
+            ]
+            for td in test_data:
+                if not Check.equal(*td):
+                    break
+        except TimeoutError:
+            Check.error("Dovoljen čas izvajanja presežen")
+        except Exception:
+            Check.error(
+                "Testi sprožijo izjemo\n  {0}",
+                "\n  ".join(traceback.format_exc().split("\n"))[:-2],
+            )
+
+    if Check.part():
+        Check.current_part[
+            "token"
+        ] = "eyJwYXJ0IjoxNzM5LCJ1c2VyIjoxMTUxNH0:1x1L4S:C_GBp56gCgldJGWl0cUVwbN2prwpneoXPBQZUQfFJeM"
+        try:
+            test_data = [
+                ('Ulomek(1, 6) / Ulomek(1, 4)', Ulomek(2, 3)),
+                ('Ulomek(4, 9) / Ulomek(2, 3)', Ulomek(2, 3)),
+                ('Ulomek(1, -6) / Ulomek(-1, 4)', Ulomek(2, 3)),
+                ('Ulomek(1, 6) / Ulomek(-1, 4)', Ulomek(-2, 3)),
+                ('Ulomek(1, -6) / Ulomek(1, 4)', Ulomek(-2, 3)),
+                ('Ulomek(757, 3000) / Ulomek(743, 3000)', Ulomek(757, 743)),
+                ('Ulomek(757, 3000) / Ulomek(3000, 743)', Ulomek(562451, 9000000)),
+                ('Ulomek(60, 1) / Ulomek(-60, 1)', Ulomek(-1, 1)),
+                ('Ulomek(160930, 25857) / Ulomek(277970, 33813)', Ulomek(187, 247)),
+                ('Ulomek(25857, 1) / Ulomek(277970, 1)', Ulomek(25857, 277970)),
+                ('Ulomek(25857, 1) / Ulomek(1, 277970)', Ulomek(7187470290, 1)),
+            ]
+            for td in test_data:
+                if not Check.equal(*td):
+                    break
+        except TimeoutError:
+            Check.error("Dovoljen čas izvajanja presežen")
+        except Exception:
+            Check.error(
+                "Testi sprožijo izjemo\n  {0}",
+                "\n  ".join(traceback.format_exc().split("\n"))[:-2],
+            )
+
+    if Check.part():
+        Check.current_part[
+            "token"
+        ] = "eyJwYXJ0IjoxNzQwLCJ1c2VyIjoxMTUxNH0:1x1L4S:GqvX3U-f0GGf27iupS39rgSkU-XYQ4Iv5IOiUBEw3s4"
+        try:
+            test_data = [
+                ('priblizek(3)', Ulomek(8, 3)),
+                ('priblizek(1)', Ulomek(2, 1)),
+                ('priblizek(0)', Ulomek(1, 1)),
+                ('priblizek(5)', Ulomek(163, 60)),
+                ('priblizek(10)', Ulomek(9864101, 3628800)),
+                ('priblizek(20)', Ulomek(6613313319248080001, 2432902008176640000)),
+            ]
+            for td in test_data:
+                if not Check.equal(*td):
+                    break
         except TimeoutError:
             Check.error("Dovoljen čas izvajanja presežen")
         except Exception:

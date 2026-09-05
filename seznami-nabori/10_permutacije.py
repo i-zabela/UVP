@@ -1,101 +1,159 @@
 # =============================================================================
-# Rezine in rekurzija
-# =====================================================================@027486=
+# Permutacije
+#
+# Permutacijo običajno predstavimo s seznamom slik posameznih elementov,
+# npr. [5, 1, 6, 4, 2, 3], lahko pa tudi s seznamom disjunktnih ciklov, npr.
+# [[1, 5, 2], [3, 6], [4]]. Ciklov dolžine 1 (fiksnih točk) običajno ne
+# navajamo, a moramo v tem primeru navesti še velikost permutacije
+# (v tem primeru 6).
+# =====================================================================@013404=
 # 1. podnaloga
-# Sestavite funkcijo `filtriraj`, ki sprejme dva niza in vrne nov niz sestavljen
-# zgolj iz znakov prvega niza, ki so hkrati tudi v drugem nizu, preostale znake
-# pa zamenja z _
-# Velikost črk je nepomembna.
+# Sestavite funkcijo `je_permutacija`, ki sprejme seznam in preveri,
+# ali je v njem zapisana permutacija v običajnem zapisu. V seznamu je zapisana
+# permutacija, če se vsak element od $1$ do $n$, kjer je $n$ dolžina
+# permutacije, pojavi natanko enkrat.
 # 
-#     >>> filtriraj("Ne gremo še domov", "ngm")
-#     "N__g__m_______m__"
+#     >>> je_permutacija([7, 3, 4, 5, 2, 1])
+#     False
+#     >>> je_permutacija([7, 3, 4, 5, 2, 6, 1])
+#     True
 # =============================================================================
-def filtriraj(niz1, niz2):
-    if niz1 == "":
-        return ""
-    elif niz1[0].lower() in niz2.lower():
-        return niz1[0] + filtriraj(niz1[1:], niz2)
-    else :
-        return "_" + filtriraj(niz1[1:], niz2)
-#def filtriraj(s, f):
-#    if not s:
-#        return s
-#    if s[0].lower() in f.lower():
-#        return s[0] + filtriraj(s[1:], f)
-#    else:
-#        return "_" + filtriraj(s[1:], f)
-# =====================================================================@027490=
+def je_permutacija(sez):
+    for i in range(len(sez)):
+        if sez.count(i + 1) != 1:
+            return False
+    return True
+# =====================================================================@013405=
 # 2. podnaloga
-# Sestavite funkcijo `pretvori`, ki sprejme niz in bazo ter vrne podano število
-# v desetiškem zapisu. Ko zmanjka števil si znaki sledijo po angleški abecedi
-# `0123456789ABC...`. Primer vrstnega reda lahko najdete v
-# `string.ascii_uppercase`. Lahko predpostavite, da bo baza vedno med 2 in 36.
+# Sestavite funkcijo `je_seznam_ciklov`, ki sprejme seznam seznamov in preveri,
+# ali vsebuje disjunktne cikle neke permutacije. Preveriti je torej treba,
+# ali so vsi elementi pozitivni ter ali se vsak element v stiku vseh ciklov
+# pojavi natanko enkrat.
 # 
-#     >>> pretvori("10001", 2)
-#     17
-#     >>> pretvori("2ACBD04", 36)
-#     4978911892
+#     >>> je_seznam_ciklov([[8,3,4],[5,7,1]])
+#     True
+#     >>> je_seznam_ciklov([[8,1,4],[5,7,1]])
+#     False
 # =============================================================================
-def pretvori(niz, baza):
-    import string
-    znaki = "0123456789" + string.ascii_uppercase 
-    if niz == "":
-        return 0
-    else:
-        return znaki.index(niz[-1].upper()) + baza * pretvori(niz[:-1], baza)
-
-#def pretvori_leno(s, b):
-#    return int(s, b)
-# =====================================================================@027489=
+def je_seznam_ciklov(sez):
+    stik = []
+    for seznam in sez:
+        stik.extend(seznam)
+    for element in stik:
+        if element < 1 or stik.count(element) != 1:
+            return False
+    return True
+# =====================================================================@013406=
 # 3. podnaloga
-# Sestavite funkcijo `izbrisi_podvojene`, ki sprejme niz in odstrani vse
-# zaporedno enake znake, kjer velikost črk ni pomembna. Če se po izbrisu pojavijo
-# nove podvojitve, naj jih funkcija ne izbriše.
+# Sestavite funkcijo `urejeni_cikli`, ki seznam ciklov pretvori v nov seznam
+# tako, da je najmanjši element posameznega cikla vedno na začetku cikla,
+# cikli v seznamu pa so urejeni po velikosti prvih elementov. Morebitne prazne
+# cikle in cikle dolžine 1 naj odstrani.
 # 
-#     >>> izbrisi_podvojene("aaab")
-#     "b"
-#     >>> izbrisi_podvojene("abaab")
-#     "abb"
+#     >>> urejeni_cikli([[7, 3], [4], [5, 2, 1]])
+#     [[1, 5, 2], [3, 7]]
 # =============================================================================
-def izbrisi_podvojene(s, last=None):
-    if s == "":
-        return ""
-    elif s[0] == last:
-        return izbrisi_podvojene(s[1:], last)
-    elif len(s) >= 2 and s[0] == s[1]:
-        return izbrisi_podvojene(s[2:], s[0])
-    else:
-        return s[0] + izbrisi_podvojene(s[1:], None)
-# =====================================================================@027487=
+def urejeni_cikli(cikli):
+    sez = []
+    for cikel in cikli:
+        if len(cikel) > 1:
+            najmanjsi = cikel.index(min(cikel))
+            sez.append(cikel[najmanjsi:] + cikel[:najmanjsi])
+    sez.sort()
+    return sez
+# =====================================================================@013407=
 # 4. podnaloga
-# Sestavite funkcijo `vsak_k_ti`, ki sprejme niz in parameter `k` ter vrne nov
-# niz, kjer iz vhodnega niza vzame vsak `k`-ti znak. Za nesmiselne parametre
-# naj funkcija vrne prazen niz
+# Sestavite funkcijo `iz_ciklov(cikli, dolzina)`, ki iz seznama ciklov `cikli`
+# sestavi običajen zapis permutacije dolzine `dolzina`. Če parametra `dolzina`
+# ne podamo, ali pa je ta premajhna, naj bo dolžina enaka največjemu elementu,
+# ki se pojavi v ciklih.
 # 
-#     >>> vsak_k_ti("abcdefghijk", 3)
-#     "adgj"
-#     >>> vsak_k_ti("abcdefghijk", 0)
-#     ""
+#     >>> iz_ciklov([[7, 3], [4], [5, 2, 1]])
+#     [5, 1, 7, 4, 2, 6, 3]
+#     >>> iz_ciklov([[7, 3], [4], [5, 2, 1]], 9)
+#     [5, 1, 7, 4, 2, 6, 3, 8, 9]
 # =============================================================================
-def vsak_k_ti(s, k):
-    if k <= 0:
-        return ""
-    else:
-        return s[::k]
-# =====================================================================@027488=
+def iz_ciklov(cikli, dolzina=0):
+    for cikel in cikli:
+        dolzina = max(dolzina, max(cikel))
+    perm = list(range(1, dolzina + 1))
+    for cikel in cikli:
+        for i in range(1, len(cikel)):
+            perm[cikel[i - 1] - 1] = cikel[i]
+        perm[cikel[-1] - 1] = cikel[0]
+    return perm
+# =====================================================================@013408=
 # 5. podnaloga
-# Sestavitev funkcijo `zaporedje`, ki sprejme niz in vrne nov niz sestavljen iz
-# znakov na indeksih 0, 1, 3, 6, 10, ...
-# Namig: Ali razlike med indeksi sledijo kakemu preprostemu zaporedju?
+# Sestavite funkcijo `v_cikle`, ki iz permutacije sestavi njeno predstavitev s
+# cikli.
 # 
-#     >>> zaporedje("0123456789X")
-#     "0136X"
+#     >>> v_cikle([5, 1, 7, 4, 2, 6, 3])
+#     [[1, 5, 2], [3, 7]]
 # =============================================================================
-def zaporedje(niz, indeks=0, korak=1):
-    if indeks >= len(niz):
-        return ""
-    else:
-        return niz[indeks] + zaporedje(niz, indeks + korak, korak + 1)
+def v_cikle(perm):
+    cikli = []
+    pregledani = []
+    for i in range(1, len(perm) + 1):
+        j = i
+        cikel = []
+        while j not in pregledani:
+            pregledani.append(j)
+            cikel.append(j)
+            j = perm[j - 1]
+        if len(cikel) > 1:
+            cikli.append(cikel)
+    return cikli
+# =====================================================================@013409=
+# 6. podnaloga
+# Sestavite funkcijo `inverz_perm`, ki sestavi in vrne inverz dane permutacije
+# v običajni predstavitvi.
+# 
+#     >>> inverz_perm([7, 3, 4, 5, 2, 1, 6])
+#     [6, 5, 2, 3, 4, 7, 1]
+# =============================================================================
+
+# =====================================================================@013410=
+# 7. podnaloga
+# Sestavite funkcijo `inverz_cikli`, ki sestavi in vrne inverz dane
+# permutacije, predstavljene s seznamom ciklov. Inverz permutacije dobimo tako,
+# da v cikličnem zapisu obrnemo vse cikle (vsakega posebej).
+# 
+#     >>> inverz_cikli([[7, 3], [4], [5, 2, 1]])
+#     [[1, 2, 5], [3, 7]]
+# =============================================================================
+
+# =====================================================================@013411=
+# 8. podnaloga
+# Sestavite funkcijo `ciklicni_tip(cikli, dolzina)`, ki vrne ciklični tip
+# permutacije dolžine `dolzina`, predstavljene s seznamom ciklov `cikli`.
+# To je nabor, ki ima toliko elementov, kot je dolžina najdaljšega cikla.
+# Prvi element v tem naboru je število ciklov dolžine 1, drugi element je
+# število ciklov dolžine 2, itd. Če parametra `dolzina` ne podamo, ali pa
+# je ta premajhna, naj bo dolžina enaka največjemu elementu, ki se pojavi
+# v ciklih.
+# 
+#     >>> ciklicni_tip([[7, 3], [4], [5, 2, 1]])
+#     (2, 1, 1)
+#     >>> ciklicni_tip([[7, 3], [4], [5, 2, 1]], 9)
+#     (4, 1, 1)
+# =============================================================================
+
+# =====================================================================@013412=
+# 9. podnaloga
+# Sestavite funkcijo `red`, ki izračuna in vrne red permutacije podane s cikli.
+# Naj bo $\pi$ permutacija. Red permutacije $\pi$ je najmanjše pozitivno
+# število $k$, pri katerem je $\pi^k$ identiteta.
+# 
+# Namig 1: Red permutacije je najmanjši skupni večkratnik dolžin vseh ciklov.
+# 
+# Namig 2: Za poljubni dve naravni števili `a` in `b` velja, da je
+# `gcd(a, b) * lcm(a, b) == a * b`. (Funkcija `gcd` računa največji
+# skupni delitelj, funkcija `lcm` pa najmanjši skupni večkratnik.)
+# 
+#     >>> red([[7, 3], [4], [5, 2, 1]])
+#     6
+# =============================================================================
+
 
 
 
@@ -713,13 +771,17 @@ def _validate_current_file():
     if Check.part():
         Check.current_part[
             "token"
-        ] = "eyJwYXJ0IjoyNzQ4NiwidXNlciI6MTE1MTR9:1vyvM1:ZP-3bADoPBCX6zzIdOTYLTFaaf1zM6e8xzd7bgfdLTc"
+        ] = "eyJwYXJ0IjoxMzQwNCwidXNlciI6MTE1MTR9:1wyX5Y:I99yrdIlus-Qg_kM18CwWUpDZb-fEHhqtmfFQE3EDxo"
         try:
-            Check.equal('filtriraj("Ne gremo še domov", "ngm")', "N__g__m_______m__")
-            Check.secret(filtriraj("Planica!! planica!!, snežena kraljica", "Planica!"))
-            
-            # =============================================================================
-            # Nizi
+            Check.equal('je_permutacija([7, 3, 4, 5, 2, 1])', False)
+            Check.equal('je_permutacija([7, 3, 4, 5, 2, 6, 1])', True)
+            Check.equal('je_permutacija([7, 3, 4, 0, 2, 1])', False)
+            Check.equal('je_permutacija([7, 3, 4, 8, 2, 1])', False)
+            Check.equal('je_permutacija([2, 3, 4, 5, 2, 1])', False)
+            Check.equal('je_permutacija([])', True)
+            Check.equal('je_permutacija([1])', True)
+            Check.equal('je_permutacija([1, 2])', True)
+            Check.equal('je_permutacija([2, 1])', True)
         except TimeoutError:
             Check.error("Dovoljen čas izvajanja presežen")
         except Exception:
@@ -731,17 +793,22 @@ def _validate_current_file():
     if Check.part():
         Check.current_part[
             "token"
-        ] = "eyJwYXJ0IjoyNzQ5MCwidXNlciI6MTE1MTR9:1vyvM1:bMGuujGfsq216TWS4TLE1ss1xGJJQQ8Dr4AN_qYhHSc"
+        ] = "eyJwYXJ0IjoxMzQwNSwidXNlciI6MTE1MTR9:1wyX5Y:IPMvuDr_nPMPcBU0n-I_1wNE6C7h-LBRRZm9Tw9RiiQ"
         try:
-            Check.equal('pretvori("10001", 2)', 17)
-            Check.equal('pretvori("2ACBD04", 36)', 4978911892)
-            Check.equal('pretvori("AB", 30)', 311)
-            Check.equal('pretvori("101", 30)', 901)
-            for b in range(3, 36 + 1):
-                Check.secret(pretvori("101010111101", b))
-            for b in range(30, 36 + 1):
-                Check.secret(pretvori("PLANICA", b))
-                Check.secret(pretvori("MIHEC01267", b))
+            Check.equal('je_seznam_ciklov([])', True)
+            Check.equal('je_seznam_ciklov([[]])', True)
+            Check.equal('je_seznam_ciklov([[0]])', False)
+            Check.equal('je_seznam_ciklov([[1]])', True)
+            Check.equal('je_seznam_ciklov([[2]])', True)
+            Check.equal('je_seznam_ciklov([[1,3]])', True)
+            Check.equal('je_seznam_ciklov([[3,1]])', True)
+            Check.equal('je_seznam_ciklov([[1,3,5,7,4]])', True)
+            Check.equal('je_seznam_ciklov([[1,3,5,1,4]])', False)
+            Check.equal('je_seznam_ciklov([[8,3,2,4],[5,7,6,1]])', True)
+            Check.equal('je_seznam_ciklov([[8,3,4],[5,7,1]])', True)
+            Check.equal('je_seznam_ciklov([[8,3,4],[5,7,3,1]])', False)
+            Check.equal('je_seznam_ciklov([[8],[7],[1],[3],[6],[4],[2]])', True)
+            Check.equal('je_seznam_ciklov([[8],[7],[1],[3],[6],[1],[2]])', False)
         except TimeoutError:
             Check.error("Dovoljen čas izvajanja presežen")
         except Exception:
@@ -753,14 +820,11 @@ def _validate_current_file():
     if Check.part():
         Check.current_part[
             "token"
-        ] = "eyJwYXJ0IjoyNzQ4OSwidXNlciI6MTE1MTR9:1vyvM1:n1MMq81P4jTF4uex_QcxyhWLj6eo_6V08O6CGiiG9e0"
+        ] = "eyJwYXJ0IjoxMzQwNiwidXNlciI6MTE1MTR9:1wyX5Y:nQ_DmzKUkTJQ-lajwPm6bqgezHJJAfrIFG_ZC-yPUHA"
         try:
-            Check.equal('izbrisi_podvojene("abaab")', "abb")
-            Check.equal('izbrisi_podvojene("abab")', "abab")
-            Check.equal('izbrisi_podvojene("aaaabaaaa")', "b")
-            Check.secret(izbrisi_podvojene("10000010001010101010002"))
-            Check.secret(izbrisi_podvojene("10000010sxsXXXs01010101010002"))
-            Check.secret(izbrisi_podvojene("asdhaskbbbsna,,sjnansd"))
+            Check.equal('urejeni_cikli([[7, 3], [4], [5, 2, 1]])', [[1, 5, 2], [3, 7]])
+            Check.equal('urejeni_cikli([[12, 11], [1, 2], [9, 10], [3, 4], [14, 13], [5, 6], [7, 8]])', [[1, 2], [3, 4], [5, 6], [7, 8], [9, 10], [11, 12], [13, 14]])
+            Check.equal('urejeni_cikli([[5, 3, 7, 9, 13], [11, 12, 4, 6], [8, 2, 14], [15, 18]])', [[2, 14, 8], [3, 7, 9, 13, 5], [4, 6, 11, 12], [15, 18]])
         except TimeoutError:
             Check.error("Dovoljen čas izvajanja presežen")
         except Exception:
@@ -772,14 +836,10 @@ def _validate_current_file():
     if Check.part():
         Check.current_part[
             "token"
-        ] = "eyJwYXJ0IjoyNzQ4NywidXNlciI6MTE1MTR9:1vyvM1:zNYPMeryVTY25sHdGtiqAZ5uj9KlH4aeZPYHdRLxrTU"
+        ] = "eyJwYXJ0IjoxMzQwNywidXNlciI6MTE1MTR9:1wyX5Y:x7rEza_DfalVjOhZVGCbi8SPKJi3oRcxAHa1h8a7Vpo"
         try:
-            Check.equal('vsak_k_ti("abcdefghijk", 0)', "")
-            Check.equal('vsak_k_ti("abcdefghijk", 3)', "adgj")
-            Check.secret(vsak_k_ti("abcdefghijk", 5))
-            Check.secret(vsak_k_ti("abcdefghijk", -3))
-            Check.secret(vsak_k_ti("abcdefghihvjdksa s asčdhaglsda saasč jk", 5))
-            Check.secret(vsak_k_ti("abcdefghihvjdksa s asčdhaglsda saasč jk", 8))
+            Check.equal('iz_ciklov([[7, 3], [4], [5, 2, 1]])', [5, 1, 7, 4, 2, 6, 3])
+            Check.equal('iz_ciklov([[7, 3], [4], [5, 2, 1]], 9)', [5, 1, 7, 4, 2, 6, 3, 8, 9])
         except TimeoutError:
             Check.error("Dovoljen čas izvajanja presežen")
         except Exception:
@@ -791,11 +851,76 @@ def _validate_current_file():
     if Check.part():
         Check.current_part[
             "token"
-        ] = "eyJwYXJ0IjoyNzQ4OCwidXNlciI6MTE1MTR9:1vyvM1:8yq1knvHM8e3xEKzbsW73dGKVe4kdV86HjPSKZx3QH8"
+        ] = "eyJwYXJ0IjoxMzQwOCwidXNlciI6MTE1MTR9:1wyX5Y:8-_yDaSJ_ioCpcePvePKfn_Qo72gua15o8203_i7J5o"
         try:
-            Check.equal('zaporedje("0123456789X")', "0136X")
-            Check.secret(zaporedje("".join([str(x) for x in range(100)])))
-            Check.secret(zaporedje("".join([str(x) for x in range(150)])))
+            Check.equal('v_cikle([5, 1, 7, 4, 2, 6, 3])', [[1, 5, 2], [3, 7]])
+            Check.equal('v_cikle([1, 2, 3, 4, 5, 6, 7])', [])
+            Check.equal('v_cikle([7, 6, 5, 4, 3, 2, 1])', [[1, 7], [2, 6], [3, 5]])
+        except TimeoutError:
+            Check.error("Dovoljen čas izvajanja presežen")
+        except Exception:
+            Check.error(
+                "Testi sprožijo izjemo\n  {0}",
+                "\n  ".join(traceback.format_exc().split("\n"))[:-2],
+            )
+
+    if Check.part():
+        Check.current_part[
+            "token"
+        ] = "eyJwYXJ0IjoxMzQwOSwidXNlciI6MTE1MTR9:1wyX5Y:9x1pR7TIVmiPX13v9_WkN0vAfOCOOcM0bPhM1DUKW3w"
+        try:
+            Check.equal('inverz_perm([7, 3, 4, 5, 2, 1, 6])', [6, 5, 2, 3, 4, 7, 1])
+            Check.equal('inverz_perm([1, 2, 3, 4, 5, 6, 7])', [1, 2, 3, 4, 5, 6, 7])
+        except TimeoutError:
+            Check.error("Dovoljen čas izvajanja presežen")
+        except Exception:
+            Check.error(
+                "Testi sprožijo izjemo\n  {0}",
+                "\n  ".join(traceback.format_exc().split("\n"))[:-2],
+            )
+
+    if Check.part():
+        Check.current_part[
+            "token"
+        ] = "eyJwYXJ0IjoxMzQxMCwidXNlciI6MTE1MTR9:1wyX5Y:B06ny7T8VohS5GQcNa5V13Lr-FdHc4nwDgWjUrJvXgM"
+        try:
+            Check.equal('inverz_cikli([[7, 3], [4], [5, 2, 1]])', [[1, 2, 5], [3, 7]])
+            Check.equal('inverz_cikli([[10, 7, 3], [4], [5, 2, 1]])', [[1, 2, 5], [3, 7, 10]])
+        except TimeoutError:
+            Check.error("Dovoljen čas izvajanja presežen")
+        except Exception:
+            Check.error(
+                "Testi sprožijo izjemo\n  {0}",
+                "\n  ".join(traceback.format_exc().split("\n"))[:-2],
+            )
+
+    if Check.part():
+        Check.current_part[
+            "token"
+        ] = "eyJwYXJ0IjoxMzQxMSwidXNlciI6MTE1MTR9:1wyX5Y:WkuuDVK0RmIU_kOWA-ia_q0M28oretOjSzFWjkm3rM8"
+        try:
+            Check.equal('ciklicni_tip([[7, 3], [4], [5, 2, 1]], 9)', (4, 1, 1))
+            Check.equal('ciklicni_tip([[7, 3], [4], [5, 2, 1]])', (2, 1, 1))
+            Check.equal('ciklicni_tip([[12, 11], [1, 2], [9, 10], [3, 4], [14, 13], [5, 6], [7, 8]])', (0, 7))
+            Check.equal('ciklicni_tip([[12, 11], [1, 2], [9, 10], [3, 4], [14, 13], [5, 6], [7, 8]], 21)', (7, 7))
+            Check.equal('ciklicni_tip([[5, 3, 7, 9, 13], [11, 12, 4, 6], [8, 2, 14], [15, 18]])', (4, 1, 1, 1, 1))
+        except TimeoutError:
+            Check.error("Dovoljen čas izvajanja presežen")
+        except Exception:
+            Check.error(
+                "Testi sprožijo izjemo\n  {0}",
+                "\n  ".join(traceback.format_exc().split("\n"))[:-2],
+            )
+
+    if Check.part():
+        Check.current_part[
+            "token"
+        ] = "eyJwYXJ0IjoxMzQxMiwidXNlciI6MTE1MTR9:1wyX5Y:uGLQ66PfkXISYDjFj43pXZ7J1AhFa1kmj42SuQoh59Q"
+        try:
+            Check.equal('red([[7, 3], [4], [5, 2, 1]])', 6)
+            Check.equal('red([[12, 11], [1, 2], [9, 10], [3, 4], [14, 13], [5, 6], [7, 8]])', 2)
+            Check.equal('red([[5, 3, 7, 9, 13], [11, 12, 4, 6], [8, 2, 14], [15, 18]])', 60)
+            Check.equal('red([[1, 2, 3, 4, 5, 6], [7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21], [22, 23, 24, 25, 26, 27, 28, 29, 30, 31], [32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45]])', 210)
         except TimeoutError:
             Check.error("Dovoljen čas izvajanja presežen")
         except Exception:

@@ -1,107 +1,116 @@
 # =============================================================================
-# Rezine in rekurzija
-# =====================================================================@027486=
+# Zajec
+#
+# Jože goji zajce. V zadnjih letih so se tako
+# namnožili, da si Jože enostavno ne more več zapomniti vseh. Zato
+# potrebuje primeren informacijski sistem. V pomoč mu sestavite razred,
+# ki bo vseboval vse potrebne podatke o vsakem zajcu.
+# =====================================================================@001706=
 # 1. podnaloga
-# Sestavite funkcijo `filtriraj`, ki sprejme dva niza in vrne nov niz sestavljen
-# zgolj iz znakov prvega niza, ki so hkrati tudi v drugem nizu, preostale znake
-# pa zamenja z _
-# Velikost črk je nepomembna.
-# 
-#     >>> filtriraj("Ne gremo še domov", "ngm")
-#     "N__g__m_______m__"
+# Sestavite razred `Zajec` s konstruktorjem `__init__(self, teza, starost)`,
+# ki predstavlja zajca z dano težo in starostjo. Vrednosti shranite v
+# atributa z imenoma `teza` in `starost`.
 # =============================================================================
-def filtriraj(niz1, niz2):
-    if niz1 == "":
-        return ""
-    elif niz1[0].lower() in niz2.lower():
-        return niz1[0] + filtriraj(niz1[1:], niz2)
-    else :
-        return "_" + filtriraj(niz1[1:], niz2)
-#def filtriraj(s, f):
-#    if not s:
-#        return s
-#    if s[0].lower() in f.lower():
-#        return s[0] + filtriraj(s[1:], f)
-#    else:
-#        return "_" + filtriraj(s[1:], f)
-# =====================================================================@027490=
+class Zajec:
+
+    def __init__(self, teza, starost):
+        self.teza = teza
+        self.starost = starost
+
+# =====================================================================@001707=
 # 2. podnaloga
-# Sestavite funkcijo `pretvori`, ki sprejme niz in bazo ter vrne podano število
-# v desetiškem zapisu. Ko zmanjka števil si znaki sledijo po angleški abecedi
-# `0123456789ABC...`. Primer vrstnega reda lahko najdete v
-# `string.ascii_uppercase`. Lahko predpostavite, da bo baza vedno med 2 in 36.
+# Sestavite metodo `nahrani(self, hrana)`, kjer je argument `hrana` teža
+# hrane, ki jo damo zajcu. Pri hranjenju se teža zajca poveča za 30 %
+# teže hrane, ki jo zajec poje. Zgled:
 # 
-#     >>> pretvori("10001", 2)
-#     17
-#     >>> pretvori("2ACBD04", 36)
-#     4978911892
+#     >>> z = Zajec(5, 2)
+#     >>> z.nahrani(2)
+#     >>> z.teza
+#     5.6
 # =============================================================================
-def pretvori(niz, baza):
-    import string
-    znaki = "0123456789" + string.ascii_uppercase 
-    if niz == "":
-        return 0
-    else:
-        return znaki.index(niz[-1].upper()) + baza * pretvori(niz[:-1], baza)
+class Zajec(Zajec):
 
-#def pretvori_leno(s, b):
-#    return int(s, b)
-# =====================================================================@027489=
+    def nahrani(self, hrana):
+        self.teza += 0.30 * hrana
+
+# =====================================================================@001708=
 # 3. podnaloga
-# Sestavite funkcijo `izbrisi_podvojene`, ki sprejme niz in odstrani vse
-# zaporedno enake znake, kjer velikost črk ni pomembna. Če se po izbrisu pojavijo
-# nove podvojitve, naj jih funkcija ne izbriše.
+# Sestavite metodo `__str__(self)`, ki vrne predstavitev razreda `Zajec`
+# z nizom oblike `'Zajec težak X kg, star Y let.'`.
 # 
-#     >>> izbrisi_podvojene("aaab")
-#     "b"
-#     >>> izbrisi_podvojene("abaab")
-#     "abb"
+# Primer:
+# 
+#     >>> z = Zajec(5, 2)
+#     >>> print(z)
+#     'Zajec težak 5 kg, star 2 let.'
 # =============================================================================
-def izbrisi_podvojene(s, last=None):
-    if s == "":
-        return ""
-    elif s[0] == last:
-        return izbrisi_podvojene(s[1:], last)
-    elif len(s) >= 2 and s[0] == s[1]:
-        return izbrisi_podvojene(s[2:], s[0])
-    else:
-        return s[0] + izbrisi_podvojene(s[1:], None)
-# =====================================================================@027487=
+class Zajec(Zajec):
+
+    def __str__(self):
+        return f'Zajec težak {self.teza} kg, star {self.starost} let.'
+# =====================================================================@001709=
 # 4. podnaloga
-# Sestavite funkcijo `vsak_k_ti`, ki sprejme niz in parameter `k` ter vrne nov
-# niz, kjer iz vhodnega niza vzame vsak `k`-ti znak. Za nesmiselne parametre
-# naj funkcija vrne prazen niz
+# Sestavite še metodo `__repr__`, ki vrne predstavitev razreda
+# `Zajec` kot niz oblike `'Zajec(X, Y)'`, kjer je `X` teža, `Y` pa starost
+# zajca.
 # 
-#     >>> vsak_k_ti("abcdefghijk", 3)
-#     "adgj"
-#     >>> vsak_k_ti("abcdefghijk", 0)
-#     ""
+# Primer:
+# 
+#     >>> z = Zajec(5, 2)
+#     >>> z
+#     Zajec(5, 2)
 # =============================================================================
-def vsak_k_ti(s, k):
-    if k <= 0:
-        return ""
-    else:
-        return s[::k]
-# =====================================================================@027488=
+class Zajec(Zajec):
+
+    def __repr__(self):
+        return f'Zajec({self.teza}, {self.starost})'
+
+# =====================================================================@001710=
 # 5. podnaloga
-# Sestavitev funkcijo `zaporedje`, ki sprejme niz in vrne nov niz sestavljen iz
-# znakov na indeksih 0, 1, 3, 6, 10, ...
-# Namig: Ali razlike med indeksi sledijo kakemu preprostemu zaporedju?
+# Sestavite metodo `__lt__(self, drugi)`, ki dva zajca primerja med sabo.
+# Metoda naj vrne `True`, če je prvi zajec manjši od drugega in `False` sicer.
 # 
-#     >>> zaporedje("0123456789X")
-#     "0136X"
+# Manjši zajec je tisti, ki je lažji. Če pa imata zajca enako maso, je manjši
+# tisti, ki je mlajši (tj. ima manjše število let).
+# 
+#     >>> Zajec(5, 3) < Zajec(6, 2)
+#     True
+#     >>> Zajec(3, 1) < Zajec(2, 2)
+#     False
+#     >>> Zajec(4, 3) < Zajec(4, 2)
+#     False
 # =============================================================================
-def zaporedje(niz, indeks=0, korak=1):
-    if indeks >= len(niz):
-        return ""
-    else:
-        return niz[indeks] + zaporedje(niz, indeks + korak, korak + 1)
+class Zajec(Zajec):
 
-
-
-
-
-
+    def __lt__(self, drugi):
+        if self.teza < drugi.teza:
+            return True
+        if self.teza == drugi.teza:
+            if self.starost < drugi.starost:
+                return True
+        return False
+# =====================================================================@001711=
+# 6. podnaloga
+# Sestavite funkcijo `uredi(teze, starosti)`. Argumenta `teze` in `starosti`
+# sta enako dolga seznama števil, kjer $i$-ti element predstavlja težo oz.
+# starost $i$-tega zajca. Funkcija `uredi` naj ne bo znotraj razreda `Zajec`,
+# saj ni objektna metoda, ampak je čisto običajna funkcija.
+# 
+# Funkcija naj ustvari seznam ustreznih primerkov razreda `Zajec`, ga uredi
+# po velikosti glede na zgoraj opisano relacijo in ta seznam vrne kot rezultat.
+# 
+#     >>> l = uredi([5, 4, 4], [3, 2, 3])
+#     >>> for z in l:
+#     ...     print(z)
+#     ...
+#     Zajec težak 4 kg, star 2 let.
+#     Zajec težak 4 kg, star 3 let.
+#     Zajec težak 5 kg, star 3 let.
+# =============================================================================
+def uredi(teze, starosti):    
+    zajci = [Zajec(teza, starost) for teza, starost in zip(teze, starosti)]
+    zajci.sort()
+    return zajci
 
 
 
@@ -713,13 +722,17 @@ def _validate_current_file():
     if Check.part():
         Check.current_part[
             "token"
-        ] = "eyJwYXJ0IjoyNzQ4NiwidXNlciI6MTE1MTR9:1vyvM1:ZP-3bADoPBCX6zzIdOTYLTFaaf1zM6e8xzd7bgfdLTc"
+        ] = "eyJwYXJ0IjoxNzA2LCJ1c2VyIjoxMTUxNH0:1x1L4S:eCzhTdh_VgHiz2vPQ628FmLD4jedyewGKJvxynqv6Wc"
         try:
-            Check.equal('filtriraj("Ne gremo še domov", "ngm")', "N__g__m_______m__")
-            Check.secret(filtriraj("Planica!! planica!!, snežena kraljica", "Planica!"))
-            
-            # =============================================================================
-            # Nizi
+            test_data = [
+                ('Zajec(5, 3).teza', 5),
+                ('Zajec(5, 3).starost', 3),
+                ('Zajec(7, 2).teza', 7),
+                ('Zajec(7, 2).starost', 2),
+            ]
+            for td in test_data:
+                if not Check.equal(*td):
+                    break
         except TimeoutError:
             Check.error("Dovoljen čas izvajanja presežen")
         except Exception:
@@ -731,17 +744,21 @@ def _validate_current_file():
     if Check.part():
         Check.current_part[
             "token"
-        ] = "eyJwYXJ0IjoyNzQ5MCwidXNlciI6MTE1MTR9:1vyvM1:bMGuujGfsq216TWS4TLE1ss1xGJJQQ8Dr4AN_qYhHSc"
+        ] = "eyJwYXJ0IjoxNzA3LCJ1c2VyIjoxMTUxNH0:1x1L4S:_REDQR-bltDyKuO24PhQ1XQ-uSpkiG-gbY0X-Xso208"
         try:
-            Check.equal('pretvori("10001", 2)', 17)
-            Check.equal('pretvori("2ACBD04", 36)', 4978911892)
-            Check.equal('pretvori("AB", 30)', 311)
-            Check.equal('pretvori("101", 30)', 901)
-            for b in range(3, 36 + 1):
-                Check.secret(pretvori("101010111101", b))
-            for b in range(30, 36 + 1):
-                Check.secret(pretvori("PLANICA", b))
-                Check.secret(pretvori("MIHEC01267", b))
+            Check.run(["z = Zajec(5, 2)", "z.nahrani(2)", "nova_teza = z.teza"],
+                      {'nova_teza': 5.6})
+            test_data = [
+                (["z = Zajec(5, 2)", "z.nahrani(2)", "nova_teza = z.teza"],
+                 {'nova_teza': 5.6}),
+                (["z = Zajec(5, 2)", "z.nahrani(0)", "nova_teza = z.teza"],
+                 {'nova_teza': 5}),
+                (["z = Zajec(4, 2)", "z.nahrani(10)", "nova_teza = z.teza"],
+                 {'nova_teza': 7}),
+            ]
+            for td in test_data:
+                if not Check.run(*td):
+                    break
         except TimeoutError:
             Check.error("Dovoljen čas izvajanja presežen")
         except Exception:
@@ -753,14 +770,15 @@ def _validate_current_file():
     if Check.part():
         Check.current_part[
             "token"
-        ] = "eyJwYXJ0IjoyNzQ4OSwidXNlciI6MTE1MTR9:1vyvM1:n1MMq81P4jTF4uex_QcxyhWLj6eo_6V08O6CGiiG9e0"
+        ] = "eyJwYXJ0IjoxNzA4LCJ1c2VyIjoxMTUxNH0:1x1L4S:Bs0Uw9hNHRPPavlC4xLU09GpVi4psntgejztj3rQu_Q"
         try:
-            Check.equal('izbrisi_podvojene("abaab")', "abb")
-            Check.equal('izbrisi_podvojene("abab")', "abab")
-            Check.equal('izbrisi_podvojene("aaaabaaaa")', "b")
-            Check.secret(izbrisi_podvojene("10000010001010101010002"))
-            Check.secret(izbrisi_podvojene("10000010sxsXXXs01010101010002"))
-            Check.secret(izbrisi_podvojene("asdhaskbbbsna,,sjnansd"))
+            test_data = [
+                ('str(Zajec(5, 2))', 'Zajec težak 5 kg, star 2 let.'),
+                ('str(Zajec(10, 8))', 'Zajec težak 10 kg, star 8 let.'),
+            ]
+            for td in test_data:
+                if not Check.equal(*td):
+                    break
         except TimeoutError:
             Check.error("Dovoljen čas izvajanja presežen")
         except Exception:
@@ -772,14 +790,15 @@ def _validate_current_file():
     if Check.part():
         Check.current_part[
             "token"
-        ] = "eyJwYXJ0IjoyNzQ4NywidXNlciI6MTE1MTR9:1vyvM1:zNYPMeryVTY25sHdGtiqAZ5uj9KlH4aeZPYHdRLxrTU"
+        ] = "eyJwYXJ0IjoxNzA5LCJ1c2VyIjoxMTUxNH0:1x1L4S:-x85zuyLQtK-8MO1QkmhkfBuJxG8xYfpt9i9i8-nIb0"
         try:
-            Check.equal('vsak_k_ti("abcdefghijk", 0)', "")
-            Check.equal('vsak_k_ti("abcdefghijk", 3)', "adgj")
-            Check.secret(vsak_k_ti("abcdefghijk", 5))
-            Check.secret(vsak_k_ti("abcdefghijk", -3))
-            Check.secret(vsak_k_ti("abcdefghihvjdksa s asčdhaglsda saasč jk", 5))
-            Check.secret(vsak_k_ti("abcdefghihvjdksa s asčdhaglsda saasč jk", 8))
+            test_data = [
+                ('repr(Zajec(5, 2))', 'Zajec(5, 2)'),
+                ('repr(Zajec(10, 8))', 'Zajec(10, 8)'),
+            ]
+            for td in test_data:
+                if not Check.equal(*td):
+                    break
         except TimeoutError:
             Check.error("Dovoljen čas izvajanja presežen")
         except Exception:
@@ -791,11 +810,34 @@ def _validate_current_file():
     if Check.part():
         Check.current_part[
             "token"
-        ] = "eyJwYXJ0IjoyNzQ4OCwidXNlciI6MTE1MTR9:1vyvM1:8yq1knvHM8e3xEKzbsW73dGKVe4kdV86HjPSKZx3QH8"
+        ] = "eyJwYXJ0IjoxNzEwLCJ1c2VyIjoxMTUxNH0:1x1L4S:7B7ARBSirt05tXEip7ERhQMJ-BjM2Amg8V4wvWIhy_4"
         try:
-            Check.equal('zaporedje("0123456789X")', "0136X")
-            Check.secret(zaporedje("".join([str(x) for x in range(100)])))
-            Check.secret(zaporedje("".join([str(x) for x in range(150)])))
+            prav = (
+                Check.equal("Zajec(3, 10) < Zajec(5, 5)", True) and 
+                Check.equal("Zajec(4, 2) < Zajec(4, 3)", True) and
+                Check.equal("Zajec(4, 2) < Zajec(4, 1)", False) and
+                Check.equal("Zajec(5, 2) < Zajec(4, 3)", False) 
+            ) 
+            if prav:
+                Check.run(["z1 = Zajec(10, 10)", "z2 = Zajec(10, 11)", "z3 = Zajec(5, 15)",
+                        "seznam = [z2, z1, z3]", "seznam.sort()", "urejeno = [(z.teza, z.starost) for z in seznam]"],
+                        {'urejeno': [(5, 15), (10, 10), (10, 11)]})
+        except TimeoutError:
+            Check.error("Dovoljen čas izvajanja presežen")
+        except Exception:
+            Check.error(
+                "Testi sprožijo izjemo\n  {0}",
+                "\n  ".join(traceback.format_exc().split("\n"))[:-2],
+            )
+
+    if Check.part():
+        Check.current_part[
+            "token"
+        ] = "eyJwYXJ0IjoxNzExLCJ1c2VyIjoxMTUxNH0:1x1L4S:Vl5mUsMpiaIkChBguCaUa4H9F01RpPaVeJe5iYCikWQ"
+        try:
+            Check.run(["teze = [10, 10, 5]",  "starosti = [10, 11, 15]",
+                       "seznam = uredi(teze, starosti)", "urejeno = [(z.teza, z.starost) for z in seznam]"],
+                      {'urejeno': [(5, 15), (10, 10), (10, 11)]})
         except TimeoutError:
             Check.error("Dovoljen čas izvajanja presežen")
         except Exception:

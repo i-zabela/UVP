@@ -1,101 +1,58 @@
 # =============================================================================
-# Rezine in rekurzija
-# =====================================================================@027486=
+# Kuhamo in pečemo
+#
+# Sestavine, ki jih potrebujemo za nek recept, opišemo s slovarjem, v katerem
+# so ključi sestavine, vrednosti pa količine, ki jih potrebujemo.
+# =====================================================================@001392=
 # 1. podnaloga
-# Sestavite funkcijo `filtriraj`, ki sprejme dva niza in vrne nov niz sestavljen
-# zgolj iz znakov prvega niza, ki so hkrati tudi v drugem nizu, preostale znake
-# pa zamenja z _
-# Velikost črk je nepomembna.
+# Sestavite funkcijo `pomnozi`, ki sprejme recept in celoštevilski faktor in
+# sestavi nov recept. Ta naj vsebuje iste sestavine kot podani recept le da so
+# vse količine v njem pomnožene z danim faktorjem.
 # 
-#     >>> filtriraj("Ne gremo še domov", "ngm")
-#     "N__g__m_______m__"
+#     >>> pomnozi({'jajca': 4, 'moka': 500}, 2)
+#     {'jajca': 8, 'moka': 1000}
 # =============================================================================
-def filtriraj(niz1, niz2):
-    if niz1 == "":
-        return ""
-    elif niz1[0].lower() in niz2.lower():
-        return niz1[0] + filtriraj(niz1[1:], niz2)
-    else :
-        return "_" + filtriraj(niz1[1:], niz2)
-#def filtriraj(s, f):
-#    if not s:
-#        return s
-#    if s[0].lower() in f.lower():
-#        return s[0] + filtriraj(s[1:], f)
-#    else:
-#        return "_" + filtriraj(s[1:], f)
-# =====================================================================@027490=
+def pomnozi(recept, faktor):
+    return {sestavina: kolicina * faktor for sestavina, kolicina in recept.items()}
+# =====================================================================@001393=
 # 2. podnaloga
-# Sestavite funkcijo `pretvori`, ki sprejme niz in bazo ter vrne podano število
-# v desetiškem zapisu. Ko zmanjka števil si znaki sledijo po angleški abecedi
-# `0123456789ABC...`. Primer vrstnega reda lahko najdete v
-# `string.ascii_uppercase`. Lahko predpostavite, da bo baza vedno med 2 in 36.
+# Sestavite funkcijo `ali_imamo_sestavine(recept, shramba)`, ki preveri, ali
+# imamo v shrambi dovolj sestavin za dani recept. Sestavine, ki jih imamo v
+# shrambi, so predstavljene s slovarjem na enak način kot sestavine v receptu.
 # 
-#     >>> pretvori("10001", 2)
-#     17
-#     >>> pretvori("2ACBD04", 36)
-#     4978911892
+#     >>> ali_imamo_sestavine({'jajca': 3, 'moka': 500}, {'moka': 1000, 'jajca': 6, 'sladkor': 1000})
+#     True
+#     >>> ali_imamo_sestavine({'jajca': 3, 'moka': 500}, {'moka': 1000, 'sladkor': 1000})
+#     False
 # =============================================================================
-def pretvori(niz, baza):
-    import string
-    znaki = "0123456789" + string.ascii_uppercase 
-    if niz == "":
-        return 0
-    else:
-        return znaki.index(niz[-1].upper()) + baza * pretvori(niz[:-1], baza)
-
-#def pretvori_leno(s, b):
-#    return int(s, b)
-# =====================================================================@027489=
+def ali_imamo_sestavine(recept, shramba):
+    for sestavina in recept:
+        if sestavina not in shramba:
+            return False
+        if recept[sestavina] > shramba[sestavina]:
+            return False
+    return True
+# =====================================================================@001394=
 # 3. podnaloga
-# Sestavite funkcijo `izbrisi_podvojene`, ki sprejme niz in odstrani vse
-# zaporedno enake znake, kjer velikost črk ni pomembna. Če se po izbrisu pojavijo
-# nove podvojitve, naj jih funkcija ne izbriše.
+# Sestavite funkcijo `kaj_moramo_se_kupiti(recept, shramba)`, ki vrne slovar
+# sestavin s pripadajočimi količinami, ki jih moramo še dokupiti, da bomo lahko
+# skuhali jed po danem receptu.
 # 
-#     >>> izbrisi_podvojene("aaab")
-#     "b"
-#     >>> izbrisi_podvojene("abaab")
-#     "abb"
+#     >>> kaj_moramo_se_kupiti({'jajca': 3, 'moka': 500}, {'moka': 1000, 'jajca': 6, 'sladkor': 1000})
+#     {}
+#     >>> kaj_moramo_se_kupiti({'jajca': 3, 'moka': 500}, {'moka': 1000, 'sladkor': 1000})
+#     {'jajca': 3}
+#     >>> kaj_moramo_se_kupiti({'jajca': 3, 'moka': 500}, {'moka': 100})
+#     {'jajca': 3, 'moka': 400}
 # =============================================================================
-def izbrisi_podvojene(s, last=None):
-    if s == "":
-        return ""
-    elif s[0] == last:
-        return izbrisi_podvojene(s[1:], last)
-    elif len(s) >= 2 and s[0] == s[1]:
-        return izbrisi_podvojene(s[2:], s[0])
-    else:
-        return s[0] + izbrisi_podvojene(s[1:], None)
-# =====================================================================@027487=
-# 4. podnaloga
-# Sestavite funkcijo `vsak_k_ti`, ki sprejme niz in parameter `k` ter vrne nov
-# niz, kjer iz vhodnega niza vzame vsak `k`-ti znak. Za nesmiselne parametre
-# naj funkcija vrne prazen niz
-# 
-#     >>> vsak_k_ti("abcdefghijk", 3)
-#     "adgj"
-#     >>> vsak_k_ti("abcdefghijk", 0)
-#     ""
-# =============================================================================
-def vsak_k_ti(s, k):
-    if k <= 0:
-        return ""
-    else:
-        return s[::k]
-# =====================================================================@027488=
-# 5. podnaloga
-# Sestavitev funkcijo `zaporedje`, ki sprejme niz in vrne nov niz sestavljen iz
-# znakov na indeksih 0, 1, 3, 6, 10, ...
-# Namig: Ali razlike med indeksi sledijo kakemu preprostemu zaporedju?
-# 
-#     >>> zaporedje("0123456789X")
-#     "0136X"
-# =============================================================================
-def zaporedje(niz, indeks=0, korak=1):
-    if indeks >= len(niz):
-        return ""
-    else:
-        return niz[indeks] + zaporedje(niz, indeks + korak, korak + 1)
+def kaj_moramo_se_kupiti(recept, shramba):
+    nakup = {}
+    for sestavina, količina in recept.items():
+        razlika = količina - shramba.get(sestavina, 0)
+        if razlika > 0:
+            nakup[sestavina] = razlika
+    return nakup
+        
 
 
 
@@ -713,13 +670,14 @@ def _validate_current_file():
     if Check.part():
         Check.current_part[
             "token"
-        ] = "eyJwYXJ0IjoyNzQ4NiwidXNlciI6MTE1MTR9:1vyvM1:ZP-3bADoPBCX6zzIdOTYLTFaaf1zM6e8xzd7bgfdLTc"
+        ] = "eyJwYXJ0IjoxMzkyLCJ1c2VyIjoxMTUxNH0:1x15iH:mRp8RiTAhWe1P4lnZRfzEzIaLo5Z4vO-cY4roBMTnAE"
         try:
-            Check.equal('filtriraj("Ne gremo še domov", "ngm")', "N__g__m_______m__")
-            Check.secret(filtriraj("Planica!! planica!!, snežena kraljica", "Planica!"))
-            
-            # =============================================================================
-            # Nizi
+            Check.equal("pomnozi({'jajca': 3, 'moka': 500}, 2)", {'moka': 1000, 'jajca': 6})
+            Check.equal("pomnozi({'jajca': 4, 'moka': 500}, 1.5)", {'moka': 750, 'jajca': 6})
+            Check.equal("pomnozi({'jajca': 3, 'moka': 500}, 0.5)", {'moka': 250, 'jajca': 1.5}) and \
+            Check.equal("pomnozi({'jajca': 3, 'moka': 500, 'sol': 200, 'olje': 3, 'kakav': 350}, 3.5)",
+                         {'jajca': 10.5, 'sol': 700, 'moka': 1750, 'kakav': 1225, 'olje': 10.5})
+            Check.secret("pomnozi({'jajca': 2, 'moka': 500}, 2)")
         except TimeoutError:
             Check.error("Dovoljen čas izvajanja presežen")
         except Exception:
@@ -731,17 +689,15 @@ def _validate_current_file():
     if Check.part():
         Check.current_part[
             "token"
-        ] = "eyJwYXJ0IjoyNzQ5MCwidXNlciI6MTE1MTR9:1vyvM1:bMGuujGfsq216TWS4TLE1ss1xGJJQQ8Dr4AN_qYhHSc"
+        ] = "eyJwYXJ0IjoxMzkzLCJ1c2VyIjoxMTUxNH0:1x15iH:eps-XG4estcI_hn2LOgPO8f4V_WCZerhcJm9op54gaw"
         try:
-            Check.equal('pretvori("10001", 2)', 17)
-            Check.equal('pretvori("2ACBD04", 36)', 4978911892)
-            Check.equal('pretvori("AB", 30)', 311)
-            Check.equal('pretvori("101", 30)', 901)
-            for b in range(3, 36 + 1):
-                Check.secret(pretvori("101010111101", b))
-            for b in range(30, 36 + 1):
-                Check.secret(pretvori("PLANICA", b))
-                Check.secret(pretvori("MIHEC01267", b))
+            Check.equal("ali_imamo_sestavine({'jajca': 3, 'moka': 500}, {'moka': 1000, 'jajca': 6, 'sladkor': 1000, 'grah': 7})", True)
+            Check.equal("ali_imamo_sestavine({'jajca': 3, 'moka': 500}, {'moka': 1000, 'sladkor': 1000})", False)
+            Check.equal("ali_imamo_sestavine({'jajca': 3, 'moka': 500}, {'moka': 100, 'jajca': 2})", False)
+            Check.equal("ali_imamo_sestavine({'jajca': 3, 'moka': 500}, {'moka': 600, 'jajca': 2})", False)
+            Check.equal("ali_imamo_sestavine({'jajca': 3, 'moka': 500}, {'moka': 400, 'jajca': 6})", False)
+            Check.equal("ali_imamo_sestavine({'jajca': 3, 'moka': 500}, {'moka': 600})", False)
+            Check.secret("ali_imamo_sestavine({'maslo': 3, 'moka': 500}, {'moka': 600})")
         except TimeoutError:
             Check.error("Dovoljen čas izvajanja presežen")
         except Exception:
@@ -753,49 +709,16 @@ def _validate_current_file():
     if Check.part():
         Check.current_part[
             "token"
-        ] = "eyJwYXJ0IjoyNzQ4OSwidXNlciI6MTE1MTR9:1vyvM1:n1MMq81P4jTF4uex_QcxyhWLj6eo_6V08O6CGiiG9e0"
+        ] = "eyJwYXJ0IjoxMzk0LCJ1c2VyIjoxMTUxNH0:1x15iH:Ej_TTdWeniS5YpgkILFEVAiZNx6IE_HnHe54xEvvfdE"
         try:
-            Check.equal('izbrisi_podvojene("abaab")', "abb")
-            Check.equal('izbrisi_podvojene("abab")', "abab")
-            Check.equal('izbrisi_podvojene("aaaabaaaa")', "b")
-            Check.secret(izbrisi_podvojene("10000010001010101010002"))
-            Check.secret(izbrisi_podvojene("10000010sxsXXXs01010101010002"))
-            Check.secret(izbrisi_podvojene("asdhaskbbbsna,,sjnansd"))
-        except TimeoutError:
-            Check.error("Dovoljen čas izvajanja presežen")
-        except Exception:
-            Check.error(
-                "Testi sprožijo izjemo\n  {0}",
-                "\n  ".join(traceback.format_exc().split("\n"))[:-2],
-            )
-
-    if Check.part():
-        Check.current_part[
-            "token"
-        ] = "eyJwYXJ0IjoyNzQ4NywidXNlciI6MTE1MTR9:1vyvM1:zNYPMeryVTY25sHdGtiqAZ5uj9KlH4aeZPYHdRLxrTU"
-        try:
-            Check.equal('vsak_k_ti("abcdefghijk", 0)', "")
-            Check.equal('vsak_k_ti("abcdefghijk", 3)', "adgj")
-            Check.secret(vsak_k_ti("abcdefghijk", 5))
-            Check.secret(vsak_k_ti("abcdefghijk", -3))
-            Check.secret(vsak_k_ti("abcdefghihvjdksa s asčdhaglsda saasč jk", 5))
-            Check.secret(vsak_k_ti("abcdefghihvjdksa s asčdhaglsda saasč jk", 8))
-        except TimeoutError:
-            Check.error("Dovoljen čas izvajanja presežen")
-        except Exception:
-            Check.error(
-                "Testi sprožijo izjemo\n  {0}",
-                "\n  ".join(traceback.format_exc().split("\n"))[:-2],
-            )
-
-    if Check.part():
-        Check.current_part[
-            "token"
-        ] = "eyJwYXJ0IjoyNzQ4OCwidXNlciI6MTE1MTR9:1vyvM1:8yq1knvHM8e3xEKzbsW73dGKVe4kdV86HjPSKZx3QH8"
-        try:
-            Check.equal('zaporedje("0123456789X")', "0136X")
-            Check.secret(zaporedje("".join([str(x) for x in range(100)])))
-            Check.secret(zaporedje("".join([str(x) for x in range(150)])))
+            Check.equal("kaj_moramo_se_kupiti({'jajca': 3, 'moka': 500}, {'moka': 1000, 'jajca': 6, 'sladkor': 1000})", {})
+            Check.equal("kaj_moramo_se_kupiti({'jajca': 3, 'moka': 500}, {'moka': 1000, 'sladkor': 1000})",{'jajca': 3} )
+            Check.equal("kaj_moramo_se_kupiti({'jajca': 3, 'moka': 500}, {'moka': 100})", {'jajca': 3, 'moka': 400}) and \
+            Check.equal("kaj_moramo_se_kupiti({'jajca': 3, 'moka': 500}, {'moka': 1000, 'jajca': 6, 'sladkor': 1000, 'grah': 7})", {}) and \
+            Check.equal("kaj_moramo_se_kupiti({'jajca': 3, 'moka': 500, 'grah': 14}, {'moka': 1000, 'jajca': 6, 'sladkor': 1000, 'grah': 7})", {'grah': 7}) and \
+            Check.equal("kaj_moramo_se_kupiti({}, {'moka': 1000, 'jajca': 6, 'sladkor': 1000, 'grah': 7})", {}) and \
+            Check.equal("kaj_moramo_se_kupiti({}, {'moka': 1000, 'jajca': 6, 'sladkor': 1000, 'grah': 7})", {})
+            Check.secret("kaj_moramo_se_kupiti({}, {'moka': 1000, 'jajca': 7, 'sladkor': 1000, 'grah': 7})")
         except TimeoutError:
             Check.error("Dovoljen čas izvajanja presežen")
         except Exception:

@@ -1,101 +1,111 @@
 # =============================================================================
-# Rezine in rekurzija
-# =====================================================================@027486=
+# Imena
+#
+# V neki datoteki, ki ima lahko več vrstic, so zapisana imena. Znotraj
+# posamične vrstice so imena ločena z vejicami (brez presledkov). Primer take
+# datoteke:
+# 
+#     Jaka,Peter,Miha,Peter,Anja
+#     Franci,Roman,Renata,Jožefa
+#     Pavle,Tadeja,Arif,Filip,Gašper
+# =====================================================================@001510=
 # 1. podnaloga
-# Sestavite funkcijo `filtriraj`, ki sprejme dva niza in vrne nov niz sestavljen
-# zgolj iz znakov prvega niza, ki so hkrati tudi v drugem nizu, preostale znake
-# pa zamenja z _
-# Velikost črk je nepomembna.
+# Sestavite funkcijo `kolikokrat_se_pojavi(niz, ime)`, ki vrne število
+# pojavitev imena `ime` v nizu imen `niz`.
 # 
-#     >>> filtriraj("Ne gremo še domov", "ngm")
-#     "N__g__m_______m__"
+#     >>> kolikokrat_se_pojavi('Alojz,Samo,Peter,Alojz,Franci', 'Alojz')
+#     2
 # =============================================================================
-def filtriraj(niz1, niz2):
-    if niz1 == "":
-        return ""
-    elif niz1[0].lower() in niz2.lower():
-        return niz1[0] + filtriraj(niz1[1:], niz2)
-    else :
-        return "_" + filtriraj(niz1[1:], niz2)
-#def filtriraj(s, f):
-#    if not s:
-#        return s
-#    if s[0].lower() in f.lower():
-#        return s[0] + filtriraj(s[1:], f)
-#    else:
-#        return "_" + filtriraj(s[1:], f)
-# =====================================================================@027490=
+def kolikokrat_se_pojavi(niz, ime):
+    seznam = niz.split(',')
+    št = 0
+    for beseda in seznam:
+        if beseda == ime:
+            št += 1
+    return št
+# =====================================================================@001511=
 # 2. podnaloga
-# Sestavite funkcijo `pretvori`, ki sprejme niz in bazo ter vrne podano število
-# v desetiškem zapisu. Ko zmanjka števil si znaki sledijo po angleški abecedi
-# `0123456789ABC...`. Primer vrstnega reda lahko najdete v
-# `string.ascii_uppercase`. Lahko predpostavite, da bo baza vedno med 2 in 36.
+# Sestavite funkcijo `koliko(niz, datoteka)`, ki na izhodno datoteko za vsako
+# ime zapiše, kolikokrat se pojavi v nizu.
 # 
-#     >>> pretvori("10001", 2)
-#     17
-#     >>> pretvori("2ACBD04", 36)
-#     4978911892
+# Na primer, če je niz enak `'Jaka,Luka,Miha,Luka'`, naj funkcija v izhodno
+# datoteko zapiše
+# 
+#     Jaka 1
+#     Luka 2
+#     Miha 1
+# 
+# Pozor: Imena naj bodo izpisana v takem vrstnem redu, kakor si sledijo njihove
+# prve pojavitve v nizu.
 # =============================================================================
-def pretvori(niz, baza):
-    import string
-    znaki = "0123456789" + string.ascii_uppercase 
-    if niz == "":
-        return 0
-    else:
-        return znaki.index(niz[-1].upper()) + baza * pretvori(niz[:-1], baza)
-
-#def pretvori_leno(s, b):
-#    return int(s, b)
-# =====================================================================@027489=
+def koliko(niz, datoteka):
+    with open(datoteka, 'w', encoding='UTF-8') as dat:
+        seznam = niz.split(',')
+        dodajam = []
+        for ime in seznam:
+            if ime not in dodajam:
+                dodajam.append(ime)
+        for ime in dodajam:
+            št = kolikokrat_se_pojavi(niz, ime)
+            dat.write(f'{ime} {št} \n')
+        
+# =====================================================================@001512=
 # 3. podnaloga
-# Sestavite funkcijo `izbrisi_podvojene`, ki sprejme niz in odstrani vse
-# zaporedno enake znake, kjer velikost črk ni pomembna. Če se po izbrisu pojavijo
-# nove podvojitve, naj jih funkcija ne izbriše.
+# Sestavite funkcijo `koliko_iz_datoteke(vhodna, izhodna)`, ki naj naredi isto
+# kot funkcija `koliko`, le da podatke prebere iz datoteke. Torej, na izhodno
+# datoteko naj za vsako ime zapiše, kolikokrat se pojavi v vhodni datoteki.
 # 
-#     >>> izbrisi_podvojene("aaab")
-#     "b"
-#     >>> izbrisi_podvojene("abaab")
-#     "abb"
+# Pozor: Vhodna datoteka ima lahko več vrstic. Imena izpišite v enakem vrstnem
+# redu, kot si sledijo njihove prve pojavitve v vhodni datoteki.
 # =============================================================================
-def izbrisi_podvojene(s, last=None):
-    if s == "":
-        return ""
-    elif s[0] == last:
-        return izbrisi_podvojene(s[1:], last)
-    elif len(s) >= 2 and s[0] == s[1]:
-        return izbrisi_podvojene(s[2:], s[0])
-    else:
-        return s[0] + izbrisi_podvojene(s[1:], None)
-# =====================================================================@027487=
+def koliko_iz_datoteke(vhodna, izhodna):
+    with open(vhodna, encoding="UTF-8") as vh:
+        v = vh.read().replace('\n', ',')
+        v_seznam = [ime for ime in v.split(',') if ime != '']
+        dodajam = []
+        for ime in v_seznam:
+            if ime not in dodajam:
+                dodajam.append(ime)
+        with open(izhodna, "w", encoding="UTF-8") as izh:       
+            for ime in dodajam:
+                št = kolikokrat_se_pojavi(v, ime)
+                izh.write(f'{ime} {št} \n')
+# =====================================================================@001513=
 # 4. podnaloga
-# Sestavite funkcijo `vsak_k_ti`, ki sprejme niz in parameter `k` ter vrne nov
-# niz, kjer iz vhodnega niza vzame vsak `k`-ti znak. Za nesmiselne parametre
-# naj funkcija vrne prazen niz
+# Sestavite funkcijo `koliko_urejen`, ki sprejme imeni vhodne in izhodne
+# datoteke in v izhodno datoteko za vsako ime zapiše, kolikokrat se pojavi v
+# vhodni datoteki. Imena naj bodo urejena padajoče po frekvenci pojavitev.
+# Imena, ki imajo enako frekvenco, naj bodo nadalje urejena leksikografsko (tj.
+# po abecednem vrstnem redu).
 # 
-#     >>> vsak_k_ti("abcdefghijk", 3)
-#     "adgj"
-#     >>> vsak_k_ti("abcdefghijk", 0)
-#     ""
-# =============================================================================
-def vsak_k_ti(s, k):
-    if k <= 0:
-        return ""
-    else:
-        return s[::k]
-# =====================================================================@027488=
-# 5. podnaloga
-# Sestavitev funkcijo `zaporedje`, ki sprejme niz in vrne nov niz sestavljen iz
-# znakov na indeksih 0, 1, 3, 6, 10, ...
-# Namig: Ali razlike med indeksi sledijo kakemu preprostemu zaporedju?
+# Primer: Če je na datoteki imena_vhod.txt vsebina
 # 
-#     >>> zaporedje("0123456789X")
-#     "0136X"
+#     Luka,Jaka
+#     Luka,Miha,Miha
+#     Miha,Aleš,Aleš
+# 
+# naj bo po klicu funkcije `koliko_urejen('imena_vhod.txt', 'imena_izhod.txt')`
+# na datoteki imena_izhod.txt naslednja vsebina:
+# 
+#     Miha 3
+#     Aleš 2
+#     Luka 2
+#     Jaka 1
 # =============================================================================
-def zaporedje(niz, indeks=0, korak=1):
-    if indeks >= len(niz):
-        return ""
-    else:
-        return niz[indeks] + zaporedje(niz, indeks + korak, korak + 1)
+def koliko_urejen(vhodna, izhodna):
+    with open(vhodna, encoding="utf-8") as vh:
+        v = vh.read().replace('\n', ',')
+        seznam = [ime for ime in v.split(',') if ime != '']
+
+    sestej = {}
+    for ime in seznam:
+        sestej[ime] = sestej.get(ime, 0) + 1
+
+    urejena_imena = sorted(sestej, key=lambda ime: (-sestej[ime], ime))
+
+    with open(izhodna, 'w', encoding="utf-8") as izh:
+        for ime in urejena_imena:
+            izh.write(f'{ime} {sestej[ime]}\n')
 
 
 
@@ -713,13 +723,12 @@ def _validate_current_file():
     if Check.part():
         Check.current_part[
             "token"
-        ] = "eyJwYXJ0IjoyNzQ4NiwidXNlciI6MTE1MTR9:1vyvM1:ZP-3bADoPBCX6zzIdOTYLTFaaf1zM6e8xzd7bgfdLTc"
+        ] = "eyJwYXJ0IjoxNTEwLCJ1c2VyIjoxMTUxNH0:1x2TfE:_5DPkaJY52yer49rGNcRMMXELZI8Wzsv02NiXzC1-Og"
         try:
-            Check.equal('filtriraj("Ne gremo še domov", "ngm")', "N__g__m_______m__")
-            Check.secret(filtriraj("Planica!! planica!!, snežena kraljica", "Planica!"))
-            
-            # =============================================================================
-            # Nizi
+            Check.equal('kolikokrat_se_pojavi("Jaka,Luka,Miha,Luka", "Jaka")', 1)
+            Check.equal('kolikokrat_se_pojavi("Jaka,Luka,Miha,Luka", "Luka")', 2)
+            Check.equal('kolikokrat_se_pojavi("Jaka,Luka,Miha,Luka", "Tone")', 0)
+            Check.equal('kolikokrat_se_pojavi("Andrej,Andreja,Miha,Luka,Andrej", "Andrej")', 2)
         except TimeoutError:
             Check.error("Dovoljen čas izvajanja presežen")
         except Exception:
@@ -731,17 +740,18 @@ def _validate_current_file():
     if Check.part():
         Check.current_part[
             "token"
-        ] = "eyJwYXJ0IjoyNzQ5MCwidXNlciI6MTE1MTR9:1vyvM1:bMGuujGfsq216TWS4TLE1ss1xGJJQQ8Dr4AN_qYhHSc"
+        ] = "eyJwYXJ0IjoxNTExLCJ1c2VyIjoxMTUxNH0:1x2TfE:h7eBmyZOCaBwQ3JqD8cIPNLGWVj2mLWH92s8InQSA-k"
         try:
-            Check.equal('pretvori("10001", 2)', 17)
-            Check.equal('pretvori("2ACBD04", 36)', 4978911892)
-            Check.equal('pretvori("AB", 30)', 311)
-            Check.equal('pretvori("101", 30)', 901)
-            for b in range(3, 36 + 1):
-                Check.secret(pretvori("101010111101", b))
-            for b in range(30, 36 + 1):
-                Check.secret(pretvori("PLANICA", b))
-                Check.secret(pretvori("MIHEC01267", b))
+            test_cases = [
+                ("Jaka,Luka,Miha,Luka,Miha,Miha", "imena_koliko.txt", ["Jaka 1", "Luka 2", "Miha 3"]),
+                ("Alen,Alen,Boris,Boris,Ciril,Ciril,Alen,Boris,Cilka", "imena_koliko_2.txt", ["Alen 3", "Boris 3", "Ciril 2", "Cilka 1"]),
+                ("Jožefa,Jožefa,Jože,Jožefa", "imena_koliko_3.txt", ["Jožefa 3", "Jože 1"]),
+                ("Ciril,Boris,Aleš,Aleš,Boris,Ciril", "imena_koliko_4.txt", ["Ciril 2", "Boris 2", "Aleš 2"]),
+            ]
+            for vhod, f_name, izhod in test_cases:
+                koliko(vhod, f_name)
+                if not Check.out_file(f_name, izhod, encoding='utf-8'):
+                    break # test has failed
         except TimeoutError:
             Check.error("Dovoljen čas izvajanja presežen")
         except Exception:
@@ -753,14 +763,21 @@ def _validate_current_file():
     if Check.part():
         Check.current_part[
             "token"
-        ] = "eyJwYXJ0IjoyNzQ4OSwidXNlciI6MTE1MTR9:1vyvM1:n1MMq81P4jTF4uex_QcxyhWLj6eo_6V08O6CGiiG9e0"
+        ] = "eyJwYXJ0IjoxNTEyLCJ1c2VyIjoxMTUxNH0:1x2TfE:GRFOBz0RITbSoAhTX1Zzd2r8WOK30k8J7axWZEYJhME"
         try:
-            Check.equal('izbrisi_podvojene("abaab")', "abb")
-            Check.equal('izbrisi_podvojene("abab")', "abab")
-            Check.equal('izbrisi_podvojene("aaaabaaaa")', "b")
-            Check.secret(izbrisi_podvojene("10000010001010101010002"))
-            Check.secret(izbrisi_podvojene("10000010sxsXXXs01010101010002"))
-            Check.secret(izbrisi_podvojene("asdhaskbbbsna,,sjnansd"))
+            test_cases = [
+                ("imena_vhod.txt", ["Luka,Jaka", "Luka", "Miha", "Miha", "Miha"], "imena_izhod.txt", ["Luka 2", "Jaka 1", "Miha 3"]),
+                ("imena_vhod_2.txt", ["Boris,Cilka", "Alen,Alen,Boris", "Boris,Ciril,Ciril,Alen"], "imena_izhod_2.txt", ["Boris 3",  "Cilka 1", "Alen 3", "Ciril 2"]),
+                ("imena_vhod_3.txt", ["Jožefa", "Jožefa", "Jožefa"], "imena_izhod_3.txt", ["Jožefa 3"]),
+            ]
+            napaka = False
+            for in_name, vhod, out_name, izhod in test_cases:
+                if napaka:
+                    break
+                with Check.in_file(in_name, vhod, encoding='utf-8'):
+                    koliko_iz_datoteke(in_name, out_name)
+                    if not Check.out_file(out_name, izhod, encoding='utf-8'):
+                        napaka = True  # test had failed
         except TimeoutError:
             Check.error("Dovoljen čas izvajanja presežen")
         except Exception:
@@ -772,30 +789,21 @@ def _validate_current_file():
     if Check.part():
         Check.current_part[
             "token"
-        ] = "eyJwYXJ0IjoyNzQ4NywidXNlciI6MTE1MTR9:1vyvM1:zNYPMeryVTY25sHdGtiqAZ5uj9KlH4aeZPYHdRLxrTU"
+        ] = "eyJwYXJ0IjoxNTEzLCJ1c2VyIjoxMTUxNH0:1x2TfE:09kyBtYjnxxdj-vcv2PO4PLp5CetIBctJMgUqeTV9tY"
         try:
-            Check.equal('vsak_k_ti("abcdefghijk", 0)', "")
-            Check.equal('vsak_k_ti("abcdefghijk", 3)', "adgj")
-            Check.secret(vsak_k_ti("abcdefghijk", 5))
-            Check.secret(vsak_k_ti("abcdefghijk", -3))
-            Check.secret(vsak_k_ti("abcdefghihvjdksa s asčdhaglsda saasč jk", 5))
-            Check.secret(vsak_k_ti("abcdefghihvjdksa s asčdhaglsda saasč jk", 8))
-        except TimeoutError:
-            Check.error("Dovoljen čas izvajanja presežen")
-        except Exception:
-            Check.error(
-                "Testi sprožijo izjemo\n  {0}",
-                "\n  ".join(traceback.format_exc().split("\n"))[:-2],
-            )
-
-    if Check.part():
-        Check.current_part[
-            "token"
-        ] = "eyJwYXJ0IjoyNzQ4OCwidXNlciI6MTE1MTR9:1vyvM1:8yq1knvHM8e3xEKzbsW73dGKVe4kdV86HjPSKZx3QH8"
-        try:
-            Check.equal('zaporedje("0123456789X")', "0136X")
-            Check.secret(zaporedje("".join([str(x) for x in range(100)])))
-            Check.secret(zaporedje("".join([str(x) for x in range(150)])))
+            test_cases = [
+                ("imena_vhod_4.txt", ["Luka,Jaka", "Luka,Miha,Miha", "Miha,Aleš,Aleš"], "imena_urejen_izhod_4.txt", ["Miha 3", "Aleš 2", "Luka 2", "Jaka 1"]),
+                ("imena_vhod.txt", ["Luka,Jaka", "Luka", "Miha", "Miha", "Miha"], "imena_urejen_izhod.txt", ["Miha 3", "Luka 2", "Jaka 1"]),
+                ("imena_vhod_2.txt", ["Boris,Cilka", "Alen,Alen,Boris", "Boris,Ciril,Ciril,Alen"], "imena_urejen_izhod_2.txt", ["Alen 3", "Boris 3", "Ciril 2", "Cilka 1"]),
+                ("imena_vhod_3.txt", ["Jožefa", "Jožefa", "Jožefa"], "imena_urejen_izhod_3.txt", ["Jožefa 3"]),
+            ]
+            napaka = False
+            for in_name, vhod, out_name, izhod in test_cases:
+                if napaka: break
+                with Check.in_file(in_name, vhod, encoding='utf-8'):
+                    koliko_urejen(in_name, out_name)
+                    if not Check.out_file(out_name, izhod, encoding='utf-8'):
+                        napaka = True # test has failed
         except TimeoutError:
             Check.error("Dovoljen čas izvajanja presežen")
         except Exception:

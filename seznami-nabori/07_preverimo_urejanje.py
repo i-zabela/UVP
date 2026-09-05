@@ -1,101 +1,44 @@
 # =============================================================================
-# Rezine in rekurzija
-# =====================================================================@027486=
+# Preverimo urejanje
+# =====================================================================@027624=
 # 1. podnaloga
-# Sestavite funkcijo `filtriraj`, ki sprejme dva niza in vrne nov niz sestavljen
-# zgolj iz znakov prvega niza, ki so hkrati tudi v drugem nizu, preostale znake
-# pa zamenja z _
-# Velikost črk je nepomembna.
+# Z namenom preverjanja različnih algoritmov za urejanje seznamov, si želite
+# pripraviti zanimive testne primere. Ti bodo sestavljeni iz seznamov parov, 
+# kjer druga komponenta pove, na katerem mestu mora stati par. 
 # 
-#     >>> filtriraj("Ne gremo še domov", "ngm")
-#     "N__g__m_______m__"
+# Sestavite funkcijo `pripravi_primer`, ki sprejme dva seznama - seznam 
+# elementov in seznam indeksov - ter iz njiju napravi testni primer. 
+# 
+#     >>> pripravi_primer(["c", "b", "d", "a"], [2, 1, 3, 0])
+#     [('c', 2), ('b', 1), ('d', 3), ('a', 0)]
+#     >>> pripravi_primer(['daj', 'cas', 'da', 5, 'zapeljem', 'mi', 'te', 'minut'],[3, 4, 5, 0, 7, 2, 6, 1])
+#     [('daj', 3), ('cas', 4), ('da', 5), (5, 0), ('zapeljem', 7), ('mi', 2), ('te', 6), ('minut', 1)]
 # =============================================================================
-def filtriraj(niz1, niz2):
-    if niz1 == "":
-        return ""
-    elif niz1[0].lower() in niz2.lower():
-        return niz1[0] + filtriraj(niz1[1:], niz2)
-    else :
-        return "_" + filtriraj(niz1[1:], niz2)
-#def filtriraj(s, f):
-#    if not s:
-#        return s
-#    if s[0].lower() in f.lower():
-#        return s[0] + filtriraj(s[1:], f)
-#    else:
-#        return "_" + filtriraj(s[1:], f)
-# =====================================================================@027490=
+def pripravi_primer(sez1, sez2):
+    nov = []
+    for i in zip(sez1, sez2):
+        nov.append(i)
+    return nov
+# =====================================================================@027625=
 # 2. podnaloga
-# Sestavite funkcijo `pretvori`, ki sprejme niz in bazo ter vrne podano število
-# v desetiškem zapisu. Ko zmanjka števil si znaki sledijo po angleški abecedi
-# `0123456789ABC...`. Primer vrstnega reda lahko najdete v
-# `string.ascii_uppercase`. Lahko predpostavite, da bo baza vedno med 2 in 36.
+# Svoje urejevalne algoritme ste uporabili na primerih in želite preveriti,
+# ali delujejo pravilno. Sestavite funkcijo`pravilno_urejen`, ki pove, ali je
+# seznam urejen skladno z zgornjim principom.
 # 
-#     >>> pretvori("10001", 2)
-#     17
-#     >>> pretvori("2ACBD04", 36)
-#     4978911892
+#     >>> pravilno_urejen([('so', 5), ('vcasih', 6), ('stezice', 3), ('bile?', 7), ('tiste', 2), ('k', 4), ('Kje', 0), ('so', 1)])
+#     False
+#     >>> pravilno_urejen([('Kje', 0), ('so', 1), ('tiste', 2), ('stezice', 3), ('k', 4), ('so', 5), ('vcasih', 6), ('bile?', 7)])
+#     True
+#     >>> pravilno_urejen([('daj', 3), ('cas', 4), ('da', 5), (5, 0), ('zapeljem', 7), ('mi', 2), ('te', 6), ('minut', 1)])
+#     False
+#     >>> pravilno_urejen([(5, 0), ('minut', 1), ('mi', 2), ('daj', 3), ('cas', 4), ('da', 5), ('te', 6), ('zapeljem', 7)])
+#     True
 # =============================================================================
-def pretvori(niz, baza):
-    import string
-    znaki = "0123456789" + string.ascii_uppercase 
-    if niz == "":
-        return 0
-    else:
-        return znaki.index(niz[-1].upper()) + baza * pretvori(niz[:-1], baza)
-
-#def pretvori_leno(s, b):
-#    return int(s, b)
-# =====================================================================@027489=
-# 3. podnaloga
-# Sestavite funkcijo `izbrisi_podvojene`, ki sprejme niz in odstrani vse
-# zaporedno enake znake, kjer velikost črk ni pomembna. Če se po izbrisu pojavijo
-# nove podvojitve, naj jih funkcija ne izbriše.
-# 
-#     >>> izbrisi_podvojene("aaab")
-#     "b"
-#     >>> izbrisi_podvojene("abaab")
-#     "abb"
-# =============================================================================
-def izbrisi_podvojene(s, last=None):
-    if s == "":
-        return ""
-    elif s[0] == last:
-        return izbrisi_podvojene(s[1:], last)
-    elif len(s) >= 2 and s[0] == s[1]:
-        return izbrisi_podvojene(s[2:], s[0])
-    else:
-        return s[0] + izbrisi_podvojene(s[1:], None)
-# =====================================================================@027487=
-# 4. podnaloga
-# Sestavite funkcijo `vsak_k_ti`, ki sprejme niz in parameter `k` ter vrne nov
-# niz, kjer iz vhodnega niza vzame vsak `k`-ti znak. Za nesmiselne parametre
-# naj funkcija vrne prazen niz
-# 
-#     >>> vsak_k_ti("abcdefghijk", 3)
-#     "adgj"
-#     >>> vsak_k_ti("abcdefghijk", 0)
-#     ""
-# =============================================================================
-def vsak_k_ti(s, k):
-    if k <= 0:
-        return ""
-    else:
-        return s[::k]
-# =====================================================================@027488=
-# 5. podnaloga
-# Sestavitev funkcijo `zaporedje`, ki sprejme niz in vrne nov niz sestavljen iz
-# znakov na indeksih 0, 1, 3, 6, 10, ...
-# Namig: Ali razlike med indeksi sledijo kakemu preprostemu zaporedju?
-# 
-#     >>> zaporedje("0123456789X")
-#     "0136X"
-# =============================================================================
-def zaporedje(niz, indeks=0, korak=1):
-    if indeks >= len(niz):
-        return ""
-    else:
-        return niz[indeks] + zaporedje(niz, indeks + korak, korak + 1)
+def pravilno_urejen(seznam):
+    for i, par in enumerate(seznam):
+        if par[1] != i:
+            return False
+    return True
 
 
 
@@ -713,13 +656,14 @@ def _validate_current_file():
     if Check.part():
         Check.current_part[
             "token"
-        ] = "eyJwYXJ0IjoyNzQ4NiwidXNlciI6MTE1MTR9:1vyvM1:ZP-3bADoPBCX6zzIdOTYLTFaaf1zM6e8xzd7bgfdLTc"
+        ] = "eyJwYXJ0IjoyNzYyNCwidXNlciI6MTE1MTR9:1wyX5Y:pE_ZjE9AahAZizFmIM03bFyp87N6vL2id1npBcNdsZc"
         try:
-            Check.equal('filtriraj("Ne gremo še domov", "ngm")', "N__g__m_______m__")
-            Check.secret(filtriraj("Planica!! planica!!, snežena kraljica", "Planica!"))
-            
-            # =============================================================================
-            # Nizi
+            Check.equal("pripravi_primer(['so', 'vcasih', 'stezice', 'bile?', 'tiste', 'k', 'Kje', 'so'], [5, 6, 3, 7, 2, 4, 0, 1])",
+                        [('so', 5),('vcasih', 6), ('stezice', 3), ('bile?', 7), ('tiste', 2), ('k', 4), ('Kje', 0), ('so', 1)])
+            Check.equal("pripravi_primer(['daj', 'cas', 'da', 5, 'zapeljem', 'mi', 'te', 'minut'],[3, 4, 5, 0, 7, 2, 6, 1])",
+                        [('daj', 3), ('cas', 4), ('da', 5), (5, 0), ('zapeljem', 7), ('mi', 2), ('te', 6), ('minut', 1)])
+            Check.equal("pripravi_primer(['parara', 'podarim', 'Lahko', 'parara', 'papapa', 'samo', 'ljubezen', 'ti'],[5, 2, 0, 7, 6, 3, 4, 1])",
+                        [('parara', 5), ('podarim', 2), ('Lahko', 0), ('parara', 7), ('papapa', 6), ('samo', 3), ('ljubezen', 4), ('ti', 1)])
         except TimeoutError:
             Check.error("Dovoljen čas izvajanja presežen")
         except Exception:
@@ -731,71 +675,19 @@ def _validate_current_file():
     if Check.part():
         Check.current_part[
             "token"
-        ] = "eyJwYXJ0IjoyNzQ5MCwidXNlciI6MTE1MTR9:1vyvM1:bMGuujGfsq216TWS4TLE1ss1xGJJQQ8Dr4AN_qYhHSc"
+        ] = "eyJwYXJ0IjoyNzYyNSwidXNlciI6MTE1MTR9:1wyX5Y:t0HtXHq_mQgi4ruuDBSe9toBZsqswIGbCcpc5-a5he4"
         try:
-            Check.equal('pretvori("10001", 2)', 17)
-            Check.equal('pretvori("2ACBD04", 36)', 4978911892)
-            Check.equal('pretvori("AB", 30)', 311)
-            Check.equal('pretvori("101", 30)', 901)
-            for b in range(3, 36 + 1):
-                Check.secret(pretvori("101010111101", b))
-            for b in range(30, 36 + 1):
-                Check.secret(pretvori("PLANICA", b))
-                Check.secret(pretvori("MIHEC01267", b))
-        except TimeoutError:
-            Check.error("Dovoljen čas izvajanja presežen")
-        except Exception:
-            Check.error(
-                "Testi sprožijo izjemo\n  {0}",
-                "\n  ".join(traceback.format_exc().split("\n"))[:-2],
-            )
-
-    if Check.part():
-        Check.current_part[
-            "token"
-        ] = "eyJwYXJ0IjoyNzQ4OSwidXNlciI6MTE1MTR9:1vyvM1:n1MMq81P4jTF4uex_QcxyhWLj6eo_6V08O6CGiiG9e0"
-        try:
-            Check.equal('izbrisi_podvojene("abaab")', "abb")
-            Check.equal('izbrisi_podvojene("abab")', "abab")
-            Check.equal('izbrisi_podvojene("aaaabaaaa")', "b")
-            Check.secret(izbrisi_podvojene("10000010001010101010002"))
-            Check.secret(izbrisi_podvojene("10000010sxsXXXs01010101010002"))
-            Check.secret(izbrisi_podvojene("asdhaskbbbsna,,sjnansd"))
-        except TimeoutError:
-            Check.error("Dovoljen čas izvajanja presežen")
-        except Exception:
-            Check.error(
-                "Testi sprožijo izjemo\n  {0}",
-                "\n  ".join(traceback.format_exc().split("\n"))[:-2],
-            )
-
-    if Check.part():
-        Check.current_part[
-            "token"
-        ] = "eyJwYXJ0IjoyNzQ4NywidXNlciI6MTE1MTR9:1vyvM1:zNYPMeryVTY25sHdGtiqAZ5uj9KlH4aeZPYHdRLxrTU"
-        try:
-            Check.equal('vsak_k_ti("abcdefghijk", 0)', "")
-            Check.equal('vsak_k_ti("abcdefghijk", 3)', "adgj")
-            Check.secret(vsak_k_ti("abcdefghijk", 5))
-            Check.secret(vsak_k_ti("abcdefghijk", -3))
-            Check.secret(vsak_k_ti("abcdefghihvjdksa s asčdhaglsda saasč jk", 5))
-            Check.secret(vsak_k_ti("abcdefghihvjdksa s asčdhaglsda saasč jk", 8))
-        except TimeoutError:
-            Check.error("Dovoljen čas izvajanja presežen")
-        except Exception:
-            Check.error(
-                "Testi sprožijo izjemo\n  {0}",
-                "\n  ".join(traceback.format_exc().split("\n"))[:-2],
-            )
-
-    if Check.part():
-        Check.current_part[
-            "token"
-        ] = "eyJwYXJ0IjoyNzQ4OCwidXNlciI6MTE1MTR9:1vyvM1:8yq1knvHM8e3xEKzbsW73dGKVe4kdV86HjPSKZx3QH8"
-        try:
-            Check.equal('zaporedje("0123456789X")', "0136X")
-            Check.secret(zaporedje("".join([str(x) for x in range(100)])))
-            Check.secret(zaporedje("".join([str(x) for x in range(150)])))
+            Check.equal("pravilno_urejen([('banana', 2),('paradiznik', 0),('zelje', 3),('kivi', 1)])", False)
+            Check.equal('pravilno_urejen([(100, 0), (99, 1), (77, 2), (13, 3), (42, 4)])', True)
+            Check.equal('pravilno_urejen([])', True)
+            Check.equal('pravilno_urejen([("prvi", 0)])', True)
+            Check.equal('pravilno_urejen([("prvi", 1)])', False) and \
+            Check.equal("pravilno_urejen([('parara', 5), ('podarim', 2), ('Lahko', 0), ('parara', 7), ('papapa', 6), ('samo', 3), ('ljubezen', 4), ('ti', 1)])", False) and \
+            Check.equal("pravilno_urejen([('Lahko', 0), ('ti', 1), ('podarim', 2), ('samo', 3), ('ljubezen', 4), ('parara', 5), ('papapa', 6), ('parara', 7)])", True) and \
+            Check.equal("pravilno_urejen([('so', 5), ('vcasih', 6), ('stezice', 3), ('bile?', 7), ('tiste', 2), ('k', 4), ('Kje', 0), ('so', 1)])", False) and \
+            Check.equal("pravilno_urejen([('Kje', 0), ('so', 1), ('tiste', 2), ('stezice', 3), ('k', 4), ('so', 5), ('vcasih', 6), ('bile?', 7)])", True) and \
+            Check.equal("pravilno_urejen([('daj', 3), ('cas', 4), ('da', 5), (5, 0), ('zapeljem', 7), ('mi', 2), ('te', 6), ('minut', 1)])", False) and \
+            Check.equal("pravilno_urejen([(5, 0), ('minut', 1), ('mi', 2), ('daj', 3), ('cas', 4), ('da', 5), ('te', 6), ('zapeljem', 7)])", True)
         except TimeoutError:
             Check.error("Dovoljen čas izvajanja presežen")
         except Exception:

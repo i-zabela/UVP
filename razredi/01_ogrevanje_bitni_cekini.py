@@ -1,102 +1,131 @@
 # =============================================================================
-# Rezine in rekurzija
-# =====================================================================@027486=
+# Ogrevanje: Bitni cekini
+#
+# Trenutno je na spletu zelo popularna digitalna valuta
+# [Bitcoin](http://en.wikipedia.org/wiki/Bitcoin).
+# Osnova za pošteno uporabo take valute so zapleteni kriptografski
+# protokoli, mi pa bomo ubrali malo bolj poenostavljeno varianto ter
+# sestavili razred `BitniCekin`, s katerim bomo predstavili račun nekega
+# lastnika te valute.
+# =====================================================================@001712=
 # 1. podnaloga
-# Sestavite funkcijo `filtriraj`, ki sprejme dva niza in vrne nov niz sestavljen
-# zgolj iz znakov prvega niza, ki so hkrati tudi v drugem nizu, preostale znake
-# pa zamenja z _
-# Velikost črk je nepomembna.
+# Sestavite razred `BitniCekin` s konstruktorjem `__init__(self, stanje)`,
+# ki sprejme začetno stanje na računu uporabnika (v valuti Bitcoin).
+# Atribut, v katerega shranite stanje, naj bo poimenovan `stanje`.
 # 
-#     >>> filtriraj("Ne gremo še domov", "ngm")
-#     "N__g__m_______m__"
+# Argument `stanje` naj bo neobvezen in v primeru, ko ni podan, naj bo
+# začetno stanje enako nič.
 # =============================================================================
-def filtriraj(niz1, niz2):
-    if niz1 == "":
-        return ""
-    elif niz1[0].lower() in niz2.lower():
-        return niz1[0] + filtriraj(niz1[1:], niz2)
-    else :
-        return "_" + filtriraj(niz1[1:], niz2)
-#def filtriraj(s, f):
-#    if not s:
-#        return s
-#    if s[0].lower() in f.lower():
-#        return s[0] + filtriraj(s[1:], f)
-#    else:
-#        return "_" + filtriraj(s[1:], f)
-# =====================================================================@027490=
+class BitniCekin:
+    def __init__(self, stanje=0):
+        self.stanje = stanje
+
+# =====================================================================@001713=
 # 2. podnaloga
-# Sestavite funkcijo `pretvori`, ki sprejme niz in bazo ter vrne podano število
-# v desetiškem zapisu. Ko zmanjka števil si znaki sledijo po angleški abecedi
-# `0123456789ABC...`. Primer vrstnega reda lahko najdete v
-# `string.ascii_uppercase`. Lahko predpostavite, da bo baza vedno med 2 in 36.
+# Sestavite metodo `__str__(self)`, ki predstavi stanje na računu v obliki:
+# `'Število bitnih cekinov na računu: X'`
 # 
-#     >>> pretvori("10001", 2)
-#     17
-#     >>> pretvori("2ACBD04", 36)
-#     4978911892
+# Primer:
+# 
+#     >>> racun = BitniCekin(6)
+#     >>> print(racun)
+#     Število bitnih cekinov na računu: 6
+# 
+# _Opomba_: Funkcija `print` na svojem argumentu pokliče metodo `__str__`
+# in izpiše niz, ki ga ta metoda vrne. Metoda `__str__` običajno vrne
+# razumljiv opis objekta, ki naj bi ga razumeli tudi ne-programerji.
 # =============================================================================
-def pretvori(niz, baza):
-    import string
-    znaki = "0123456789" + string.ascii_uppercase 
-    if niz == "":
-        return 0
-    else:
-        return znaki.index(niz[-1].upper()) + baza * pretvori(niz[:-1], baza)
+class BitniCekin(BitniCekin):
 
-#def pretvori_leno(s, b):
-#    return int(s, b)
-# =====================================================================@027489=
+    def __str__(self):
+        return f'Število bitnih cekinov na računu: {self.stanje}'
+# =====================================================================@001714=
 # 3. podnaloga
-# Sestavite funkcijo `izbrisi_podvojene`, ki sprejme niz in odstrani vse
-# zaporedno enake znake, kjer velikost črk ni pomembna. Če se po izbrisu pojavijo
-# nove podvojitve, naj jih funkcija ne izbriše.
+# Sestavite še metodo `__repr__`, ki predstavi objekt z nizom
+# oblike `'BitniCekin(X)'`, kjer je `X` stanje na računu.
 # 
-#     >>> izbrisi_podvojene("aaab")
-#     "b"
-#     >>> izbrisi_podvojene("abaab")
-#     "abb"
-# =============================================================================
-def izbrisi_podvojene(s, last=None):
-    if s == "":
-        return ""
-    elif s[0] == last:
-        return izbrisi_podvojene(s[1:], last)
-    elif len(s) >= 2 and s[0] == s[1]:
-        return izbrisi_podvojene(s[2:], s[0])
-    else:
-        return s[0] + izbrisi_podvojene(s[1:], None)
-# =====================================================================@027487=
-# 4. podnaloga
-# Sestavite funkcijo `vsak_k_ti`, ki sprejme niz in parameter `k` ter vrne nov
-# niz, kjer iz vhodnega niza vzame vsak `k`-ti znak. Za nesmiselne parametre
-# naj funkcija vrne prazen niz
+# Primer:
 # 
-#     >>> vsak_k_ti("abcdefghijk", 3)
-#     "adgj"
-#     >>> vsak_k_ti("abcdefghijk", 0)
-#     ""
-# =============================================================================
-def vsak_k_ti(s, k):
-    if k <= 0:
-        return ""
-    else:
-        return s[::k]
-# =====================================================================@027488=
-# 5. podnaloga
-# Sestavitev funkcijo `zaporedje`, ki sprejme niz in vrne nov niz sestavljen iz
-# znakov na indeksih 0, 1, 3, 6, 10, ...
-# Namig: Ali razlike med indeksi sledijo kakemu preprostemu zaporedju?
+#     >>> racun = BitniCekin(6)
+#     >>> racun
+#     BitniCekin(6)
 # 
-#     >>> zaporedje("0123456789X")
-#     "0136X"
+# _Opomba_: Če v interaktivni konzoli pokličemo nek objekt, se izpiše niz,
+# ki ga vrne klic metode `__repr__` na tem objektu. Priporočilo je, da je
+# niz, ki ga vrne metoda `__repr__`, veljavna programska koda v Pythonu, ki
+# ustvari identično kopijo objekta.
 # =============================================================================
-def zaporedje(niz, indeks=0, korak=1):
-    if indeks >= len(niz):
-        return ""
-    else:
-        return niz[indeks] + zaporedje(niz, indeks + korak, korak + 1)
+class BitniCekin(BitniCekin):
 
+    def __repr__(self):
+        return f'BitniCekin({self.stanje})'
+# =====================================================================@001715=
+# 4. podnaloga
+# Sestavite metodi `dvig(self, koliko)` in `polog(self, koliko)`, ki
+# dvigneta oz. položita ustrezno količino bitnih cekinov na račun.
+# Predpostavimo, da bo vrednost argumenta `koliko` vedno nenegativno
+# celo število.
+# 
+# Pri metodi `dvig` upoštevajte, da stanje na računu ne sme biti negativno.
+# V takšnem primeru se dvig ne sme izvesti.
+# 
+# Metoda `dvig` naj vrne `True`, če je dvig uspel in `False`, če ni.
+# Metoda `polog` naj vrne stanje na računu po pologu.
+# =============================================================================
+class BitniCekin(BitniCekin):
+
+    def dvig(self, koliko):
+        if self.stanje < koliko:
+            return False
+        else:
+            self.stanje -= koliko
+            return True
+
+    def polog(self, koliko):
+        self.stanje += koliko
+        return self.stanje
+
+
+
+class BitniCekin(BitniCekin):
+
+    def dvig(self, koliko):
+        if koliko > self.stanje:
+            return False
+        self.stanje = self.stanje - koliko
+        return True
+
+    def polog(self, koliko):
+        self.koliko = koliko
+        self.stanje = self.stanje + self.koliko
+        return self.stanje
+# =====================================================================@001716=
+# 5. podnaloga
+# Sestavite funkcijo `prenesi(racun1, racun2, koliko)`, ki iz računa `racun1`
+# prenese `koliko` cekinov na račun `racun2`. Funkcija `prenesi` naj ne bo
+# znotraj razreda `BitniCekin`, saj ni objektna metoda, ampak je čisto običajna
+# funkcija.
+# 
+# Če na računu `racun1` ni dovolj denarja, se transakcija ne sme
+# izvršiti, torej mora stanje na obeh računih ostati nespremenjeno.
+# Funkcija naj vrne uspešnost transakcije (`True`, če je transakcija uspela,
+# in `False`, če ni).
+# =============================================================================
+def prenesi(racun1, racun2, koliko):
+    if racun1 < koliko:
+        return False
+    else:
+        racun1 -= koliko
+        racun2 += koliko
+        return True
+
+    
+def prenesi(racun1, racun2, koliko):
+    if racun1.dvig(koliko) is True:
+        racun2.polog(koliko)
+        return True
+    else:
+        return False
 
 
 
@@ -713,13 +742,16 @@ def _validate_current_file():
     if Check.part():
         Check.current_part[
             "token"
-        ] = "eyJwYXJ0IjoyNzQ4NiwidXNlciI6MTE1MTR9:1vyvM1:ZP-3bADoPBCX6zzIdOTYLTFaaf1zM6e8xzd7bgfdLTc"
+        ] = "eyJwYXJ0IjoxNzEyLCJ1c2VyIjoxMTUxNH0:1x1L4S:tHmreGHLvVmWgYMZ2f5s59Lwfc-GoyFIvh7e98jrayA"
         try:
-            Check.equal('filtriraj("Ne gremo še domov", "ngm")', "N__g__m_______m__")
-            Check.secret(filtriraj("Planica!! planica!!, snežena kraljica", "Planica!"))
-            
-            # =============================================================================
-            # Nizi
+            test_data = [
+                ('BitniCekin(5).stanje', 5),
+                ('BitniCekin(1000).stanje', 1000),
+                ('BitniCekin().stanje', 0),
+            ]
+            for td in test_data:
+                if not Check.equal(*td):
+                    break
         except TimeoutError:
             Check.error("Dovoljen čas izvajanja presežen")
         except Exception:
@@ -731,17 +763,16 @@ def _validate_current_file():
     if Check.part():
         Check.current_part[
             "token"
-        ] = "eyJwYXJ0IjoyNzQ5MCwidXNlciI6MTE1MTR9:1vyvM1:bMGuujGfsq216TWS4TLE1ss1xGJJQQ8Dr4AN_qYhHSc"
+        ] = "eyJwYXJ0IjoxNzEzLCJ1c2VyIjoxMTUxNH0:1x1L4S:iLWzNwvTvIZ92IGuERQWDaNfkBwMxWiGnFeHqIM5i84"
         try:
-            Check.equal('pretvori("10001", 2)', 17)
-            Check.equal('pretvori("2ACBD04", 36)', 4978911892)
-            Check.equal('pretvori("AB", 30)', 311)
-            Check.equal('pretvori("101", 30)', 901)
-            for b in range(3, 36 + 1):
-                Check.secret(pretvori("101010111101", b))
-            for b in range(30, 36 + 1):
-                Check.secret(pretvori("PLANICA", b))
-                Check.secret(pretvori("MIHEC01267", b))
+            test_data = [
+                ('str(BitniCekin(5))', 'Število bitnih cekinov na računu: 5'),
+                ('str(BitniCekin(1000))', 'Število bitnih cekinov na računu: 1000'),
+                ('str(BitniCekin())', 'Število bitnih cekinov na računu: 0'),
+            ]
+            for td in test_data:
+                if not Check.equal(*td):
+                    break
         except TimeoutError:
             Check.error("Dovoljen čas izvajanja presežen")
         except Exception:
@@ -753,14 +784,16 @@ def _validate_current_file():
     if Check.part():
         Check.current_part[
             "token"
-        ] = "eyJwYXJ0IjoyNzQ4OSwidXNlciI6MTE1MTR9:1vyvM1:n1MMq81P4jTF4uex_QcxyhWLj6eo_6V08O6CGiiG9e0"
+        ] = "eyJwYXJ0IjoxNzE0LCJ1c2VyIjoxMTUxNH0:1x1L4S:NP6mDZDs_B4mDOV1MyXEYlOkmgwuhpArxip6qSlArns"
         try:
-            Check.equal('izbrisi_podvojene("abaab")', "abb")
-            Check.equal('izbrisi_podvojene("abab")', "abab")
-            Check.equal('izbrisi_podvojene("aaaabaaaa")', "b")
-            Check.secret(izbrisi_podvojene("10000010001010101010002"))
-            Check.secret(izbrisi_podvojene("10000010sxsXXXs01010101010002"))
-            Check.secret(izbrisi_podvojene("asdhaskbbbsna,,sjnansd"))
+            test_data = [
+                ('repr(BitniCekin(5))', 'BitniCekin(5)'),
+                ('repr(BitniCekin(1000))', 'BitniCekin(1000)'),
+                ('repr(BitniCekin())', 'BitniCekin(0)'),
+            ]
+            for td in test_data:
+                if not Check.equal(*td):
+                    break
         except TimeoutError:
             Check.error("Dovoljen čas izvajanja presežen")
         except Exception:
@@ -772,14 +805,13 @@ def _validate_current_file():
     if Check.part():
         Check.current_part[
             "token"
-        ] = "eyJwYXJ0IjoyNzQ4NywidXNlciI6MTE1MTR9:1vyvM1:zNYPMeryVTY25sHdGtiqAZ5uj9KlH4aeZPYHdRLxrTU"
+        ] = "eyJwYXJ0IjoxNzE1LCJ1c2VyIjoxMTUxNH0:1x1L4S:NM-OpGFMRoBFqKhJR_adyamSUDC4tpd6Z6q1l-hIsQg"
         try:
-            Check.equal('vsak_k_ti("abcdefghijk", 0)', "")
-            Check.equal('vsak_k_ti("abcdefghijk", 3)', "adgj")
-            Check.secret(vsak_k_ti("abcdefghijk", 5))
-            Check.secret(vsak_k_ti("abcdefghijk", -3))
-            Check.secret(vsak_k_ti("abcdefghihvjdksa s asčdhaglsda saasč jk", 5))
-            Check.secret(vsak_k_ti("abcdefghihvjdksa s asčdhaglsda saasč jk", 8))
+            Check.run(["racun = BitniCekin(10)", "prvi_dvig = racun.dvig(5)",
+                       "drugi_dvig = racun.dvig(10)", "polog = racun.polog(30)",
+                       "tretji_dvig = racun.dvig(20)", "konec = racun.stanje"],
+                      {'prvi_dvig': True, 'drugi_dvig': False, 'polog': 35,
+                       'tretji_dvig': True, 'konec': 15})
         except TimeoutError:
             Check.error("Dovoljen čas izvajanja presežen")
         except Exception:
@@ -791,11 +823,21 @@ def _validate_current_file():
     if Check.part():
         Check.current_part[
             "token"
-        ] = "eyJwYXJ0IjoyNzQ4OCwidXNlciI6MTE1MTR9:1vyvM1:8yq1knvHM8e3xEKzbsW73dGKVe4kdV86HjPSKZx3QH8"
+        ] = "eyJwYXJ0IjoxNzE2LCJ1c2VyIjoxMTUxNH0:1x1L4S:PuROYlJ5WC1Ii60yorOfajaaziXkmo103NCipC5LgIY"
         try:
-            Check.equal('zaporedje("0123456789X")', "0136X")
-            Check.secret(zaporedje("".join([str(x) for x in range(100)])))
-            Check.secret(zaporedje("".join([str(x) for x in range(150)])))
+            test_data = [
+                (["racun1 = BitniCekin(10)", "racun2 = BitniCekin(10)",
+                      "uspeh1 = prenesi(racun1, racun2, 7)", "uspeh2 = prenesi(racun2, racun1, 20)",
+                       "konec1 = racun1.stanje", "konec2 = racun2.stanje"],
+                      {'konec1': 3, 'konec2': 17, 'uspeh1': True, 'uspeh2': False}),
+                (["racun1 = BitniCekin(10)", "racun2 = BitniCekin(10)",
+                      "uspeh1 = prenesi(racun1, racun2, 7)", "uspeh2 = prenesi(racun2, racun1, 15)",
+                       "konec1 = racun1.stanje", "konec2 = racun2.stanje"],
+                      {'konec1': 18, 'konec2': 2, 'uspeh1': True, 'uspeh2': True}),
+            ]
+            for td in test_data:
+                if not Check.run(*td):
+                    break
         except TimeoutError:
             Check.error("Dovoljen čas izvajanja presežen")
         except Exception:

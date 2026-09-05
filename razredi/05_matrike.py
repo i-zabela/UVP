@@ -1,101 +1,110 @@
 # =============================================================================
-# Rezine in rekurzija
-# =====================================================================@027486=
+# Matrike
+# =====================================================================@027762=
 # 1. podnaloga
-# Sestavite funkcijo `filtriraj`, ki sprejme dva niza in vrne nov niz sestavljen
-# zgolj iz znakov prvega niza, ki so hkrati tudi v drugem nizu, preostale znake
-# pa zamenja z _
-# Velikost črk je nepomembna.
+# Matriko v Pythonu predstavimo s seznami seznamov, pri čemer predpostavimo, 
+# da ima matrika vsaj en element in da imajo vsi podseznami enako dolžino.
 # 
-#     >>> filtriraj("Ne gremo še domov", "ngm")
-#     "N__g__m_______m__"
-# =============================================================================
-def filtriraj(niz1, niz2):
-    if niz1 == "":
-        return ""
-    elif niz1[0].lower() in niz2.lower():
-        return niz1[0] + filtriraj(niz1[1:], niz2)
-    else :
-        return "_" + filtriraj(niz1[1:], niz2)
-#def filtriraj(s, f):
-#    if not s:
-#        return s
-#    if s[0].lower() in f.lower():
-#        return s[0] + filtriraj(s[1:], f)
-#    else:
-#        return "_" + filtriraj(s[1:], f)
-# =====================================================================@027490=
-# 2. podnaloga
-# Sestavite funkcijo `pretvori`, ki sprejme niz in bazo ter vrne podano število
-# v desetiškem zapisu. Ko zmanjka števil si znaki sledijo po angleški abecedi
-# `0123456789ABC...`. Primer vrstnega reda lahko najdete v
-# `string.ascii_uppercase`. Lahko predpostavite, da bo baza vedno med 2 in 36.
+# Sestavite razred `Matrika`, ki sprejme en argument, 2d seznam, ki predstavlja 
+# matriko. To matriko naj si shrani v atribut `matrika`. Shrani naj si še dva 
+# atributa `visina` in `sirina`, ki predstavljata število vrstic in število stolpcev.
+# Poskrbi, da razred matrika uporablja kopijo podanega seznama, tako da kasnejše 
+# spreminjanje podanega seznama ne vpliva na matriko
 # 
-#     >>> pretvori("10001", 2)
-#     17
-#     >>> pretvori("2ACBD04", 36)
-#     4978911892
+#     >>> osnovna = [[1], [2]]
+#     >>> a = Matrika(osnovna)
+#     >>> a.visina 
+#     2
+#     >>> osnovna[0][0] = 13
+#     >>> a.matrika 
+#     [[1], [2]]
 # =============================================================================
-def pretvori(niz, baza):
-    import string
-    znaki = "0123456789" + string.ascii_uppercase 
-    if niz == "":
-        return 0
-    else:
-        return znaki.index(niz[-1].upper()) + baza * pretvori(niz[:-1], baza)
+class Matrika:
 
-#def pretvori_leno(s, b):
-#    return int(s, b)
-# =====================================================================@027489=
+    def __init__(self, matrika):
+        self.matrika = [vrstica[:] for vrstica in matrika]
+        self.visina = len(matrika)
+        self.sirina = len(matrika[0])
+
+# =====================================================================@027763=
+# 2. podnaloga
+# Definirajte metodo `__eq__(self, other)`, ki preveri, ali sta matriki enaki. 
+# 
+#     >>> Matrika([[1], [2]]) == Matrika([[1], [2]])
+#     True
+#     >>> Matrika([[1], [2]]) == Matrika([[1], [2], [3]])
+#     False
+# =============================================================================
+    def __eq__(self, other):
+        return self.matrika == other.matrika
+# =====================================================================@027764=
 # 3. podnaloga
-# Sestavite funkcijo `izbrisi_podvojene`, ki sprejme niz in odstrani vse
-# zaporedno enake znake, kjer velikost črk ni pomembna. Če se po izbrisu pojavijo
-# nove podvojitve, naj jih funkcija ne izbriše.
+# Definirajte metodo `__str__(self)`, ki na lep način izpiše matriko. Vsaka vrstica naj 
+# bo izpisana v svoji vrstici, posamezni elementi pa naj bodo lepo ločeni z vejico.
 # 
-#     >>> izbrisi_podvojene("aaab")
-#     "b"
-#     >>> izbrisi_podvojene("abaab")
-#     "abb"
+#     >>> print(Matrika([[1], [2]]))
+#     1
+#     3
+#     >>> print(Matrika([[1, 2], [222, 1]]))
+#     1, 2
+#     222, 1
 # =============================================================================
-def izbrisi_podvojene(s, last=None):
-    if s == "":
-        return ""
-    elif s[0] == last:
-        return izbrisi_podvojene(s[1:], last)
-    elif len(s) >= 2 and s[0] == s[1]:
-        return izbrisi_podvojene(s[2:], s[0])
-    else:
-        return s[0] + izbrisi_podvojene(s[1:], None)
-# =====================================================================@027487=
+class Matrika(Matrika):
+    def __str__(self):
+        return "\n".join(
+            ", ".join([str(i) for i in line]) 
+            for line in self.matrika
+        )
+# =====================================================================@027765=
 # 4. podnaloga
-# Sestavite funkcijo `vsak_k_ti`, ki sprejme niz in parameter `k` ter vrne nov
-# niz, kjer iz vhodnega niza vzame vsak `k`-ti znak. Za nesmiselne parametre
-# naj funkcija vrne prazen niz
+# Definirajte metodo `__add__(self, other)`, ki naj implementira običajno matrično 
+# seštevanje. Ta metoda naj vrne novo matriko. Predpostavite lahko, da bosta matriki 
+# vedno ustreznih dimenzij.
 # 
-#     >>> vsak_k_ti("abcdefghijk", 3)
-#     "adgj"
-#     >>> vsak_k_ti("abcdefghijk", 0)
-#     ""
+#     >>> print(Matrika([[-1], [2]]) + Matrika([[1], [2]]))
+#     0
+#     4
+#     >>> print(Matrika([[1], [2], [0]]) + Matrika([[1], [2], [3]]))
+#     2
+#     4
+#     3
+#     >>> print(Matrika([[1, 2, 3]]) + Matrika([[1, 2, 3]]))
+#     2 4 6
 # =============================================================================
-def vsak_k_ti(s, k):
-    if k <= 0:
-        return ""
-    else:
-        return s[::k]
-# =====================================================================@027488=
+class Matrika(Matrika):
+
+    def __add__(self, other):
+        sešteta = []
+        for i in range(self.visina):
+            vrstica = []
+            for j in range(self.sirina):
+                seštevek = self.matrika[i][j] + other.matrika[i][j]
+                vrstica.append(seštevek)
+            sešteta.append(vrstica)
+        return Matrika(sešteta)
+
+# =====================================================================@027766=
 # 5. podnaloga
-# Sestavitev funkcijo `zaporedje`, ki sprejme niz in vrne nov niz sestavljen iz
-# znakov na indeksih 0, 1, 3, 6, 10, ...
-# Namig: Ali razlike med indeksi sledijo kakemu preprostemu zaporedju?
+# Definirajte metodo `__mul__(self, other)`, ki implementira množenje istoležnih 
+# elementov. To NI matrično množenje. Metoda naj vrne novo matriko
 # 
-#     >>> zaporedje("0123456789X")
-#     "0136X"
+#     >>> print(Matrika([[-1], [2]]) * Matrika([[1], [2]]))
+#     -1
+#     4
 # =============================================================================
-def zaporedje(niz, indeks=0, korak=1):
-    if indeks >= len(niz):
-        return ""
-    else:
-        return niz[indeks] + zaporedje(niz, indeks + korak, korak + 1)
+class Matrika(Matrika):
+
+    def __mul__(self, other):
+        zmnožena = []
+        for i in range(self.visina):
+            vrstica = []
+            for j in range(self.sirina):
+                zmnožek = self.matrika[i][j] * other.matrika[i][j]
+                vrstica.append(zmnožek)
+            zmnožena.append(vrstica)
+        return Matrika(zmnožena)
+
+        
 
 
 
@@ -713,13 +722,19 @@ def _validate_current_file():
     if Check.part():
         Check.current_part[
             "token"
-        ] = "eyJwYXJ0IjoyNzQ4NiwidXNlciI6MTE1MTR9:1vyvM1:ZP-3bADoPBCX6zzIdOTYLTFaaf1zM6e8xzd7bgfdLTc"
+        ] = "eyJwYXJ0IjoyNzc2MiwidXNlciI6MTE1MTR9:1x1L4S:ljjC8sBX6x0yvOVmx0S7e6VOCi3VNdwIR_0_SDqOea0"
         try:
-            Check.equal('filtriraj("Ne gremo še domov", "ngm")', "N__g__m_______m__")
-            Check.secret(filtriraj("Planica!! planica!!, snežena kraljica", "Planica!"))
+            Check.equal("Matrika([[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]]).matrika", [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]])
+            Check.equal("Matrika([[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]]).visina", 4)
+            Check.equal("Matrika([[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]]).sirina", 4)
+            Check.equal("Matrika([[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0]]).visina", 3)
+            Check.equal("Matrika([[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0]]).sirina", 4)
+            Check.equal("Matrika([[0, 1, 2, 3]]).sirina", 4)
+            Check.equal("Matrika([[0, 1, 2, 3]]).visina", 1)
             
-            # =============================================================================
-            # Nizi
+            Check.run(["zacetni_seznam = [[1], [12]]", "matrika = Matrika(zacetni_seznam)", "zacetni_seznam.append([13])", "matrika_2d = matrika.matrika"], {"matrika_2d": [[1], [12]]})
+            
+            Check.secret(Matrika([[0, 1, 2, 3, 5, 6, 7]]).matrika)
         except TimeoutError:
             Check.error("Dovoljen čas izvajanja presežen")
         except Exception:
@@ -731,17 +746,11 @@ def _validate_current_file():
     if Check.part():
         Check.current_part[
             "token"
-        ] = "eyJwYXJ0IjoyNzQ5MCwidXNlciI6MTE1MTR9:1vyvM1:bMGuujGfsq216TWS4TLE1ss1xGJJQQ8Dr4AN_qYhHSc"
+        ] = "eyJwYXJ0IjoyNzc2MywidXNlciI6MTE1MTR9:1x1L4S:2fcNulH0mJkwrzv3h4CoWskOon3I22PQW84RSFYowbc"
         try:
-            Check.equal('pretvori("10001", 2)', 17)
-            Check.equal('pretvori("2ACBD04", 36)', 4978911892)
-            Check.equal('pretvori("AB", 30)', 311)
-            Check.equal('pretvori("101", 30)', 901)
-            for b in range(3, 36 + 1):
-                Check.secret(pretvori("101010111101", b))
-            for b in range(30, 36 + 1):
-                Check.secret(pretvori("PLANICA", b))
-                Check.secret(pretvori("MIHEC01267", b))
+            Check.equal('Matrika([[1], [2]]) == Matrika([[1], [2]])', True)
+            Check.equal('Matrika([[1], [2]]) == Matrika([[1], [2], [3]])', False)
+            Check.equal('Matrika([[1], [2]]) == Matrika([[1], [3]])', False)
         except TimeoutError:
             Check.error("Dovoljen čas izvajanja presežen")
         except Exception:
@@ -753,14 +762,12 @@ def _validate_current_file():
     if Check.part():
         Check.current_part[
             "token"
-        ] = "eyJwYXJ0IjoyNzQ4OSwidXNlciI6MTE1MTR9:1vyvM1:n1MMq81P4jTF4uex_QcxyhWLj6eo_6V08O6CGiiG9e0"
+        ] = "eyJwYXJ0IjoyNzc2NCwidXNlciI6MTE1MTR9:1x1L4S:B_-wDfT7dBZAAPhffrynKaM7Dc12rGOGxONGg35n9-s"
         try:
-            Check.equal('izbrisi_podvojene("abaab")', "abb")
-            Check.equal('izbrisi_podvojene("abab")', "abab")
-            Check.equal('izbrisi_podvojene("aaaabaaaa")', "b")
-            Check.secret(izbrisi_podvojene("10000010001010101010002"))
-            Check.secret(izbrisi_podvojene("10000010sxsXXXs01010101010002"))
-            Check.secret(izbrisi_podvojene("asdhaskbbbsna,,sjnansd"))
+            Check.equal("Matrika([[1], [2]]).__str__()", "1\n2")
+            Check.equal("Matrika([[1], [2], [3]]).__str__()", "1\n2\n3")
+            Check.equal("Matrika([[1, 2], [222, 1]]).__str__()", "1, 2\n222, 1")
+            Check.secret(Matrika([[1, 2, 3, 4], [2, 3, 4, 5]]).__str__())
         except TimeoutError:
             Check.error("Dovoljen čas izvajanja presežen")
         except Exception:
@@ -772,14 +779,12 @@ def _validate_current_file():
     if Check.part():
         Check.current_part[
             "token"
-        ] = "eyJwYXJ0IjoyNzQ4NywidXNlciI6MTE1MTR9:1vyvM1:zNYPMeryVTY25sHdGtiqAZ5uj9KlH4aeZPYHdRLxrTU"
+        ] = "eyJwYXJ0IjoyNzc2NSwidXNlciI6MTE1MTR9:1x1L4S:DXAycwtDQ9YHISu6Xn8YrJ78qegdV3dqK5pdB2wIkNY"
         try:
-            Check.equal('vsak_k_ti("abcdefghijk", 0)', "")
-            Check.equal('vsak_k_ti("abcdefghijk", 3)', "adgj")
-            Check.secret(vsak_k_ti("abcdefghijk", 5))
-            Check.secret(vsak_k_ti("abcdefghijk", -3))
-            Check.secret(vsak_k_ti("abcdefghihvjdksa s asčdhaglsda saasč jk", 5))
-            Check.secret(vsak_k_ti("abcdefghihvjdksa s asčdhaglsda saasč jk", 8))
+            Check.equal('(Matrika([[1], [2]]) + Matrika([[1], [2]]))', Matrika([[2], [4]]))
+            Check.equal('(Matrika([[1], [2], [0]]) + Matrika([[1], [2], [3]])).matrika', [[2], [4], [3]])
+            Check.equal('(Matrika([[1, 2, 3]]) + Matrika([[1, 2, 30]])).matrika', [[2, 4, 33]])
+            Check.secret((Matrika([[1, 2, 3000]]) + Matrika([[-1, 2000, 3]])).matrika)
         except TimeoutError:
             Check.error("Dovoljen čas izvajanja presežen")
         except Exception:
@@ -791,11 +796,12 @@ def _validate_current_file():
     if Check.part():
         Check.current_part[
             "token"
-        ] = "eyJwYXJ0IjoyNzQ4OCwidXNlciI6MTE1MTR9:1vyvM1:8yq1knvHM8e3xEKzbsW73dGKVe4kdV86HjPSKZx3QH8"
+        ] = "eyJwYXJ0IjoyNzc2NiwidXNlciI6MTE1MTR9:1x1L4S:-NLqbR08wgj3aUb82BhHxqsXa_4sFIfan44qW3o2AAE"
         try:
-            Check.equal('zaporedje("0123456789X")', "0136X")
-            Check.secret(zaporedje("".join([str(x) for x in range(100)])))
-            Check.secret(zaporedje("".join([str(x) for x in range(150)])))
+            Check.equal('(Matrika([[-1], [2]]) * Matrika([[1], [2]])).matrika', [[-1], [4]])
+            Check.equal('(Matrika([[-12], [2]]) * Matrika([[1], [2]])).matrika', [[-12], [4]])
+            Check.equal('(Matrika([[-1, 2]]) * Matrika([[1, 2]])).matrika', [[-1, 4]])
+            Check.secret((Matrika([[1, 2, 3]]) + Matrika([[1, 2, 30]])).matrika)
         except TimeoutError:
             Check.error("Dovoljen čas izvajanja presežen")
         except Exception:

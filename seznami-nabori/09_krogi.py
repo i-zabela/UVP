@@ -1,101 +1,62 @@
 # =============================================================================
-# Rezine in rekurzija
-# =====================================================================@027486=
+# Krogi
+# =====================================================================@001311=
 # 1. podnaloga
-# Sestavite funkcijo `filtriraj`, ki sprejme dva niza in vrne nov niz sestavljen
-# zgolj iz znakov prvega niza, ki so hkrati tudi v drugem nizu, preostale znake
-# pa zamenja z _
-# Velikost črk je nepomembna.
+# Krog predstavimo s trojico `(x, y, r)`, kjer je `(x, y)` središče kroga in
+# `r` njegov radij.
 # 
-#     >>> filtriraj("Ne gremo še domov", "ngm")
-#     "N__g__m_______m__"
+# Sestavite funkcijo `v_uniji(x0, y0, krogi)`, ki vrne `True`, če točka
+# `(x0, y0)` leži v vsaj enem krogu v seznamu `krogi`, in `False`
+# sicer.
 # =============================================================================
-def filtriraj(niz1, niz2):
-    if niz1 == "":
-        return ""
-    elif niz1[0].lower() in niz2.lower():
-        return niz1[0] + filtriraj(niz1[1:], niz2)
-    else :
-        return "_" + filtriraj(niz1[1:], niz2)
-#def filtriraj(s, f):
-#    if not s:
-#        return s
-#    if s[0].lower() in f.lower():
-#        return s[0] + filtriraj(s[1:], f)
-#    else:
-#        return "_" + filtriraj(s[1:], f)
-# =====================================================================@027490=
+def v_uniji(x0, y0, krogi):
+    if krogi == []:
+        return False
+    else:
+        for krog in krogi:
+            x, y, r = krog
+            if (x - x0)**2 + (y - y0)**2 <= r**2:
+                return True
+        return False
+# =====================================================================@001312=
 # 2. podnaloga
-# Sestavite funkcijo `pretvori`, ki sprejme niz in bazo ter vrne podano število
-# v desetiškem zapisu. Ko zmanjka števil si znaki sledijo po angleški abecedi
-# `0123456789ABC...`. Primer vrstnega reda lahko najdete v
-# `string.ascii_uppercase`. Lahko predpostavite, da bo baza vedno med 2 in 36.
-# 
-#     >>> pretvori("10001", 2)
-#     17
-#     >>> pretvori("2ACBD04", 36)
-#     4978911892
+# Sestavite funkcijo `v_preseku(x, y, krogi)`, ki vrne `True`, če točka
+# `(x, y)` leži v vseh krogih v danem seznamu `krogi`, in `False`
+# sicer.
 # =============================================================================
-def pretvori(niz, baza):
-    import string
-    znaki = "0123456789" + string.ascii_uppercase 
-    if niz == "":
-        return 0
-    else:
-        return znaki.index(niz[-1].upper()) + baza * pretvori(niz[:-1], baza)
-
-#def pretvori_leno(s, b):
-#    return int(s, b)
-# =====================================================================@027489=
+def v_preseku(x, y, krogi):
+    for krog in krogi:
+        x1, y1, r = krog
+        if (x - x1)**2 + (y - y1)**2 > r**2:
+            return False
+    return True
+# =====================================================================@001313=
 # 3. podnaloga
-# Sestavite funkcijo `izbrisi_podvojene`, ki sprejme niz in odstrani vse
-# zaporedno enake znake, kjer velikost črk ni pomembna. Če se po izbrisu pojavijo
-# nove podvojitve, naj jih funkcija ne izbriše.
+# Sestavite funkcijo `pravokotnik(krogi)`, ki poišče najmanjši pravokotnik,
+# ki vsebuje unijo vseh krogov iz danega seznama `krogi`. Pravokotnik
+# naj vrne kot nabor `(x_min, y_min, x_max, y_max)`, torej najprej
+# koordinati oglišča spodaj levo, nato pa koordinati oglišča zgoraj desno.
 # 
-#     >>> izbrisi_podvojene("aaab")
-#     "b"
-#     >>> izbrisi_podvojene("abaab")
-#     "abb"
-# =============================================================================
-def izbrisi_podvojene(s, last=None):
-    if s == "":
-        return ""
-    elif s[0] == last:
-        return izbrisi_podvojene(s[1:], last)
-    elif len(s) >= 2 and s[0] == s[1]:
-        return izbrisi_podvojene(s[2:], s[0])
-    else:
-        return s[0] + izbrisi_podvojene(s[1:], None)
-# =====================================================================@027487=
-# 4. podnaloga
-# Sestavite funkcijo `vsak_k_ti`, ki sprejme niz in parameter `k` ter vrne nov
-# niz, kjer iz vhodnega niza vzame vsak `k`-ti znak. Za nesmiselne parametre
-# naj funkcija vrne prazen niz
+# Predpostavite, da seznam vsebuje vsaj en krog.
 # 
-#     >>> vsak_k_ti("abcdefghijk", 3)
-#     "adgj"
-#     >>> vsak_k_ti("abcdefghijk", 0)
-#     ""
+#     >>> pravokotnik([(0, 0, 1)]
+#     (-1, -1, 1, 1)
 # =============================================================================
-def vsak_k_ti(s, k):
-    if k <= 0:
-        return ""
-    else:
-        return s[::k]
-# =====================================================================@027488=
-# 5. podnaloga
-# Sestavitev funkcijo `zaporedje`, ki sprejme niz in vrne nov niz sestavljen iz
-# znakov na indeksih 0, 1, 3, 6, 10, ...
-# Namig: Ali razlike med indeksi sledijo kakemu preprostemu zaporedju?
-# 
-#     >>> zaporedje("0123456789X")
-#     "0136X"
-# =============================================================================
-def zaporedje(niz, indeks=0, korak=1):
-    if indeks >= len(niz):
-        return ""
-    else:
-        return niz[indeks] + zaporedje(niz, indeks + korak, korak + 1)
+def pravokotnik(krogi):
+    x0, y0, r0 = krogi[0]
+    x_min = x0 - r0
+    x_max = x0 + r0
+    y_min = y0 - r0
+    y_max = y0 + r0
+    
+    for krog in krogi[1:]:
+        x, y, r = krog
+        x_min = min(x_min, x - r)
+        x_max = max(x_max, x + r)
+        y_min = min(y_min, y - r)
+        y_max = max(y_max, y + r)
+    
+    return (x_min, y_min, x_max, y_max)
 
 
 
@@ -713,13 +674,13 @@ def _validate_current_file():
     if Check.part():
         Check.current_part[
             "token"
-        ] = "eyJwYXJ0IjoyNzQ4NiwidXNlciI6MTE1MTR9:1vyvM1:ZP-3bADoPBCX6zzIdOTYLTFaaf1zM6e8xzd7bgfdLTc"
+        ] = "eyJwYXJ0IjoxMzExLCJ1c2VyIjoxMTUxNH0:1wyX5Y:MCPXLATm1iAl_ZBuOTKT3Gq1wdRCiwD60Uf2J2I8v7A"
         try:
-            Check.equal('filtriraj("Ne gremo še domov", "ngm")', "N__g__m_______m__")
-            Check.secret(filtriraj("Planica!! planica!!, snežena kraljica", "Planica!"))
-            
-            # =============================================================================
-            # Nizi
+            Check.equal('v_uniji(2, 3, [])', False)
+            Check.equal('v_uniji(2, 2, [(2, 2, 3), (1, 1, 4), (2, 0, 3)])', True)
+            Check.equal('v_uniji(2, 5, [(2, 2, 3), (1, 1, 4), (2, 0, 3)])', True)
+            Check.equal('v_uniji(2, 5, [(1, 1, 4), (2, 2, 3), (2, 0, 3)])', True)
+            Check.equal('v_uniji(5, 3, [(2, 2, 3), (1, 1, 4), (2, 0, 3)])', False)
         except TimeoutError:
             Check.error("Dovoljen čas izvajanja presežen")
         except Exception:
@@ -731,17 +692,12 @@ def _validate_current_file():
     if Check.part():
         Check.current_part[
             "token"
-        ] = "eyJwYXJ0IjoyNzQ5MCwidXNlciI6MTE1MTR9:1vyvM1:bMGuujGfsq216TWS4TLE1ss1xGJJQQ8Dr4AN_qYhHSc"
+        ] = "eyJwYXJ0IjoxMzEyLCJ1c2VyIjoxMTUxNH0:1wyX5Y:SjRx5Px8s-Opyd-1xalh20CSWlmpXtSGPzrTCRpg02I"
         try:
-            Check.equal('pretvori("10001", 2)', 17)
-            Check.equal('pretvori("2ACBD04", 36)', 4978911892)
-            Check.equal('pretvori("AB", 30)', 311)
-            Check.equal('pretvori("101", 30)', 901)
-            for b in range(3, 36 + 1):
-                Check.secret(pretvori("101010111101", b))
-            for b in range(30, 36 + 1):
-                Check.secret(pretvori("PLANICA", b))
-                Check.secret(pretvori("MIHEC01267", b))
+            Check.equal('v_preseku(2, 3, [])', True)
+            Check.equal('v_preseku(2, 2, [(2, 2, 3), (1, 1, 4), (2, 0, 3)])', True)
+            Check.equal('v_preseku(2, 5, [(2, 2, 3), (1, 1, 4), (2, 0, 3)])', False)
+            Check.equal('v_preseku(5, 3, [(2, 2, 3), (1, 1, 4), (2, 0, 3)])', False)
         except TimeoutError:
             Check.error("Dovoljen čas izvajanja presežen")
         except Exception:
@@ -753,49 +709,11 @@ def _validate_current_file():
     if Check.part():
         Check.current_part[
             "token"
-        ] = "eyJwYXJ0IjoyNzQ4OSwidXNlciI6MTE1MTR9:1vyvM1:n1MMq81P4jTF4uex_QcxyhWLj6eo_6V08O6CGiiG9e0"
+        ] = "eyJwYXJ0IjoxMzEzLCJ1c2VyIjoxMTUxNH0:1wyX5Y:KPbX0rc4vCIVBsPqJy6br6JG-jKnXqrepB1XvHCsacA"
         try:
-            Check.equal('izbrisi_podvojene("abaab")', "abb")
-            Check.equal('izbrisi_podvojene("abab")', "abab")
-            Check.equal('izbrisi_podvojene("aaaabaaaa")', "b")
-            Check.secret(izbrisi_podvojene("10000010001010101010002"))
-            Check.secret(izbrisi_podvojene("10000010sxsXXXs01010101010002"))
-            Check.secret(izbrisi_podvojene("asdhaskbbbsna,,sjnansd"))
-        except TimeoutError:
-            Check.error("Dovoljen čas izvajanja presežen")
-        except Exception:
-            Check.error(
-                "Testi sprožijo izjemo\n  {0}",
-                "\n  ".join(traceback.format_exc().split("\n"))[:-2],
-            )
-
-    if Check.part():
-        Check.current_part[
-            "token"
-        ] = "eyJwYXJ0IjoyNzQ4NywidXNlciI6MTE1MTR9:1vyvM1:zNYPMeryVTY25sHdGtiqAZ5uj9KlH4aeZPYHdRLxrTU"
-        try:
-            Check.equal('vsak_k_ti("abcdefghijk", 0)', "")
-            Check.equal('vsak_k_ti("abcdefghijk", 3)', "adgj")
-            Check.secret(vsak_k_ti("abcdefghijk", 5))
-            Check.secret(vsak_k_ti("abcdefghijk", -3))
-            Check.secret(vsak_k_ti("abcdefghihvjdksa s asčdhaglsda saasč jk", 5))
-            Check.secret(vsak_k_ti("abcdefghihvjdksa s asčdhaglsda saasč jk", 8))
-        except TimeoutError:
-            Check.error("Dovoljen čas izvajanja presežen")
-        except Exception:
-            Check.error(
-                "Testi sprožijo izjemo\n  {0}",
-                "\n  ".join(traceback.format_exc().split("\n"))[:-2],
-            )
-
-    if Check.part():
-        Check.current_part[
-            "token"
-        ] = "eyJwYXJ0IjoyNzQ4OCwidXNlciI6MTE1MTR9:1vyvM1:8yq1knvHM8e3xEKzbsW73dGKVe4kdV86HjPSKZx3QH8"
-        try:
-            Check.equal('zaporedje("0123456789X")', "0136X")
-            Check.secret(zaporedje("".join([str(x) for x in range(100)])))
-            Check.secret(zaporedje("".join([str(x) for x in range(150)])))
+            Check.equal('pravokotnik([(0, 0, 1)])', (-1, -1, 1, 1))
+            Check.equal('pravokotnik([(0, 0, 1), (2, 2, 2)])', (-1, -1, 4, 4))
+            Check.equal('pravokotnik([(-1, 1, 1), (2, -2, 1)])', (-2, -3, 3, 2))
         except TimeoutError:
             Check.error("Dovoljen čas izvajanja presežen")
         except Exception:

@@ -1,101 +1,145 @@
 # =============================================================================
-# Rezine in rekurzija
-# =====================================================================@027486=
+# Kolokviji
+#
+# V vsaki vrstici datoteke imamo shranjene rezultate kolokvija v obliki:
+# 
+#     Ime Priimek,N1,N2,N3,N4,N5
+# 
+# Cela števila od `N1` do `N5` predstavljajo število točk pri posamezni nalogi.
+# Zgled:
+# 
+#     Janez Novak,1,3,3,0,2
+# =====================================================================@001518=
 # 1. podnaloga
-# Sestavite funkcijo `filtriraj`, ki sprejme dva niza in vrne nov niz sestavljen
-# zgolj iz znakov prvega niza, ki so hkrati tudi v drugem nizu, preostale znake
-# pa zamenja z _
-# Velikost črk je nepomembna.
+# Sestavite funkcijo `nabor`, ki kot parameter dobi niz z vejico ločenih
+# vrednosti v taki obliki, kot je opisano zgoraj. Funkcija naj vrne nabor s
+# temi vrednostmi. Pri tem naj točke za posamezne naloge spremeni v števila
+# (tj. naj jih ne vrača kot nize).
 # 
-#     >>> filtriraj("Ne gremo še domov", "ngm")
-#     "N__g__m_______m__"
+#     >>> nabor('Janez Novak,1,3,3,0,2')
+#     ('Janez Novak', 1, 3, 3, 0, 2)
+#     >>> nabor('Janez Horvat,2,4,0')
+#     ('Janez Horvat', 2, 4, 0)
+# 
+# Predpostavite lahko, da so vsi podatki razen prvega res števila. Ni pa nujno,
+# da imenu sledi natanko 5 števil.
 # =============================================================================
-def filtriraj(niz1, niz2):
-    if niz1 == "":
-        return ""
-    elif niz1[0].lower() in niz2.lower():
-        return niz1[0] + filtriraj(niz1[1:], niz2)
-    else :
-        return "_" + filtriraj(niz1[1:], niz2)
-#def filtriraj(s, f):
-#    if not s:
-#        return s
-#    if s[0].lower() in f.lower():
-#        return s[0] + filtriraj(s[1:], f)
-#    else:
-#        return "_" + filtriraj(s[1:], f)
-# =====================================================================@027490=
+def nabor(niz):
+    seznam = niz.split(',')
+    nov = []
+    for znak in seznam:
+        if znak.isdigit() == True:
+            nov.append(int(znak))
+        else:
+            nov.append(znak) 
+    return tuple(nov)
+# =====================================================================@001519=
 # 2. podnaloga
-# Sestavite funkcijo `pretvori`, ki sprejme niz in bazo ter vrne podano število
-# v desetiškem zapisu. Ko zmanjka števil si znaki sledijo po angleški abecedi
-# `0123456789ABC...`. Primer vrstnega reda lahko najdete v
-# `string.ascii_uppercase`. Lahko predpostavite, da bo baza vedno med 2 in 36.
+# Sestavite funkcijo `nalozi_csv`, ki kot parameter dobi ime datoteke, v kateri
+# se nahajajo rezultati kolokvija. Vrstice v tej datoteki so take oblike, kot
+# je opisano zgoraj. Funkcija naj vrne seznam naborov; za vsako vrstico po
+# enega.
 # 
-#     >>> pretvori("10001", 2)
-#     17
-#     >>> pretvori("2ACBD04", 36)
-#     4978911892
+# Primer: Če so v datoteki kolokviji.txt shranjeni naslednji podatki:
+# 
+#     Janez Novak,1,3,3,0,2
+#     Peter Klepec,1,0,1,2,1,3
+#     Drago Dragić,7
+# 
+# potem
+# 
+#     >>> nalozi_csv('kolokviji.txt')
+#     [('Janez Novak', 1, 3, 3, 0, 2), ('Peter Klepec', 1, 0, 1, 2, 1, 3), ('Drago Dragić', 7)]
 # =============================================================================
-def pretvori(niz, baza):
-    import string
-    znaki = "0123456789" + string.ascii_uppercase 
-    if niz == "":
-        return 0
-    else:
-        return znaki.index(niz[-1].upper()) + baza * pretvori(niz[:-1], baza)
-
-#def pretvori_leno(s, b):
-#    return int(s, b)
-# =====================================================================@027489=
+def nalozi_csv(datoteka):
+    seznam = []
+    with open(datoteka, encoding='UTF-8') as dat:
+        for vrstica in dat:
+            ime = nabor(vrstica.strip())
+            seznam.append(ime)
+        return seznam
+# =====================================================================@001520=
 # 3. podnaloga
-# Sestavite funkcijo `izbrisi_podvojene`, ki sprejme niz in odstrani vse
-# zaporedno enake znake, kjer velikost črk ni pomembna. Če se po izbrisu pojavijo
-# nove podvojitve, naj jih funkcija ne izbriše.
+# Sestavite funkcijo `vsote`, ki sprejme imeni vhodne in izhodne datoteke. Iz
+# prve naj prebere vrstice s podatki (ki so v taki obliki, kot je opisano
+# zgoraj), nato pa naj izračuna vsoto točk za vsakega študenta in v drugo
+# datoteko shrani podatke v obliki:
 # 
-#     >>> izbrisi_podvojene("aaab")
-#     "b"
-#     >>> izbrisi_podvojene("abaab")
-#     "abb"
+#     Ime Priimek,vsota
+# 
+# Za vsako vrstico v vhodni datoteki morate zapisati ustrezno vrstico v izhodno
+# datoteko.
+# 
+# Primer: Če je v datoteki kolokviji.txt enaka vsebina kot pri prejšnji
+# podnalogi, potem naj bo po klicu `vsote('kolokviji.txt', 'sestevki.txt')` v
+# datoteki sestevki.txt naslednja vsebina:
+# 
+#     Janez Novak,9
+#     Peter Klepec,8
+#     Drago Dragić,7
 # =============================================================================
-def izbrisi_podvojene(s, last=None):
-    if s == "":
-        return ""
-    elif s[0] == last:
-        return izbrisi_podvojene(s[1:], last)
-    elif len(s) >= 2 and s[0] == s[1]:
-        return izbrisi_podvojene(s[2:], s[0])
-    else:
-        return s[0] + izbrisi_podvojene(s[1:], None)
-# =====================================================================@027487=
+def vsote(vhodna, izhodna):
+    csv = nalozi_csv(vhodna)
+    with open(izhodna, 'w', encoding='utf-8') as izhod:
+        for zapis in csv:
+            ime = zapis[0]
+            vsota = sum(zapis[1:])
+            izhod.write(f'{ime},{vsota}\n')
+# =====================================================================@001521=
 # 4. podnaloga
-# Sestavite funkcijo `vsak_k_ti`, ki sprejme niz in parameter `k` ter vrne nov
-# niz, kjer iz vhodnega niza vzame vsak `k`-ti znak. Za nesmiselne parametre
-# naj funkcija vrne prazen niz
+# Sestavite funkcijo `rezultati`, ki sprejme imeni vhodne in izhodne datoteke.
+# Iz prve naj prebere vrstice s podatki, v drugo pa naj zapiše originalne
+# podatke, skupaj z vsotami (na koncu dodajte še en stolpec). Predpostavite, da
+# je v vsaki vrstici enako število ocen po posameznih nalogah.
 # 
-#     >>> vsak_k_ti("abcdefghijk", 3)
-#     "adgj"
-#     >>> vsak_k_ti("abcdefghijk", 0)
-#     ""
-# =============================================================================
-def vsak_k_ti(s, k):
-    if k <= 0:
-        return ""
-    else:
-        return s[::k]
-# =====================================================================@027488=
-# 5. podnaloga
-# Sestavitev funkcijo `zaporedje`, ki sprejme niz in vrne nov niz sestavljen iz
-# znakov na indeksih 0, 1, 3, 6, 10, ...
-# Namig: Ali razlike med indeksi sledijo kakemu preprostemu zaporedju?
+# V zadnjo vrstico naj funkcija zapiše še povprečne ocene po posameznih
+# stolpcih, zaokrožene in izpisane na dve decimalni mesti. Ime v tej vrstici
+# naj bo `POVPRECEN STUDENT`.
 # 
-#     >>> zaporedje("0123456789X")
-#     "0136X"
+# V izhodni datoteki naj bodo vrstice urejene po priimkih (razen zadnje
+# vrstice, v kateri so povprečja). Predpostavite, da ima vsak študent eno ime
+# in en priimek, ki sta ločena s presledkom. Ne pozabite na povprečje vsot!
+# 
+# Primer: Če je na datoteki kolokviji.txt vsebina
+# 
+#     Janez Novak,1,3,3,2,0
+#     Micka Kovač,0,3,2,2,3
+#     Peter Klepec,1,0,1,2,1
+# 
+# naj bo po klicu funkcije `rezultati('kolokviji.txt', 'rezultati.txt')` na
+# datoteki rezultati.txt naslednja vsebina:
+# 
+#     Peter Klepec,1,0,1,2,1,5
+#     Micka Kovač,0,3,2,2,3,10
+#     Janez Novak,1,3,3,2,0,9
+#     POVPRECEN STUDENT,0.67,2.00,2.00,2.00,1.33,8.00
 # =============================================================================
-def zaporedje(niz, indeks=0, korak=1):
-    if indeks >= len(niz):
-        return ""
-    else:
-        return niz[indeks] + zaporedje(niz, indeks + korak, korak + 1)
+def rezultati(vhodna, izhodna):
+    csv = nalozi_csv(vhodna)
+    csv_urejen = sorted(csv, key=lambda zapis: zapis[0].split(' ')[1])
+
+    with open(izhodna, 'w', encoding='utf-8') as izhod:
+        stevilo_nalog = len(csv[0]) - 1
+        vsote_stolpcev = [0] * stevilo_nalog
+        vsota_vsot = 0
+
+        for zapis in csv_urejen:
+            ime = zapis[0]
+            tocke = zapis[1:]
+            vsota = sum(tocke)
+            vsota_vsot += vsota
+            for i in range(stevilo_nalog):
+                vsote_stolpcev[i] += tocke[i]
+            tocke_niz = ','.join(str(t) for t in tocke)
+            izhod.write(f'{ime},{tocke_niz},{vsota}\n')
+
+        stevilo_studentov = len(csv)
+        povprecja = [v / stevilo_studentov for v in vsote_stolpcev]
+        povprecje_vsote = vsota_vsot / stevilo_studentov
+        povprecja_niz = ','.join(f'{p:.2f}' for p in povprecja)
+        izhod.write(f'POVPRECEN STUDENT,{povprecja_niz},{povprecje_vsote:.2f}\n')
+
+    
 
 
 
@@ -713,13 +757,11 @@ def _validate_current_file():
     if Check.part():
         Check.current_part[
             "token"
-        ] = "eyJwYXJ0IjoyNzQ4NiwidXNlciI6MTE1MTR9:1vyvM1:ZP-3bADoPBCX6zzIdOTYLTFaaf1zM6e8xzd7bgfdLTc"
+        ] = "eyJwYXJ0IjoxNTE4LCJ1c2VyIjoxMTUxNH0:1x2TfE:C0LBp9bFX4v1q6UNZgnTgAFx4o0EJfN0ZTl_UXzchzo"
         try:
-            Check.equal('filtriraj("Ne gremo še domov", "ngm")', "N__g__m_______m__")
-            Check.secret(filtriraj("Planica!! planica!!, snežena kraljica", "Planica!"))
-            
-            # =============================================================================
-            # Nizi
+            Check.equal('nabor("Janez Novak,1,3,3,0,2")', ("Janez Novak", 1, 3, 3, 0, 2))
+            Check.equal('nabor("Janez Horvat,2,4,0")', ("Janez Horvat", 2, 4, 0))
+            Check.equal('nabor("Micka Kovačeva,0,3,2,2,3")', ("Micka Kovačeva", 0, 3, 2, 2, 3))
         except TimeoutError:
             Check.error("Dovoljen čas izvajanja presežen")
         except Exception:
@@ -731,17 +773,18 @@ def _validate_current_file():
     if Check.part():
         Check.current_part[
             "token"
-        ] = "eyJwYXJ0IjoyNzQ5MCwidXNlciI6MTE1MTR9:1vyvM1:bMGuujGfsq216TWS4TLE1ss1xGJJQQ8Dr4AN_qYhHSc"
+        ] = "eyJwYXJ0IjoxNTE5LCJ1c2VyIjoxMTUxNH0:1x2TfE:VjOmsPHQyYwnihw90jT1oKI0-bNaofWSwnIIEUmD2Zc"
         try:
-            Check.equal('pretvori("10001", 2)', 17)
-            Check.equal('pretvori("2ACBD04", 36)', 4978911892)
-            Check.equal('pretvori("AB", 30)', 311)
-            Check.equal('pretvori("101", 30)', 901)
-            for b in range(3, 36 + 1):
-                Check.secret(pretvori("101010111101", b))
-            for b in range(30, 36 + 1):
-                Check.secret(pretvori("PLANICA", b))
-                Check.secret(pretvori("MIHEC01267", b))
+            test_data = [
+                ("kolokviji_vhod.txt", ["Janez Novak,1,3,3,2,0", "Micka Kovaceva,0,3,2,3", "Miha Praznic", "Peter Klepec,1,0,1,2,1,3"],
+                 'nalozi_csv("kolokviji_vhod.txt")', [("Janez Novak", 1, 3, 3, 2, 0), ("Micka Kovaceva", 0, 3, 2, 3), ("Miha Praznic",), ("Peter Klepec", 1, 0, 1, 2, 1, 3)]),
+            ]
+            napaka = False
+            for vhodna, vhod, klic, izhod in test_data:
+                if napaka: break
+                with Check.in_file(vhodna, vhod, encoding='utf-8'):
+                    if not Check.equal(klic, izhod):
+                        napaka = True # test has failed
         except TimeoutError:
             Check.error("Dovoljen čas izvajanja presežen")
         except Exception:
@@ -753,14 +796,19 @@ def _validate_current_file():
     if Check.part():
         Check.current_part[
             "token"
-        ] = "eyJwYXJ0IjoyNzQ4OSwidXNlciI6MTE1MTR9:1vyvM1:n1MMq81P4jTF4uex_QcxyhWLj6eo_6V08O6CGiiG9e0"
+        ] = "eyJwYXJ0IjoxNTIwLCJ1c2VyIjoxMTUxNH0:1x2TfE:p-zib5acFduOOo0hQtHA3kNLGEn0i4fRNOgxTWHJWHU"
         try:
-            Check.equal('izbrisi_podvojene("abaab")', "abb")
-            Check.equal('izbrisi_podvojene("abab")', "abab")
-            Check.equal('izbrisi_podvojene("aaaabaaaa")', "b")
-            Check.secret(izbrisi_podvojene("10000010001010101010002"))
-            Check.secret(izbrisi_podvojene("10000010sxsXXXs01010101010002"))
-            Check.secret(izbrisi_podvojene("asdhaskbbbsna,,sjnansd"))
+            test_data = [
+                ("kolokviji_vhod.txt", ["Janez Novak,1,3,3,2,0", "Micka Kovaceva,0,3,2,3", "Miha Praznic", "Peter Klepec,1,0,1,2,1,3"],
+                 "kolokviji_izhod.txt",  ["Janez Novak,9", "Micka Kovaceva,8", "Miha Praznic,0", "Peter Klepec,8"]),
+            ]
+            napaka = False
+            for vhodna, vhod, izhodna, izhod in test_data:
+                if napaka: break
+                with Check.in_file(vhodna, vhod, encoding='utf-8'):
+                    vsote(vhodna, izhodna)
+                    if not Check.out_file(izhodna, izhod, encoding='utf-8'):
+                        napaka = True
         except TimeoutError:
             Check.error("Dovoljen čas izvajanja presežen")
         except Exception:
@@ -772,30 +820,19 @@ def _validate_current_file():
     if Check.part():
         Check.current_part[
             "token"
-        ] = "eyJwYXJ0IjoyNzQ4NywidXNlciI6MTE1MTR9:1vyvM1:zNYPMeryVTY25sHdGtiqAZ5uj9KlH4aeZPYHdRLxrTU"
+        ] = "eyJwYXJ0IjoxNTIxLCJ1c2VyIjoxMTUxNH0:1x2TfE:YuEil4DoIgkh44MebGWCEaLebipuzIYLj1rvwBauz4M"
         try:
-            Check.equal('vsak_k_ti("abcdefghijk", 0)', "")
-            Check.equal('vsak_k_ti("abcdefghijk", 3)', "adgj")
-            Check.secret(vsak_k_ti("abcdefghijk", 5))
-            Check.secret(vsak_k_ti("abcdefghijk", -3))
-            Check.secret(vsak_k_ti("abcdefghihvjdksa s asčdhaglsda saasč jk", 5))
-            Check.secret(vsak_k_ti("abcdefghihvjdksa s asčdhaglsda saasč jk", 8))
-        except TimeoutError:
-            Check.error("Dovoljen čas izvajanja presežen")
-        except Exception:
-            Check.error(
-                "Testi sprožijo izjemo\n  {0}",
-                "\n  ".join(traceback.format_exc().split("\n"))[:-2],
-            )
-
-    if Check.part():
-        Check.current_part[
-            "token"
-        ] = "eyJwYXJ0IjoyNzQ4OCwidXNlciI6MTE1MTR9:1vyvM1:8yq1knvHM8e3xEKzbsW73dGKVe4kdV86HjPSKZx3QH8"
-        try:
-            Check.equal('zaporedje("0123456789X")', "0136X")
-            Check.secret(zaporedje("".join([str(x) for x in range(100)])))
-            Check.secret(zaporedje("".join([str(x) for x in range(150)])))
+            test_data = [
+                ("kolokviji_vhod2.txt", ["Janez Novak,1,3,3,2,0", "Micka Kovac,0,3,2,2,3", "Peter Klepec,1,0,1,2,1"],
+                 "kolokviji_izhod2.txt", ["Peter Klepec,1,0,1,2,1,5", "Micka Kovac,0,3,2,2,3,10", "Janez Novak,1,3,3,2,0,9", "POVPRECEN STUDENT,0.67,2.00,2.00,2.00,1.33,8.00"]),
+            ]
+            napaka = False
+            for vhodna, vhod, izhodna, izhod in test_data:
+                if napaka: break
+                with Check.in_file(vhodna, vhod, encoding='utf-8'):
+                    rezultati(vhodna, izhodna)
+                    if not Check.out_file(izhodna, izhod, encoding='utf-8'):
+                        napaka = True # test has failed
         except TimeoutError:
             Check.error("Dovoljen čas izvajanja presežen")
         except Exception:

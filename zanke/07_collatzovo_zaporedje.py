@@ -1,110 +1,59 @@
 # =============================================================================
-# Rezine in rekurzija
-# =====================================================================@027486=
+# Collatzovo zaporedje
+#
+# *Nalogo tokrat rešujte z zankami.*
+# 
+# Collatzovo zaporedje tvorimo na sledeč način. Začnemo z nekim naravnim
+# številom $n$, ki ga nato delimo z $2$, če je sodo, ali pa pomnožimo s $3$ in
+# prištejemo $1$, če je liho. Postopek ponavljamo, dokler ne pridemo do števila
+# $1$ (v tem primeru stvar ni več zanimiva, saj se začno ponavljati števila
+# $1, 4, 2, 1, 4, 2, 1, \ldots$). Primer zaporedja, ki se začne z $6$ je tako
+# $6, 3, 10, 5, 16, 8, 4, 2, 1$. Collatzova domneva, ki trdi, da za poljubno
+# naravno število njegovo Collatzovo zaporedje sčasoma doseže $1$, je še vedno
+# nerešena.
+# =====================================================================@000985=
 # 1. podnaloga
-# Sestavite funkcijo `filtriraj`, ki sprejme dva niza in vrne nov niz sestavljen
-# zgolj iz znakov prvega niza, ki so hkrati tudi v drugem nizu, preostale znake
-# pa zamenja z _
-# Velikost črk je nepomembna.
-# 
-#     >>> filtriraj("Ne gremo še domov", "ngm")
-#     "N__g__m_______m__"
+# Sestavite funkcijo `naslednji_clen`, ki sprejme število in izračuna člen,
+# ki v Collatzovemu zaporedju sledi temu številu.
 # =============================================================================
-def filtriraj(niz1, niz2):
-    if niz1 == "":
-        return ""
-    elif niz1[0].lower() in niz2.lower():
-        return niz1[0] + filtriraj(niz1[1:], niz2)
-    else :
-        return "_" + filtriraj(niz1[1:], niz2)
-#def filtriraj(s, f):
-#    if not s:
-#        return s
-#    if s[0].lower() in f.lower():
-#        return s[0] + filtriraj(s[1:], f)
-#    else:
-#        return "_" + filtriraj(s[1:], f)
-# =====================================================================@027490=
+def naslednji_clen(n):
+    if n % 2 == 0:
+        return n // 2
+    else:
+        return n * 3 + 1
+# =====================================================================@000986=
 # 2. podnaloga
-# Sestavite funkcijo `pretvori`, ki sprejme niz in bazo ter vrne podano število
-# v desetiškem zapisu. Ko zmanjka števil si znaki sledijo po angleški abecedi
-# `0123456789ABC...`. Primer vrstnega reda lahko najdete v
-# `string.ascii_uppercase`. Lahko predpostavite, da bo baza vedno med 2 in 36.
-# 
-#     >>> pretvori("10001", 2)
-#     17
-#     >>> pretvori("2ACBD04", 36)
-#     4978911892
+# Sestavite funkcijo `dolzina_zaporedja`, ki sprejme število in izračuna 
+# dolžino Collatzovega zaporedja, ki se začne s tem številom.
 # =============================================================================
-def pretvori(niz, baza):
-    import string
-    znaki = "0123456789" + string.ascii_uppercase 
-    if niz == "":
-        return 0
-    else:
-        return znaki.index(niz[-1].upper()) + baza * pretvori(niz[:-1], baza)
-
-#def pretvori_leno(s, b):
-#    return int(s, b)
-# =====================================================================@027489=
+def dolzina_zaporedja(n):
+    dolzina = 1
+    while n != 1:
+        n = naslednji_clen(n)
+        dolzina = dolzina + 1
+    return dolzina
+# =====================================================================@000987=
 # 3. podnaloga
-# Sestavite funkcijo `izbrisi_podvojene`, ki sprejme niz in odstrani vse
-# zaporedno enake znake, kjer velikost črk ni pomembna. Če se po izbrisu pojavijo
-# nove podvojitve, naj jih funkcija ne izbriše.
-# 
-#     >>> izbrisi_podvojene("aaab")
-#     "b"
-#     >>> izbrisi_podvojene("abaab")
-#     "abb"
+# Sestavite funkcijo `najvecji_clen`, ki sprejme število in izračuna največji 
+# člen v Collatzovem zaporedju, ki se začne s tem številom.
 # =============================================================================
-def izbrisi_podvojene(s, last=None):
-    if s == "":
-        return ""
-    elif s[0] == last:
-        return izbrisi_podvojene(s[1:], last)
-    elif len(s) >= 2 and s[0] == s[1]:
-        return izbrisi_podvojene(s[2:], s[0])
-    else:
-        return s[0] + izbrisi_podvojene(s[1:], None)
-# =====================================================================@027487=
+def najvecji_clen(n):
+    najvecji = n
+    while n != 1:
+        n = naslednji_clen(n)
+        najvecji = max(najvecji, n)
+    return najvecji
+# =====================================================================@000988=
 # 4. podnaloga
-# Sestavite funkcijo `vsak_k_ti`, ki sprejme niz in parameter `k` ter vrne nov
-# niz, kjer iz vhodnega niza vzame vsak `k`-ti znak. Za nesmiselne parametre
-# naj funkcija vrne prazen niz
-# 
-#     >>> vsak_k_ti("abcdefghijk", 3)
-#     "adgj"
-#     >>> vsak_k_ti("abcdefghijk", 0)
-#     ""
+# Sestavite funkcijo `najdaljse_zaporedje(m, n)`, ki vrne dolžino najdaljšega
+# zaporedja med vsemi tistimi Collatzovimi zaporedji, ki se začnejo s števili
+# med (vključno) `m` in `n`.
 # =============================================================================
-def vsak_k_ti(s, k):
-    if k <= 0:
-        return ""
-    else:
-        return s[::k]
-# =====================================================================@027488=
-# 5. podnaloga
-# Sestavitev funkcijo `zaporedje`, ki sprejme niz in vrne nov niz sestavljen iz
-# znakov na indeksih 0, 1, 3, 6, 10, ...
-# Namig: Ali razlike med indeksi sledijo kakemu preprostemu zaporedju?
-# 
-#     >>> zaporedje("0123456789X")
-#     "0136X"
-# =============================================================================
-def zaporedje(niz, indeks=0, korak=1):
-    if indeks >= len(niz):
-        return ""
-    else:
-        return niz[indeks] + zaporedje(niz, indeks + korak, korak + 1)
-
-
-
-
-
-
-
-
-
+def najdaljse_zaporedje(m, n):
+    najdaljse = 0
+    for x in range (m, n + 1):
+        najdaljse = max(najdaljse, dolzina_zaporedja(x))
+    return najdaljse
 
 
 
@@ -713,13 +662,12 @@ def _validate_current_file():
     if Check.part():
         Check.current_part[
             "token"
-        ] = "eyJwYXJ0IjoyNzQ4NiwidXNlciI6MTE1MTR9:1vyvM1:ZP-3bADoPBCX6zzIdOTYLTFaaf1zM6e8xzd7bgfdLTc"
+        ] = "eyJwYXJ0Ijo5ODUsInVzZXIiOjExNTE0fQ:1wxUit:0lf55gaapH3wW28jQYdiMspdWyj7wnmZA2Ie3ZYlqro"
         try:
-            Check.equal('filtriraj("Ne gremo še domov", "ngm")', "N__g__m_______m__")
-            Check.secret(filtriraj("Planica!! planica!!, snežena kraljica", "Planica!"))
-            
-            # =============================================================================
-            # Nizi
+            Check.equal('naslednji_clen(1)', 4)
+            Check.equal('naslednji_clen(2)', 1)
+            Check.equal('naslednji_clen(42)', 21)
+            Check.equal('naslednji_clen(121)', 364)
         except TimeoutError:
             Check.error("Dovoljen čas izvajanja presežen")
         except Exception:
@@ -731,17 +679,12 @@ def _validate_current_file():
     if Check.part():
         Check.current_part[
             "token"
-        ] = "eyJwYXJ0IjoyNzQ5MCwidXNlciI6MTE1MTR9:1vyvM1:bMGuujGfsq216TWS4TLE1ss1xGJJQQ8Dr4AN_qYhHSc"
+        ] = "eyJwYXJ0Ijo5ODYsInVzZXIiOjExNTE0fQ:1wxUit:M3FfAsWW6odVSKPzmstPLIYghJPrnSEaDD46FAVNmCQ"
         try:
-            Check.equal('pretvori("10001", 2)', 17)
-            Check.equal('pretvori("2ACBD04", 36)', 4978911892)
-            Check.equal('pretvori("AB", 30)', 311)
-            Check.equal('pretvori("101", 30)', 901)
-            for b in range(3, 36 + 1):
-                Check.secret(pretvori("101010111101", b))
-            for b in range(30, 36 + 1):
-                Check.secret(pretvori("PLANICA", b))
-                Check.secret(pretvori("MIHEC01267", b))
+            Check.equal('dolzina_zaporedja(1)', 1)
+            Check.equal('dolzina_zaporedja(2)', 2)
+            Check.equal('dolzina_zaporedja(42)', 9)
+            Check.equal('dolzina_zaporedja(121)', 96)
         except TimeoutError:
             Check.error("Dovoljen čas izvajanja presežen")
         except Exception:
@@ -753,14 +696,12 @@ def _validate_current_file():
     if Check.part():
         Check.current_part[
             "token"
-        ] = "eyJwYXJ0IjoyNzQ4OSwidXNlciI6MTE1MTR9:1vyvM1:n1MMq81P4jTF4uex_QcxyhWLj6eo_6V08O6CGiiG9e0"
+        ] = "eyJwYXJ0Ijo5ODcsInVzZXIiOjExNTE0fQ:1wxUit:1cFGMfvWiRSPkwxiYvixeNHeeXoF7jKKDEXYTzR8naY"
         try:
-            Check.equal('izbrisi_podvojene("abaab")', "abb")
-            Check.equal('izbrisi_podvojene("abab")', "abab")
-            Check.equal('izbrisi_podvojene("aaaabaaaa")', "b")
-            Check.secret(izbrisi_podvojene("10000010001010101010002"))
-            Check.secret(izbrisi_podvojene("10000010sxsXXXs01010101010002"))
-            Check.secret(izbrisi_podvojene("asdhaskbbbsna,,sjnansd"))
+            Check.equal('najvecji_clen(42)', 64)
+            Check.equal('najvecji_clen(121)', 9232)
+            Check.equal('najvecji_clen(2015)', 39364)
+            Check.equal('najvecji_clen(1)', 1)
         except TimeoutError:
             Check.error("Dovoljen čas izvajanja presežen")
         except Exception:
@@ -772,30 +713,13 @@ def _validate_current_file():
     if Check.part():
         Check.current_part[
             "token"
-        ] = "eyJwYXJ0IjoyNzQ4NywidXNlciI6MTE1MTR9:1vyvM1:zNYPMeryVTY25sHdGtiqAZ5uj9KlH4aeZPYHdRLxrTU"
+        ] = "eyJwYXJ0Ijo5ODgsInVzZXIiOjExNTE0fQ:1wxUit:U9dbh6AlMyvWzgCoGKBDAF2XGdn1oW0wkxI8XUw5xr8"
         try:
-            Check.equal('vsak_k_ti("abcdefghijk", 0)', "")
-            Check.equal('vsak_k_ti("abcdefghijk", 3)', "adgj")
-            Check.secret(vsak_k_ti("abcdefghijk", 5))
-            Check.secret(vsak_k_ti("abcdefghijk", -3))
-            Check.secret(vsak_k_ti("abcdefghihvjdksa s asčdhaglsda saasč jk", 5))
-            Check.secret(vsak_k_ti("abcdefghihvjdksa s asčdhaglsda saasč jk", 8))
-        except TimeoutError:
-            Check.error("Dovoljen čas izvajanja presežen")
-        except Exception:
-            Check.error(
-                "Testi sprožijo izjemo\n  {0}",
-                "\n  ".join(traceback.format_exc().split("\n"))[:-2],
-            )
-
-    if Check.part():
-        Check.current_part[
-            "token"
-        ] = "eyJwYXJ0IjoyNzQ4OCwidXNlciI6MTE1MTR9:1vyvM1:8yq1knvHM8e3xEKzbsW73dGKVe4kdV86HjPSKZx3QH8"
-        try:
-            Check.equal('zaporedje("0123456789X")', "0136X")
-            Check.secret(zaporedje("".join([str(x) for x in range(100)])))
-            Check.secret(zaporedje("".join([str(x) for x in range(150)])))
+            Check.equal('najdaljse_zaporedje(1, 1)', 1)
+            Check.equal('najdaljse_zaporedje(13, 13)', 10)
+            Check.equal('najdaljse_zaporedje(4, 16)', 20)
+            Check.equal('najdaljse_zaporedje(1, 42)', 112)
+            Check.equal('najdaljse_zaporedje(100, 200)', 125)
         except TimeoutError:
             Check.error("Dovoljen čas izvajanja presežen")
         except Exception:

@@ -1,103 +1,113 @@
 # =============================================================================
-# Rezine in rekurzija
-# =====================================================================@027486=
+# Ali sva za skupaj?
+#
+# Dolgoletne raziskave partnerskih odnosov kažejo, da je najboljši pokazatelj
+# uspešnosti in dolgotrajnosti zveze število, ki ga izračunamo po spodnjem
+# postopku. Najprej za vsako črko v besedi LOVES preštejemo število njenih
+# pojavitev v imenih obeh partnerjev, s čimer dobimo petmestno število. Nato
+# v tem številu seštejemo po dve sosednji števki in tako dobimo novo število.
+# Ta postopek ponavljamo, dokler nam ne ostaneta le dve števki, ki nam povesta
+# odstotek uspešnosti zveze. Poglejmo si primer za Julijo Primic in Franceta
+# Prešerna. Najprej preštejemo število pojavitev črk LOVES:
+# 
+#            Julija Primic    France Prešeren
+#     L: 1     *
+#     O: 0
+#     V: 0
+#     E: 4                         *   * * *
+#     S: 0
+# 
+# Nato postopoma računamo vsoto dveh sosednjih števk:
+# 
+#     1   0   0   4   0
+#       1   0   4   4
+#         1   4   8
+#           5   12  (kar pišemo kot)
+#         5   1   2
+#           6   3
+# 
+# Možnosti je torej 63%. Nekateri znanstveniki (predvsem v svetu z bolj
+# germansko kulturo) zagovarjajo alternativen pristop, v katerem je treba začeti
+# s črkami v besedi ŠANSE. V tem primeru za naša zaljubljenca po podobnem
+# postopku dobimo 87%.
+# =====================================================================@013413=
 # 1. podnaloga
-# Sestavite funkcijo `filtriraj`, ki sprejme dva niza in vrne nov niz sestavljen
-# zgolj iz znakov prvega niza, ki so hkrati tudi v drugem nizu, preostale znake
-# pa zamenja z _
-# Velikost črk je nepomembna.
+# Sestavite funkcijo `razbij_na_stevke(stevilo)`, ki vrne števke danega
+# števila:
 # 
-#     >>> filtriraj("Ne gremo še domov", "ngm")
-#     "N__g__m_______m__"
+#     >>> razbij_na_stevke(12382)
+#     [1, 2, 3, 8, 2]
+#     >>> razbij_na_stevke(6)
+#     [6]
 # =============================================================================
-def filtriraj(niz1, niz2):
-    if niz1 == "":
-        return ""
-    elif niz1[0].lower() in niz2.lower():
-        return niz1[0] + filtriraj(niz1[1:], niz2)
-    else :
-        return "_" + filtriraj(niz1[1:], niz2)
-#def filtriraj(s, f):
-#    if not s:
-#        return s
-#    if s[0].lower() in f.lower():
-#        return s[0] + filtriraj(s[1:], f)
-#    else:
-#        return "_" + filtriraj(s[1:], f)
-# =====================================================================@027490=
+def razbij_na_stevke(n):
+    return [int(i) for i in str(n)]
+# =====================================================================@013414=
 # 2. podnaloga
-# Sestavite funkcijo `pretvori`, ki sprejme niz in bazo ter vrne podano število
-# v desetiškem zapisu. Ko zmanjka števil si znaki sledijo po angleški abecedi
-# `0123456789ABC...`. Primer vrstnega reda lahko najdete v
-# `string.ascii_uppercase`. Lahko predpostavite, da bo baza vedno med 2 in 36.
+# Sestavite funkcijo `prestej_crke(geslo, niz)`, ki vrne seznam pojavitev črk
+# niza `geslo` v danem nizu `niz`. Pri tem naj se ne ozira na male ali velike
+# črke (pomagajte si z metodo `upper`):
 # 
-#     >>> pretvori("10001", 2)
-#     17
-#     >>> pretvori("2ACBD04", 36)
-#     4978911892
+#     >>> prestej_crke('LOVES', 'france')
+#     [0, 0, 0, 1, 0]
+#     >>> prestej_crke('ŠANSE', 'prešeren')
+#     [1, 0, 1, 0, 3]
 # =============================================================================
-def pretvori(niz, baza):
-    import string
-    znaki = "0123456789" + string.ascii_uppercase 
-    if niz == "":
-        return 0
-    else:
-        return znaki.index(niz[-1].upper()) + baza * pretvori(niz[:-1], baza)
-
-#def pretvori_leno(s, b):
-#    return int(s, b)
-# =====================================================================@027489=
+def prestej_crke(geslo, niz):
+    niz = niz.upper()
+    seznam = []
+    for i in geslo:
+        x = niz.count(i)
+        seznam.append(x)
+    return seznam
+# =====================================================================@013415=
 # 3. podnaloga
-# Sestavite funkcijo `izbrisi_podvojene`, ki sprejme niz in odstrani vse
-# zaporedno enake znake, kjer velikost črk ni pomembna. Če se po izbrisu pojavijo
-# nove podvojitve, naj jih funkcija ne izbriše.
+# Sestavite funkcijo `sestej_stevke(stevke)`, ki vrne seznam števk, ki ga
+# dobimo, ko seštejemo sosednje števke v seznamu `stevke`. Če je vsota dveh
+# sosednjih števk dvomestno število, v vrnjeni seznam dodate dve števki.
+# Na primer:
 # 
-#     >>> izbrisi_podvojene("aaab")
-#     "b"
-#     >>> izbrisi_podvojene("abaab")
-#     "abb"
+#     >>> sestej_stevke([1, 0, 4, 4])
+#     [1, 4, 8]
+#     >>> sestej_stevke([1, 4, 8])
+#     [5, 1, 2]
+#     >>> sestej_stevke([5, 1, 2])
+#     [6, 3]
 # =============================================================================
-def izbrisi_podvojene(s, last=None):
-    if s == "":
-        return ""
-    elif s[0] == last:
-        return izbrisi_podvojene(s[1:], last)
-    elif len(s) >= 2 and s[0] == s[1]:
-        return izbrisi_podvojene(s[2:], s[0])
-    else:
-        return s[0] + izbrisi_podvojene(s[1:], None)
-# =====================================================================@027487=
+def sestej_stevke(stevke):
+    seznam = []
+    for i in range(len(stevke) - 1):
+        nova_stevka = stevke[i] + stevke[i + 1]
+        if nova_stevka > 9:
+            for i in str(nova_stevka):
+                x = int(i)
+                seznam.append(x)
+        else:
+            seznam.append(nova_stevka)
+    return seznam
+# =====================================================================@013416=
 # 4. podnaloga
-# Sestavite funkcijo `vsak_k_ti`, ki sprejme niz in parameter `k` ter vrne nov
-# niz, kjer iz vhodnega niza vzame vsak `k`-ti znak. Za nesmiselne parametre
-# naj funkcija vrne prazen niz
+# Sestavite funkcijo `ujemanje(oseba1, oseba2, geslo)`, ki po zgoraj opisanem
+# postopku izračuna odstotek uspešnosti zveze med osebama z imenoma `oseba1`
+# in `oseba2`. Argument `geslo` naj ima privzeto vrednost `'LOVES'`.
 # 
-#     >>> vsak_k_ti("abcdefghijk", 3)
-#     "adgj"
-#     >>> vsak_k_ti("abcdefghijk", 0)
-#     ""
+#     >>> ujemanje('Julija Primic', 'France Prešeren', geslo='LOVES')
+#     63
+#     >>> ujemanje('Julija Primic', 'France Prešeren')
+#     63
+#     >>> ujemanje('Julija Primic', 'France Prešeren', geslo='ŠANSE')
+#     87
 # =============================================================================
-def vsak_k_ti(s, k):
-    if k <= 0:
-        return ""
-    else:
-        return s[::k]
-# =====================================================================@027488=
-# 5. podnaloga
-# Sestavitev funkcijo `zaporedje`, ki sprejme niz in vrne nov niz sestavljen iz
-# znakov na indeksih 0, 1, 3, 6, 10, ...
-# Namig: Ali razlike med indeksi sledijo kakemu preprostemu zaporedju?
-# 
-#     >>> zaporedje("0123456789X")
-#     "0136X"
-# =============================================================================
-def zaporedje(niz, indeks=0, korak=1):
-    if indeks >= len(niz):
-        return ""
-    else:
-        return niz[indeks] + zaporedje(niz, indeks + korak, korak + 1)
+def ujemanje(oseba1, oseba2, geslo='LOVES'):
+    crke1 = prestej_crke(geslo, oseba1)
+    crke2 = prestej_crke(geslo, oseba2)
+    stevke = [sum(par) for par in zip(crke1, crke2)]
 
+    while len(stevke) > 2:
+        stevke = sestej_stevke(stevke)  # pomembno: rezultat shraniš nazaj!
+    rezultat = stevke[0] * 10 + stevke[1]
 
+    return rezultat
 
 
 
@@ -713,13 +723,11 @@ def _validate_current_file():
     if Check.part():
         Check.current_part[
             "token"
-        ] = "eyJwYXJ0IjoyNzQ4NiwidXNlciI6MTE1MTR9:1vyvM1:ZP-3bADoPBCX6zzIdOTYLTFaaf1zM6e8xzd7bgfdLTc"
+        ] = "eyJwYXJ0IjoxMzQxMywidXNlciI6MTE1MTR9:1wyX5Y:RBxEquKsbMV3Yj_PhlydoEc6s4v1AfzjAbMSdTQjmVo"
         try:
-            Check.equal('filtriraj("Ne gremo še domov", "ngm")', "N__g__m_______m__")
-            Check.secret(filtriraj("Planica!! planica!!, snežena kraljica", "Planica!"))
-            
-            # =============================================================================
-            # Nizi
+            Check.equal('razbij_na_stevke(12382)', [1, 2, 3, 8, 2]) and \
+            Check.equal('razbij_na_stevke(6)', [6])
+            Check.equal('razbij_na_stevke(0)', [0])
         except TimeoutError:
             Check.error("Dovoljen čas izvajanja presežen")
         except Exception:
@@ -731,17 +739,10 @@ def _validate_current_file():
     if Check.part():
         Check.current_part[
             "token"
-        ] = "eyJwYXJ0IjoyNzQ5MCwidXNlciI6MTE1MTR9:1vyvM1:bMGuujGfsq216TWS4TLE1ss1xGJJQQ8Dr4AN_qYhHSc"
+        ] = "eyJwYXJ0IjoxMzQxNCwidXNlciI6MTE1MTR9:1wyX5Y:WZx5BEiXeWkGgJJ11o_ypbOtZlYOa_Kj9q2HWmxei_U"
         try:
-            Check.equal('pretvori("10001", 2)', 17)
-            Check.equal('pretvori("2ACBD04", 36)', 4978911892)
-            Check.equal('pretvori("AB", 30)', 311)
-            Check.equal('pretvori("101", 30)', 901)
-            for b in range(3, 36 + 1):
-                Check.secret(pretvori("101010111101", b))
-            for b in range(30, 36 + 1):
-                Check.secret(pretvori("PLANICA", b))
-                Check.secret(pretvori("MIHEC01267", b))
+            Check.equal("prestej_crke('LOVES', 'france')", [0, 0, 0, 1, 0]) and \
+            Check.equal("prestej_crke('ŠANSE', 'prešeren')", [1, 0, 1, 0, 3])
         except TimeoutError:
             Check.error("Dovoljen čas izvajanja presežen")
         except Exception:
@@ -753,14 +754,12 @@ def _validate_current_file():
     if Check.part():
         Check.current_part[
             "token"
-        ] = "eyJwYXJ0IjoyNzQ4OSwidXNlciI6MTE1MTR9:1vyvM1:n1MMq81P4jTF4uex_QcxyhWLj6eo_6V08O6CGiiG9e0"
+        ] = "eyJwYXJ0IjoxMzQxNSwidXNlciI6MTE1MTR9:1wyX5Y:CimltAbPaTU5GLR83pOw-JBeOQyi5znGTUE2iI5m_0g"
         try:
-            Check.equal('izbrisi_podvojene("abaab")', "abb")
-            Check.equal('izbrisi_podvojene("abab")', "abab")
-            Check.equal('izbrisi_podvojene("aaaabaaaa")', "b")
-            Check.secret(izbrisi_podvojene("10000010001010101010002"))
-            Check.secret(izbrisi_podvojene("10000010sxsXXXs01010101010002"))
-            Check.secret(izbrisi_podvojene("asdhaskbbbsna,,sjnansd"))
+            Check.equal('sestej_stevke([2, 0, 0, 4])', [2, 0, 4]) and \
+            Check.equal('sestej_stevke([1, 0, 4, 4])', [1, 4, 8]) and \
+            Check.equal('sestej_stevke([1, 4, 8])', [5, 1, 2]) and \
+            Check.equal('sestej_stevke([5, 1, 2])', [6, 3])
         except TimeoutError:
             Check.error("Dovoljen čas izvajanja presežen")
         except Exception:
@@ -772,30 +771,11 @@ def _validate_current_file():
     if Check.part():
         Check.current_part[
             "token"
-        ] = "eyJwYXJ0IjoyNzQ4NywidXNlciI6MTE1MTR9:1vyvM1:zNYPMeryVTY25sHdGtiqAZ5uj9KlH4aeZPYHdRLxrTU"
+        ] = "eyJwYXJ0IjoxMzQxNiwidXNlciI6MTE1MTR9:1wyX5Y:3m7kMH7s4a2M47cMuwX5o_Xbt87cB6khcBT88Ba3rJU"
         try:
-            Check.equal('vsak_k_ti("abcdefghijk", 0)', "")
-            Check.equal('vsak_k_ti("abcdefghijk", 3)', "adgj")
-            Check.secret(vsak_k_ti("abcdefghijk", 5))
-            Check.secret(vsak_k_ti("abcdefghijk", -3))
-            Check.secret(vsak_k_ti("abcdefghihvjdksa s asčdhaglsda saasč jk", 5))
-            Check.secret(vsak_k_ti("abcdefghihvjdksa s asčdhaglsda saasč jk", 8))
-        except TimeoutError:
-            Check.error("Dovoljen čas izvajanja presežen")
-        except Exception:
-            Check.error(
-                "Testi sprožijo izjemo\n  {0}",
-                "\n  ".join(traceback.format_exc().split("\n"))[:-2],
-            )
-
-    if Check.part():
-        Check.current_part[
-            "token"
-        ] = "eyJwYXJ0IjoyNzQ4OCwidXNlciI6MTE1MTR9:1vyvM1:8yq1knvHM8e3xEKzbsW73dGKVe4kdV86HjPSKZx3QH8"
-        try:
-            Check.equal('zaporedje("0123456789X")', "0136X")
-            Check.secret(zaporedje("".join([str(x) for x in range(100)])))
-            Check.secret(zaporedje("".join([str(x) for x in range(150)])))
+            Check.equal("ujemanje('Julija Primic', 'France Prešeren')", 63) and \
+            Check.equal("ujemanje('Julija Primic', 'France Prešeren', geslo='LOVES')", 63) and \
+            Check.equal("ujemanje('Julija Primic', 'France Prešeren', geslo='ŠANSE')", 87)
         except TimeoutError:
             Check.error("Dovoljen čas izvajanja presežen")
         except Exception:

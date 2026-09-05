@@ -1,101 +1,77 @@
 # =============================================================================
-# Rezine in rekurzija
-# =====================================================================@027486=
+# Šifriranje
+#
+# Substitucijska šifra je enostaven način šifriranja, pri katerem vsako črko iz
+# dane abecede zamenjamo z neko drugo črko. Tako šifro predstavimo s slovarjem,
+# ki ima za ključe vse črke iz abecede, pripadajoče vrednosti pa so črke, s
+# katerimi jih zašifriramo.
+# 
+# Tako slovar `{'A': 'B', 'C': 'C', 'B': 'D', 'D': 'A'}` pomeni, da se `A`
+# zašifrira v `B`, `B` v `D`, `D` v `A`, `C` pa se ne spremeni.
+# 
+# V vseh testnih primerih bomo uporabljali naslednjo substitucijsko šifro:
+# 
+#     nasa_sifra = {'Č': 'K', 'A': 'O', 'C': 'Z', 'B': 'M', 'E': 'V',
+#                   'D': 'C', 'G': 'P', 'F': 'E', 'I': 'B', 'H': 'F',
+#                   'K': 'I', 'J': 'A', 'M': 'U', 'L': 'H', 'O': 'R',
+#                   'N': 'Š', 'P': 'J', 'S': 'T', 'R': 'L', 'U': 'G',
+#                   'T': 'Č', 'V': 'N', 'Z': 'Ž', 'Š': 'S', 'Ž': 'D'}
+# =====================================================================@001388=
 # 1. podnaloga
-# Sestavite funkcijo `filtriraj`, ki sprejme dva niza in vrne nov niz sestavljen
-# zgolj iz znakov prvega niza, ki so hkrati tudi v drugem nizu, preostale znake
-# pa zamenja z _
-# Velikost črk je nepomembna.
+# Sestavite funkcijo `sifriraj`, ki sprejme šifro in besedo in vrne rezultat
+# šifriranja. Predpostavite lahko, da vse črke v besedi nastopajo v šifri.
 # 
-#     >>> filtriraj("Ne gremo še domov", "ngm")
-#     "N__g__m_______m__"
+#     >>> sifriraj(nasa_sifra, 'MATEMATIK')
+#     'UOČVUOČBI'
 # =============================================================================
-def filtriraj(niz1, niz2):
-    if niz1 == "":
-        return ""
-    elif niz1[0].lower() in niz2.lower():
-        return niz1[0] + filtriraj(niz1[1:], niz2)
-    else :
-        return "_" + filtriraj(niz1[1:], niz2)
-#def filtriraj(s, f):
-#    if not s:
-#        return s
-#    if s[0].lower() in f.lower():
-#        return s[0] + filtriraj(s[1:], f)
-#    else:
-#        return "_" + filtriraj(s[1:], f)
-# =====================================================================@027490=
+def sifriraj(nasa_sifra, beseda):
+    nova = ''
+    for črka in beseda:
+        nova = nova + nasa_sifra[črka]
+    return nova
+# =====================================================================@001389=
 # 2. podnaloga
-# Sestavite funkcijo `pretvori`, ki sprejme niz in bazo ter vrne podano število
-# v desetiškem zapisu. Ko zmanjka števil si znaki sledijo po angleški abecedi
-# `0123456789ABC...`. Primer vrstnega reda lahko najdete v
-# `string.ascii_uppercase`. Lahko predpostavite, da bo baza vedno med 2 in 36.
+# Sestavite funkcijo `ali_je_sifra`, ki ugotovi, ali dani slovar predstavlja
+# šifro, torej ali je bijekcija črk na neki abecedi.
 # 
-#     >>> pretvori("10001", 2)
-#     17
-#     >>> pretvori("2ACBD04", 36)
-#     4978911892
+#     >>> ali_je_sifra({'A': 'B', 'B': 'A'})
+#     True
+#     >>> ali_je_sifra({'A': 'B', 'B': 'C'})
+#     False
 # =============================================================================
-def pretvori(niz, baza):
-    import string
-    znaki = "0123456789" + string.ascii_uppercase 
-    if niz == "":
-        return 0
+def ali_je_sifra(sifra):
+    if set(sifra.keys()) == set(sifra.values()) and len(sifra.keys()) == len(sifra):
+        return True
     else:
-        return znaki.index(niz[-1].upper()) + baza * pretvori(niz[:-1], baza)
-
-#def pretvori_leno(s, b):
-#    return int(s, b)
-# =====================================================================@027489=
+        return False
+# =====================================================================@001390=
 # 3. podnaloga
-# Sestavite funkcijo `izbrisi_podvojene`, ki sprejme niz in odstrani vse
-# zaporedno enake znake, kjer velikost črk ni pomembna. Če se po izbrisu pojavijo
-# nove podvojitve, naj jih funkcija ne izbriše.
+# Sestavite funkcijo `inverz`, ki vrne inverz dane šifre, če ta obstaja. V
+# nasprotnem primeru funkcija vrne `None`.
 # 
-#     >>> izbrisi_podvojene("aaab")
-#     "b"
-#     >>> izbrisi_podvojene("abaab")
-#     "abb"
+#     >>> inverz({'A': 'B', 'B': 'C', 'C': 'A'})
+#     {'A': 'C', 'B': 'A', 'C': 'B'}
 # =============================================================================
-def izbrisi_podvojene(s, last=None):
-    if s == "":
-        return ""
-    elif s[0] == last:
-        return izbrisi_podvojene(s[1:], last)
-    elif len(s) >= 2 and s[0] == s[1]:
-        return izbrisi_podvojene(s[2:], s[0])
-    else:
-        return s[0] + izbrisi_podvojene(s[1:], None)
-# =====================================================================@027487=
+def inverz(sifra):
+    if ali_je_sifra(sifra) is True:
+        return {v: k for k, v in sifra.items()}
+# =====================================================================@001391=
 # 4. podnaloga
-# Sestavite funkcijo `vsak_k_ti`, ki sprejme niz in parameter `k` ter vrne nov
-# niz, kjer iz vhodnega niza vzame vsak `k`-ti znak. Za nesmiselne parametre
-# naj funkcija vrne prazen niz
+# Sestavite funkcijo `odsifriraj`, ki sprejme šifro in zašifrirano besedilo,
+# vrne pa odšifrirano besedilo. Če slovar ni bijekcija (in se torej besedilo ne
+# da nujno odšifrirati), naj funkcija vrne `None`.
 # 
-#     >>> vsak_k_ti("abcdefghijk", 3)
-#     "adgj"
-#     >>> vsak_k_ti("abcdefghijk", 0)
-#     ""
+#     >>> odsifriraj(nasa_sifra, 'MVCOI')
+#     'BEDAK'
 # =============================================================================
-def vsak_k_ti(s, k):
-    if k <= 0:
-        return ""
-    else:
-        return s[::k]
-# =====================================================================@027488=
-# 5. podnaloga
-# Sestavitev funkcijo `zaporedje`, ki sprejme niz in vrne nov niz sestavljen iz
-# znakov na indeksih 0, 1, 3, 6, 10, ...
-# Namig: Ali razlike med indeksi sledijo kakemu preprostemu zaporedju?
-# 
-#     >>> zaporedje("0123456789X")
-#     "0136X"
-# =============================================================================
-def zaporedje(niz, indeks=0, korak=1):
-    if indeks >= len(niz):
-        return ""
-    else:
-        return niz[indeks] + zaporedje(niz, indeks + korak, korak + 1)
+def odsifriraj(nasa_sifra, besedilo):
+    novo = ''
+    sifra = inverz(nasa_sifra)
+    if ali_je_sifra(nasa_sifra) is True:
+        for crka in besedilo:
+            novo = novo + sifra[crka]
+        return novo
+
 
 
 
@@ -713,13 +689,46 @@ def _validate_current_file():
     if Check.part():
         Check.current_part[
             "token"
-        ] = "eyJwYXJ0IjoyNzQ4NiwidXNlciI6MTE1MTR9:1vyvM1:ZP-3bADoPBCX6zzIdOTYLTFaaf1zM6e8xzd7bgfdLTc"
+        ] = "eyJwYXJ0IjoxMzg4LCJ1c2VyIjoxMTUxNH0:1x15iH:O_A61zaK91Xh7eSx-vcSxsMLduOBkKfmwc1qGNnNQPM"
         try:
-            Check.equal('filtriraj("Ne gremo še domov", "ngm")', "N__g__m_______m__")
-            Check.secret(filtriraj("Planica!! planica!!, snežena kraljica", "Planica!"))
+            nasa_sifra = {'Č': 'K', 'A': 'O', 'C': 'Z', 'B': 'M', 'E': 'V',
+                          'D': 'C', 'G': 'P', 'F': 'E', 'I': 'B', 'H': 'F',
+                          'K': 'I', 'J': 'A', 'M': 'U', 'L': 'H', 'O': 'R',
+                          'N': 'Š', 'P': 'J', 'S': 'T', 'R': 'L', 'U': 'G',
+                          'T': 'Č', 'V': 'N', 'Z': 'Ž', 'Š': 'S', 'Ž': 'D'}
+            Check.equal('sifriraj(nasa_sifra, "KOLOKVIJ")', "IRHRINBA", env={'nasa_sifra': nasa_sifra})
+            Check.equal('sifriraj(nasa_sifra, "MATEMATIK")', "UOČVUOČBI", env={'nasa_sifra': nasa_sifra})
+            Check.equal('sifriraj(nasa_sifra, "BEDAK")', "MVCOI", env={'nasa_sifra': nasa_sifra})
+            Check.equal('sifriraj(nasa_sifra, "PESEM")', "JVTVU", env={'nasa_sifra': nasa_sifra})
+            Check.secret('sifriraj(nasa_sifra, "PROGRAMIRANJE")')
+        except TimeoutError:
+            Check.error("Dovoljen čas izvajanja presežen")
+        except Exception:
+            Check.error(
+                "Testi sprožijo izjemo\n  {0}",
+                "\n  ".join(traceback.format_exc().split("\n"))[:-2],
+            )
+
+    if Check.part():
+        Check.current_part[
+            "token"
+        ] = "eyJwYXJ0IjoxMzg5LCJ1c2VyIjoxMTUxNH0:1x15iH:CW1W64y1IzujaVkT9DNK2Ni2m4mEIMCCC_gDdBHSOgY"
+        try:
+            nasa_sifra = {'Č': 'K', 'A': 'O', 'C': 'Z', 'B': 'M', 'E': 'V',
+                          'D': 'C', 'G': 'P', 'F': 'E', 'I': 'B', 'H': 'F',
+                          'K': 'I', 'J': 'A', 'M': 'U', 'L': 'H', 'O': 'R',
+                          'N': 'Š', 'P': 'J', 'S': 'T', 'R': 'L', 'U': 'G',
+                          'T': 'Č', 'V': 'N', 'Z': 'Ž', 'Š': 'S', 'Ž': 'D'}
+            Check.equal('ali_je_sifra(nasa_sifra)', True, env={'nasa_sifra': nasa_sifra})
             
-            # =============================================================================
-            # Nizi
+            Check.equal("ali_je_sifra({'A': 'B', 'B': 'C', 'C': 'A'})", True)
+            Check.equal("ali_je_sifra({'A': 'B', 'B': 'A'})", True)
+            Check.equal("ali_je_sifra({'A': 'A', 'B': 'B', 'C': 'C'})", True)
+            Check.equal("ali_je_sifra({'A': 'B', 'B': 'C'})", False)
+            Check.equal("ali_je_sifra({'A': 'B', 'B': 'B', 'C': 'A'})", False)
+            Check.equal("ali_je_sifra({'A': '1', 'B': '2', 'C': '3'})", False)
+            Check.equal("ali_je_sifra({'A': 'B'})", False)
+            Check.secret("ali_je_sifra({'A': 'B', 'B':'C'})")
         except TimeoutError:
             Check.error("Dovoljen čas izvajanja presežen")
         except Exception:
@@ -731,17 +740,18 @@ def _validate_current_file():
     if Check.part():
         Check.current_part[
             "token"
-        ] = "eyJwYXJ0IjoyNzQ5MCwidXNlciI6MTE1MTR9:1vyvM1:bMGuujGfsq216TWS4TLE1ss1xGJJQQ8Dr4AN_qYhHSc"
+        ] = "eyJwYXJ0IjoxMzkwLCJ1c2VyIjoxMTUxNH0:1x15iH:OEUS9YrEFWvq-57ZdVd-Yr2ZmMAwTZZA-PqBxHIUUqA"
         try:
-            Check.equal('pretvori("10001", 2)', 17)
-            Check.equal('pretvori("2ACBD04", 36)', 4978911892)
-            Check.equal('pretvori("AB", 30)', 311)
-            Check.equal('pretvori("101", 30)', 901)
-            for b in range(3, 36 + 1):
-                Check.secret(pretvori("101010111101", b))
-            for b in range(30, 36 + 1):
-                Check.secret(pretvori("PLANICA", b))
-                Check.secret(pretvori("MIHEC01267", b))
+            nasa_sifra = {'Č': 'K', 'A': 'O', 'C': 'Z', 'B': 'M', 'E': 'V',
+                          'D': 'C', 'G': 'P', 'F': 'E', 'I': 'B', 'H': 'F',
+                          'K': 'I', 'J': 'A', 'M': 'U', 'L': 'H', 'O': 'R',
+                          'N': 'Š', 'P': 'J', 'S': 'T', 'R': 'L', 'U': 'G',
+                          'T': 'Č', 'V': 'N', 'Z': 'Ž', 'Š': 'S', 'Ž': 'D'}
+            Check.equal("inverz({'A': 'B', 'B': 'C', 'C': 'A'})", {'A': 'C', 'B': 'A', 'C': 'B'})
+            Check.equal("inverz({'A': 'B', 'B': 'B', 'C': 'A'})", None)
+            Check.equal("inverz({'A': 'B'})", None)
+            Check.equal("inverz(nasa_sifra)", {'Č': 'T', 'A': 'J', 'C': 'D', 'B': 'I', 'E': 'F', 'D': 'Ž', 'G': 'U', 'F': 'H', 'I': 'K', 'H': 'L', 'K': 'Č', 'J': 'P', 'M': 'B', 'L': 'R', 'O': 'A', 'N': 'V', 'P': 'G', 'S': 'Š', 'R': 'O', 'U': 'M', 'T': 'S', 'V': 'E', 'Z': 'C', 'Š': 'N', 'Ž': 'Z'}, env={'nasa_sifra': nasa_sifra})
+            Check.secret("inverz({'Č': 'T', 'A': 'J', 'C': 'D', 'B': 'I', 'E': 'F', 'D': 'Ž', 'G': 'U', 'F': 'H', 'I': 'K', 'H': 'L', 'K': 'Č', 'J': 'P', 'M': 'B', 'L': 'R', 'O': 'A', 'N': 'V', 'P': 'G', 'S': 'Š', 'R': 'O', 'U': 'M', 'T': 'S', 'V': 'E', 'Z': 'C', 'Š': 'N', 'Ž': 'Z'})")
         except TimeoutError:
             Check.error("Dovoljen čas izvajanja presežen")
         except Exception:
@@ -753,49 +763,19 @@ def _validate_current_file():
     if Check.part():
         Check.current_part[
             "token"
-        ] = "eyJwYXJ0IjoyNzQ4OSwidXNlciI6MTE1MTR9:1vyvM1:n1MMq81P4jTF4uex_QcxyhWLj6eo_6V08O6CGiiG9e0"
+        ] = "eyJwYXJ0IjoxMzkxLCJ1c2VyIjoxMTUxNH0:1x15iH:PPqpDZcuwq0REnaN0BgoaRN5v39RhmmdrVFK4TY1fTk"
         try:
-            Check.equal('izbrisi_podvojene("abaab")', "abb")
-            Check.equal('izbrisi_podvojene("abab")', "abab")
-            Check.equal('izbrisi_podvojene("aaaabaaaa")', "b")
-            Check.secret(izbrisi_podvojene("10000010001010101010002"))
-            Check.secret(izbrisi_podvojene("10000010sxsXXXs01010101010002"))
-            Check.secret(izbrisi_podvojene("asdhaskbbbsna,,sjnansd"))
-        except TimeoutError:
-            Check.error("Dovoljen čas izvajanja presežen")
-        except Exception:
-            Check.error(
-                "Testi sprožijo izjemo\n  {0}",
-                "\n  ".join(traceback.format_exc().split("\n"))[:-2],
-            )
-
-    if Check.part():
-        Check.current_part[
-            "token"
-        ] = "eyJwYXJ0IjoyNzQ4NywidXNlciI6MTE1MTR9:1vyvM1:zNYPMeryVTY25sHdGtiqAZ5uj9KlH4aeZPYHdRLxrTU"
-        try:
-            Check.equal('vsak_k_ti("abcdefghijk", 0)', "")
-            Check.equal('vsak_k_ti("abcdefghijk", 3)', "adgj")
-            Check.secret(vsak_k_ti("abcdefghijk", 5))
-            Check.secret(vsak_k_ti("abcdefghijk", -3))
-            Check.secret(vsak_k_ti("abcdefghihvjdksa s asčdhaglsda saasč jk", 5))
-            Check.secret(vsak_k_ti("abcdefghihvjdksa s asčdhaglsda saasč jk", 8))
-        except TimeoutError:
-            Check.error("Dovoljen čas izvajanja presežen")
-        except Exception:
-            Check.error(
-                "Testi sprožijo izjemo\n  {0}",
-                "\n  ".join(traceback.format_exc().split("\n"))[:-2],
-            )
-
-    if Check.part():
-        Check.current_part[
-            "token"
-        ] = "eyJwYXJ0IjoyNzQ4OCwidXNlciI6MTE1MTR9:1vyvM1:8yq1knvHM8e3xEKzbsW73dGKVe4kdV86HjPSKZx3QH8"
-        try:
-            Check.equal('zaporedje("0123456789X")', "0136X")
-            Check.secret(zaporedje("".join([str(x) for x in range(100)])))
-            Check.secret(zaporedje("".join([str(x) for x in range(150)])))
+            nasa_sifra = {'Č': 'K', 'A': 'O', 'C': 'Z', 'B': 'M', 'E': 'V',
+                          'D': 'C', 'G': 'P', 'F': 'E', 'I': 'B', 'H': 'F',
+                          'K': 'I', 'J': 'A', 'M': 'U', 'L': 'H', 'O': 'R',
+                          'N': 'Š', 'P': 'J', 'S': 'T', 'R': 'L', 'U': 'G',
+                          'T': 'Č', 'V': 'N', 'Z': 'Ž', 'Š': 'S', 'Ž': 'D'}
+            Check.equal('odsifriraj(nasa_sifra, "IRHRINBA")', "KOLOKVIJ", env={'nasa_sifra': nasa_sifra})
+            Check.equal('odsifriraj(nasa_sifra, "JVTVU")', "PESEM", env={'nasa_sifra': nasa_sifra})
+            Check.equal('odsifriraj({"A": "B"}, "JVTVU")', None)
+            Check.equal('odsifriraj(nasa_sifra, "UOČVUOČBI")', "MATEMATIK", env={'nasa_sifra': nasa_sifra})
+            Check.equal('odsifriraj(nasa_sifra, "MVCOI")', "BEDAK", env={'nasa_sifra': nasa_sifra})
+            Check.secret('odsifriraj({"A": "B"}, "JVTVUU")', None)
         except TimeoutError:
             Check.error("Dovoljen čas izvajanja presežen")
         except Exception:

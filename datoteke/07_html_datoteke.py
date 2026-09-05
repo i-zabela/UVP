@@ -1,101 +1,171 @@
 # =============================================================================
-# Rezine in rekurzija
-# =====================================================================@027486=
+# HTML datoteke
+# =====================================================================@001506=
 # 1. podnaloga
-# Sestavite funkcijo `filtriraj`, ki sprejme dva niza in vrne nov niz sestavljen
-# zgolj iz znakov prvega niza, ki so hkrati tudi v drugem nizu, preostale znake
-# pa zamenja z _
-# Velikost črk je nepomembna.
+# Sestavite funkcijo `html2txt(vhodna, izhodna)`, ki bo vsebino datoteke
+# z imenom `vhodna` prepisala v datoteko z imenom `izhodna`, pri tem pa
+# odstranila vse značke.
 # 
-#     >>> filtriraj("Ne gremo še domov", "ngm")
-#     "N__g__m_______m__"
+# Značke se začnejo z znakom `'<'` in končajo z znakom `'>'`. Pozor: Začetek
+# in konec značke nista nujno v isti vrstici.
+# 
+# Na primer, če je v datoteki vreme.html zapisano:
+# 
+#     <h1>Napoved vremena</h1>
+#     <p>Jutri bo <i><b>lepo</b></i> vreme.
+#     Več o vremenu preberite <a
+#     href="http://www.arso.gov.si/">tukaj</a>.</p>
+# 
+# bo po klicu `html2txt('vreme.html', 'vreme.txt')` v datoteki vreme.txt
+# zapisano:
+# 
+#     Napoved vremena
+#     Jutri bo lepo vreme.
+#     Več o vremenu preberite tukaj.
 # =============================================================================
-def filtriraj(niz1, niz2):
-    if niz1 == "":
-        return ""
-    elif niz1[0].lower() in niz2.lower():
-        return niz1[0] + filtriraj(niz1[1:], niz2)
-    else :
-        return "_" + filtriraj(niz1[1:], niz2)
-#def filtriraj(s, f):
-#    if not s:
-#        return s
-#    if s[0].lower() in f.lower():
-#        return s[0] + filtriraj(s[1:], f)
-#    else:
-#        return "_" + filtriraj(s[1:], f)
-# =====================================================================@027490=
+def html2txt(vhodna, izhodna):
+    with open(vhodna, encoding='UTF-8') as vhod:
+        tekst = vhod.read()
+        napisano = ''
+        napiši = True
+        for z in tekst:
+            if z == "<":
+                napiši = False
+            if z == ">":
+                napiši = True
+            if napiši == True:
+                napisano += z
+            if napiši == False:
+                napisano += ''
+        FAK = napisano.replace('>', '')
+    with open(izhodna, 'w', encoding='UTF-8') as izhod:
+        izhod.write(FAK)
+# =====================================================================@001507=
 # 2. podnaloga
-# Sestavite funkcijo `pretvori`, ki sprejme niz in bazo ter vrne podano število
-# v desetiškem zapisu. Ko zmanjka števil si znaki sledijo po angleški abecedi
-# `0123456789ABC...`. Primer vrstnega reda lahko najdete v
-# `string.ascii_uppercase`. Lahko predpostavite, da bo baza vedno med 2 in 36.
+# Sestavite funkcijo `tabela(ime_vhodne, ime_izhodne)`, ki bo podatke
+# iz vhodne datoteke zapisala v obliki HTML tabele v izhodno datoteko.
 # 
-#     >>> pretvori("10001", 2)
-#     17
-#     >>> pretvori("2ACBD04", 36)
-#     4978911892
+# V vhodni datoteki so podatki shranjeni po vrsticah ter ločeni z vejicami.
+# Na primer, če je v datoteki tabela.txt zapisano:
+# 
+#     ena,dva,tri
+#     17,52,49.4,6
+#     abc,xyz
+# 
+# bo po klicu `tabela('tabela.txt', 'tabela.html')` v datoteki tabela.html
+# zapisana naslednja vsebina:
+# 
+#     <table>
+#       <tr>
+#         <td>ena</td>
+#         <td>dva</td>
+#         <td>tri</td>
+#       </tr>
+#       <tr>
+#         <td>17</td>
+#         <td>52</td>
+#         <td>49.4</td>
+#         <td>6</td>
+#       </tr>
+#       <tr>
+#         <td>abc</td>
+#         <td>xyz</td>
+#       </tr>
+#     </table>
+# 
+# Pozor: Pazi na zamik (število presledkov na začetku vrstic) v izhodni
+# datoteki.
 # =============================================================================
-def pretvori(niz, baza):
-    import string
-    znaki = "0123456789" + string.ascii_uppercase 
-    if niz == "":
-        return 0
-    else:
-        return znaki.index(niz[-1].upper()) + baza * pretvori(niz[:-1], baza)
+def tabela(ime_vhodne, ime_izhodne):
+    with open(ime_vhodne, encoding='utf-8') as vhod:
+        vrstice = vhod.readlines()
 
-#def pretvori_leno(s, b):
-#    return int(s, b)
-# =====================================================================@027489=
+    with open(ime_izhodne, 'w', encoding='utf-8') as izhod:
+        izhod.write('<table>\n')
+        for vrstica in vrstice:
+            vrednosti = vrstica.strip().split(',')
+            izhod.write('  <tr>\n')
+            for vrednost in vrednosti:
+                izhod.write(f'    <td>{vrednost}</td>\n')
+            izhod.write('  </tr>\n')
+        izhod.write('</table>\n')
+
+# =====================================================================@001508=
 # 3. podnaloga
-# Sestavite funkcijo `izbrisi_podvojene`, ki sprejme niz in odstrani vse
-# zaporedno enake znake, kjer velikost črk ni pomembna. Če se po izbrisu pojavijo
-# nove podvojitve, naj jih funkcija ne izbriše.
+# Sestavite funkcijo `seznami(ime_vhodne, ime_izhodne)`, ki bo podatke
+# iz vhodne datoteke zapisala v izhodno datoteko v obliki neurejenega
+# seznama. V vhodni datoteki se vrstice seznamov začnejo z zvezdico.
 # 
-#     >>> izbrisi_podvojene("aaab")
-#     "b"
-#     >>> izbrisi_podvojene("abaab")
-#     "abb"
+# Na primer, če je v datoteki seznami.txt zapisano:
+# 
+#     V trgovini moram kupiti:
+#     * jajca,
+#     * kruh,
+#     * moko.
+#     Na poti nazaj moram:
+#     * obiskati sosedo.
+# 
+# bo po klicu funkcije `seznami('seznami.txt', 'seznami.html')` v datoteki
+# seznami.html naslednja vsebina:
+# 
+#     V trgovini moram kupiti:
+#     <ul>
+#       <li>jajca,</li>
+#       <li>kruh,</li>
+#       <li>moko.</li>
+#     </ul>
+#     Na poti nazaj moram:
+#     <ul>
+#       <li>obiskati sosedo.</li>
+#     </ul>
 # =============================================================================
-def izbrisi_podvojene(s, last=None):
-    if s == "":
-        return ""
-    elif s[0] == last:
-        return izbrisi_podvojene(s[1:], last)
-    elif len(s) >= 2 and s[0] == s[1]:
-        return izbrisi_podvojene(s[2:], s[0])
-    else:
-        return s[0] + izbrisi_podvojene(s[1:], None)
-# =====================================================================@027487=
+
+# =====================================================================@001509=
 # 4. podnaloga
-# Sestavite funkcijo `vsak_k_ti`, ki sprejme niz in parameter `k` ter vrne nov
-# niz, kjer iz vhodnega niza vzame vsak `k`-ti znak. Za nesmiselne parametre
-# naj funkcija vrne prazen niz
+# Sestavite funkcijo `gnezdeni_seznami(ime_vhodne, ime_izhodne)`, ki bo
+# podatke iz vhodne datoteke zapisala v izhodno datoteko v obliki neurejenega
+# gnezdenega seznama. V vhodni datoteki je vsak element seznama v svoji
+# vrstici, zamik pred elementom pa določa, kako globoko je element gnezden.
+# Zamik bo vedno večkratnik števila 2.
 # 
-#     >>> vsak_k_ti("abcdefghijk", 3)
-#     "adgj"
-#     >>> vsak_k_ti("abcdefghijk", 0)
-#     ""
-# =============================================================================
-def vsak_k_ti(s, k):
-    if k <= 0:
-        return ""
-    else:
-        return s[::k]
-# =====================================================================@027488=
-# 5. podnaloga
-# Sestavitev funkcijo `zaporedje`, ki sprejme niz in vrne nov niz sestavljen iz
-# znakov na indeksih 0, 1, 3, 6, 10, ...
-# Namig: Ali razlike med indeksi sledijo kakemu preprostemu zaporedju?
+# Na primer, če je v datoteki seznami.txt zapisano:
 # 
-#     >>> zaporedje("0123456789X")
-#     "0136X"
+#     zivali
+#       sesalci
+#         slon
+#       ptiči
+#         sinička
+#     rastline
+#       sobne rastline
+#         difenbahija
+# 
+# bo po klicu `gnezdeni_seznami('seznami.txt', 'seznami.html')` v datoteki
+# seznami.html zapisano:
+# 
+#     <ul>
+#       <li>živali
+#         <ul>
+#           <li>sesalci
+#             <ul>
+#               <li>slon
+#             </ul>
+#           <li>ptiči
+#             <ul>
+#               <li>sinička
+#             </ul>
+#         </ul>
+#       <li>rastline
+#         <ul>
+#           <li>sobne rastline
+#             <ul>
+#               <li>difenbahija
+#             </ul>
+#         </ul>
+#     </ul>
+# 
+# Značk `<li>` ne zapirajte.
 # =============================================================================
-def zaporedje(niz, indeks=0, korak=1):
-    if indeks >= len(niz):
-        return ""
-    else:
-        return niz[indeks] + zaporedje(niz, indeks + korak, korak + 1)
+
 
 
 
@@ -713,13 +783,19 @@ def _validate_current_file():
     if Check.part():
         Check.current_part[
             "token"
-        ] = "eyJwYXJ0IjoyNzQ4NiwidXNlciI6MTE1MTR9:1vyvM1:ZP-3bADoPBCX6zzIdOTYLTFaaf1zM6e8xzd7bgfdLTc"
+        ] = "eyJwYXJ0IjoxNTA2LCJ1c2VyIjoxMTUxNH0:1x2TfE:aeXRkz9DjnmQOqtpJP4tl2BdUfsONxEkj3dFR-4Az08"
         try:
-            Check.equal('filtriraj("Ne gremo še domov", "ngm")', "N__g__m_______m__")
-            Check.secret(filtriraj("Planica!! planica!!, snežena kraljica", "Planica!"))
-            
-            # =============================================================================
-            # Nizi
+            test_data = [
+                ("napoved_vremena.html", ["<h1>Napoved vremena</h1>", "<p>Jutri bo <i><b>lepo</b></i> vreme.", "Vec o vremenu preberite <a", 'href="napoved.html">tukaj</a>.</p>'],
+                 "napoved_vremena.txt", ["Napoved vremena", "Jutri bo lepo vreme.", "Vec o vremenu preberite tukaj."]),
+            ]
+            napaka = False
+            for vhodna, vhod, izhodna, izhod in test_data:
+                if napaka: break
+                with Check.in_file(vhodna, vhod, encoding='utf-8'):
+                    html2txt(vhodna, izhodna)
+                    if not Check.out_file(izhodna, izhod, encoding='utf-8'):
+                        napaka = True # test has failed
         except TimeoutError:
             Check.error("Dovoljen čas izvajanja presežen")
         except Exception:
@@ -731,17 +807,22 @@ def _validate_current_file():
     if Check.part():
         Check.current_part[
             "token"
-        ] = "eyJwYXJ0IjoyNzQ5MCwidXNlciI6MTE1MTR9:1vyvM1:bMGuujGfsq216TWS4TLE1ss1xGJJQQ8Dr4AN_qYhHSc"
+        ] = "eyJwYXJ0IjoxNTA3LCJ1c2VyIjoxMTUxNH0:1x2TfE:nsDABxLNcZ2qDjvaYaJ9qX8RsBo6feqlaaWuqF_OSms"
         try:
-            Check.equal('pretvori("10001", 2)', 17)
-            Check.equal('pretvori("2ACBD04", 36)', 4978911892)
-            Check.equal('pretvori("AB", 30)', 311)
-            Check.equal('pretvori("101", 30)', 901)
-            for b in range(3, 36 + 1):
-                Check.secret(pretvori("101010111101", b))
-            for b in range(30, 36 + 1):
-                Check.secret(pretvori("PLANICA", b))
-                Check.secret(pretvori("MIHEC01267", b))
+            test_data = [
+                ("tabela.txt", ["ena,dva,tri", "17,52,49.4,6", "abc,xyz"], "tabela.html",
+                 ["<table>", "  <tr>", "    <td>ena</td>", "    <td>dva</td>", "    <td>tri</td>",
+                  "  </tr>", "  <tr>", "    <td>17</td>", "    <td>52</td>", "    <td>49.4</td>",
+                  "    <td>6</td>", "  </tr>", "  <tr>", "    <td>abc</td>", "    <td>xyz</td>",
+                  "  </tr>", "</table>"]),
+            ]
+            napaka = False
+            for vhodna, vhod, izhodna, izhod in test_data:
+                if napaka: break
+                with Check.in_file(vhodna, vhod, encoding='utf-8'):
+                    tabela(vhodna, izhodna)
+                    if not Check.out_file(izhodna, izhod, encoding='utf-8'):
+                        napaka = True # test has failed
         except TimeoutError:
             Check.error("Dovoljen čas izvajanja presežen")
         except Exception:
@@ -753,14 +834,20 @@ def _validate_current_file():
     if Check.part():
         Check.current_part[
             "token"
-        ] = "eyJwYXJ0IjoyNzQ4OSwidXNlciI6MTE1MTR9:1vyvM1:n1MMq81P4jTF4uex_QcxyhWLj6eo_6V08O6CGiiG9e0"
+        ] = "eyJwYXJ0IjoxNTA4LCJ1c2VyIjoxMTUxNH0:1x2TfE:t46CyDLvCDxc4a7nNgtJ53yW5uh_3qYTVZ9na3VDzx8"
         try:
-            Check.equal('izbrisi_podvojene("abaab")', "abb")
-            Check.equal('izbrisi_podvojene("abab")', "abab")
-            Check.equal('izbrisi_podvojene("aaaabaaaa")', "b")
-            Check.secret(izbrisi_podvojene("10000010001010101010002"))
-            Check.secret(izbrisi_podvojene("10000010sxsXXXs01010101010002"))
-            Check.secret(izbrisi_podvojene("asdhaskbbbsna,,sjnansd"))
+            test_data = [
+                ("seznami.txt", ["V trgovini moram kupiti:", "* jajca,", "* kruh,", "* moko.", "Na poti nazaj moram:", "* obiskati sosedo."],
+                 "seznami.html", ["V trgovini moram kupiti:", "<ul>", "  <li>jajca,</li>", "  <li>kruh,</li>", "  <li>moko.</li>", "</ul>",
+                                  "Na poti nazaj moram:", "<ul>", "  <li>obiskati sosedo.</li>", "</ul>"]),
+            ]
+            napaka = False
+            for vhodna, vhod, izhodna, izhod in test_data:
+                if napaka: break
+                with Check.in_file(vhodna, vhod, encoding='utf-8'):
+                    seznami(vhodna, izhodna)
+                    if not Check.out_file(izhodna, izhod, encoding='utf-8'):
+                        napaka = True # test has failed
         except TimeoutError:
             Check.error("Dovoljen čas izvajanja presežen")
         except Exception:
@@ -772,30 +859,21 @@ def _validate_current_file():
     if Check.part():
         Check.current_part[
             "token"
-        ] = "eyJwYXJ0IjoyNzQ4NywidXNlciI6MTE1MTR9:1vyvM1:zNYPMeryVTY25sHdGtiqAZ5uj9KlH4aeZPYHdRLxrTU"
+        ] = "eyJwYXJ0IjoxNTA5LCJ1c2VyIjoxMTUxNH0:1x2TfE:g57Hc3Na0zSza1cW2FY2XedgO0a9ZZY5uNzTGg9pQcU"
         try:
-            Check.equal('vsak_k_ti("abcdefghijk", 0)', "")
-            Check.equal('vsak_k_ti("abcdefghijk", 3)', "adgj")
-            Check.secret(vsak_k_ti("abcdefghijk", 5))
-            Check.secret(vsak_k_ti("abcdefghijk", -3))
-            Check.secret(vsak_k_ti("abcdefghihvjdksa s asčdhaglsda saasč jk", 5))
-            Check.secret(vsak_k_ti("abcdefghihvjdksa s asčdhaglsda saasč jk", 8))
-        except TimeoutError:
-            Check.error("Dovoljen čas izvajanja presežen")
-        except Exception:
-            Check.error(
-                "Testi sprožijo izjemo\n  {0}",
-                "\n  ".join(traceback.format_exc().split("\n"))[:-2],
-            )
-
-    if Check.part():
-        Check.current_part[
-            "token"
-        ] = "eyJwYXJ0IjoyNzQ4OCwidXNlciI6MTE1MTR9:1vyvM1:8yq1knvHM8e3xEKzbsW73dGKVe4kdV86HjPSKZx3QH8"
-        try:
-            Check.equal('zaporedje("0123456789X")', "0136X")
-            Check.secret(zaporedje("".join([str(x) for x in range(100)])))
-            Check.secret(zaporedje("".join([str(x) for x in range(150)])))
+            test_data = [
+                ("gnezdeni_seznami.txt", ["zivali", "  sesalci", "    slon", "  ptici", "    sinicka", "rastline", "  sobne rastline", "    difenbahija"],
+                 "gnezdeni_seznami.html", ["<ul>", "  <li>zivali", "    <ul>", "      <li>sesalci", "        <ul>", "          <li>slon", "        </ul>",
+                                           "      <li>ptici", "        <ul>", "          <li>sinicka", "        </ul>", "    </ul>", "  <li>rastline",
+                                           "    <ul>", "      <li>sobne rastline", "        <ul>", "          <li>difenbahija", "        </ul>", "    </ul>", "</ul>"]),
+            ]
+            napaka = False
+            for vhodna, vhod, izhodna, izhod in test_data:
+                if napaka: break
+                with Check.in_file(vhodna, vhod, encoding='utf-8'):
+                    gnezdeni_seznami(vhodna, izhodna)
+                    if not Check.out_file(izhodna, izhod, encoding='utf-8'):
+                        napaka = True # test has failed
         except TimeoutError:
             Check.error("Dovoljen čas izvajanja presežen")
         except Exception:

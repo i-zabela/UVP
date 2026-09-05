@@ -1,101 +1,82 @@
 # =============================================================================
-# Rezine in rekurzija
-# =====================================================================@027486=
+# Vsote
+# =====================================================================@001474=
 # 1. podnaloga
-# Sestavite funkcijo `filtriraj`, ki sprejme dva niza in vrne nov niz sestavljen
-# zgolj iz znakov prvega niza, ki so hkrati tudi v drugem nizu, preostale znake
-# pa zamenja z _
-# Velikost črk je nepomembna.
+# Sestavite funkcijo `vsota_kvadratov(n)`, ki izračuna in vrne vsoto
+# $1^2 + 2^2 + 3^2 + \ldots + n^2$. Primer:
 # 
-#     >>> filtriraj("Ne gremo še domov", "ngm")
-#     "N__g__m_______m__"
+#     >>> vsota_kvadratov(10)
+#     385
 # =============================================================================
-def filtriraj(niz1, niz2):
-    if niz1 == "":
-        return ""
-    elif niz1[0].lower() in niz2.lower():
-        return niz1[0] + filtriraj(niz1[1:], niz2)
-    else :
-        return "_" + filtriraj(niz1[1:], niz2)
-#def filtriraj(s, f):
-#    if not s:
-#        return s
-#    if s[0].lower() in f.lower():
-#        return s[0] + filtriraj(s[1:], f)
-#    else:
-#        return "_" + filtriraj(s[1:], f)
-# =====================================================================@027490=
+def vsota_kvadratov(n):
+    vsota = 0
+    for x in range(1, n + 1):
+        vsota += x**2
+    return vsota
+# =====================================================================@001475=
 # 2. podnaloga
-# Sestavite funkcijo `pretvori`, ki sprejme niz in bazo ter vrne podano število
-# v desetiškem zapisu. Ko zmanjka števil si znaki sledijo po angleški abecedi
-# `0123456789ABC...`. Primer vrstnega reda lahko najdete v
-# `string.ascii_uppercase`. Lahko predpostavite, da bo baza vedno med 2 in 36.
+# Sestavite funkcijo `vsota_produktov_sosednjih(n)`, ki izračuna in vrne vsoto
+# $1 \cdot 2 + 2 \cdot 3 + 3 \cdot 4 + \ldots + n \cdot (n + 1)$. Primer:
 # 
-#     >>> pretvori("10001", 2)
-#     17
-#     >>> pretvori("2ACBD04", 36)
-#     4978911892
+#     >>> vsota_produktov_sosednjih(10)
+#     440
 # =============================================================================
-def pretvori(niz, baza):
-    import string
-    znaki = "0123456789" + string.ascii_uppercase 
-    if niz == "":
-        return 0
+def vsota_produktov_sosednjih(n):
+    if n == 1:
+        return 1 * 2
     else:
-        return znaki.index(niz[-1].upper()) + baza * pretvori(niz[:-1], baza)
-
-#def pretvori_leno(s, b):
-#    return int(s, b)
-# =====================================================================@027489=
+        return n * (n + 1) + vsota_produktov_sosednjih(n - 1)
+# =====================================================================@001476=
 # 3. podnaloga
-# Sestavite funkcijo `izbrisi_podvojene`, ki sprejme niz in odstrani vse
-# zaporedno enake znake, kjer velikost črk ni pomembna. Če se po izbrisu pojavijo
-# nove podvojitve, naj jih funkcija ne izbriše.
+# Sestavite funkcijo `stevilo_clenov(m)`, ki izračuna, največ koliko členov
+# vsote $1 \cdot 2 + 2 \cdot 3 + 3 \cdot 4 + \ldots + n \cdot (n + 1) + \ldots$
+# lahko seštejemo, da bo dobljena vsota še vedno manjša ali enaka `m`.
+# Primer:
 # 
-#     >>> izbrisi_podvojene("aaab")
-#     "b"
-#     >>> izbrisi_podvojene("abaab")
-#     "abb"
+#     >>> stevilo_clenov(20)
+#     3
 # =============================================================================
-def izbrisi_podvojene(s, last=None):
-    if s == "":
-        return ""
-    elif s[0] == last:
-        return izbrisi_podvojene(s[1:], last)
-    elif len(s) >= 2 and s[0] == s[1]:
-        return izbrisi_podvojene(s[2:], s[0])
-    else:
-        return s[0] + izbrisi_podvojene(s[1:], None)
-# =====================================================================@027487=
+def stevilo_clenov(m):
+    i = 1
+    while vsota_produktov_sosednjih(i) <= m:
+        i += 1
+    return i - 1
+# =====================================================================@001477=
 # 4. podnaloga
-# Sestavite funkcijo `vsak_k_ti`, ki sprejme niz in parameter `k` ter vrne nov
-# niz, kjer iz vhodnega niza vzame vsak `k`-ti znak. Za nesmiselne parametre
-# naj funkcija vrne prazen niz
+# Sestavite funkcijo `najblizje(a, b, m)`, ki poišče takšno število `k`
+# med `a` in `b`, pri katerem se z eno od delnih vsot
+# $k \cdot (k+1) + (k+1) \cdot (k+2) + (k+2) \cdot (k+3) + \ldots$
+# najbolj približamo številu `m`. Če je takšnih števil več, naj funkcija
+# vrne najmanjšega. Primer:
 # 
-#     >>> vsak_k_ti("abcdefghijk", 3)
-#     "adgj"
-#     >>> vsak_k_ti("abcdefghijk", 0)
-#     ""
+#     >>> najblizje(10, 20, 10000)
+#     14
 # =============================================================================
-def vsak_k_ti(s, k):
-    if k <= 0:
-        return ""
-    else:
-        return s[::k]
-# =====================================================================@027488=
-# 5. podnaloga
-# Sestavitev funkcijo `zaporedje`, ki sprejme niz in vrne nov niz sestavljen iz
-# znakov na indeksih 0, 1, 3, 6, 10, ...
-# Namig: Ali razlike med indeksi sledijo kakemu preprostemu zaporedju?
-# 
-#     >>> zaporedje("0123456789X")
-#     "0136X"
-# =============================================================================
-def zaporedje(niz, indeks=0, korak=1):
-    if indeks >= len(niz):
-        return ""
-    else:
-        return niz[indeks] + zaporedje(niz, indeks + korak, korak + 1)
+
+def vsota_najblizje(k, m):
+    """Za dani k vrne najmanjšo možno |delna_vsota - m|."""
+    cum = 0
+    prejsnja_razlika = None
+    i = k
+    while True:
+        cum += i * (i + 1)
+        razlika = abs(cum - m)
+        if prejsnja_razlika is not None and razlika > prejsnja_razlika:
+            return prejsnja_razlika  # naslednji člen bi le povečal razliko
+        prejsnja_razlika = razlika
+        i += 1
+
+
+def najblizje(a, b, m):
+    najboljsa_razlika = None
+    najboljsi_k = a
+    for k in range(a, b + 1):
+        razlika = vsota_najblizje(k, m)
+        if najboljsa_razlika is None or razlika < najboljsa_razlika:
+            najboljsa_razlika = razlika
+            najboljsi_k = k
+    return najboljsi_k
+            
 
 
 
@@ -713,13 +694,18 @@ def _validate_current_file():
     if Check.part():
         Check.current_part[
             "token"
-        ] = "eyJwYXJ0IjoyNzQ4NiwidXNlciI6MTE1MTR9:1vyvM1:ZP-3bADoPBCX6zzIdOTYLTFaaf1zM6e8xzd7bgfdLTc"
+        ] = "eyJwYXJ0IjoxNDc0LCJ1c2VyIjoxMTUxNH0:1x1mvU:6C0DuPsbkKxWL4iGUuOkM3SCqNpTLX4MLU-3QgYxXU4"
         try:
-            Check.equal('filtriraj("Ne gremo še domov", "ngm")', "N__g__m_______m__")
-            Check.secret(filtriraj("Planica!! planica!!, snežena kraljica", "Planica!"))
-            
-            # =============================================================================
-            # Nizi
+            test_data = [
+                ("""vsota_kvadratov(1)""", 1),
+                ("""vsota_kvadratov(3)""", 14),
+                ("""vsota_kvadratov(10)""", 385),
+                ("""vsota_kvadratov(15)""", 1240),
+                ("""vsota_kvadratov(100)""", 338350),
+            ]
+            for td in test_data:
+                if not Check.equal(*td):
+                    break
         except TimeoutError:
             Check.error("Dovoljen čas izvajanja presežen")
         except Exception:
@@ -731,17 +717,18 @@ def _validate_current_file():
     if Check.part():
         Check.current_part[
             "token"
-        ] = "eyJwYXJ0IjoyNzQ5MCwidXNlciI6MTE1MTR9:1vyvM1:bMGuujGfsq216TWS4TLE1ss1xGJJQQ8Dr4AN_qYhHSc"
+        ] = "eyJwYXJ0IjoxNDc1LCJ1c2VyIjoxMTUxNH0:1x1mvU:BerG8GsBWFSQp74YY0KZTuh73QwLJGQMG9ZY2X5nVM0"
         try:
-            Check.equal('pretvori("10001", 2)', 17)
-            Check.equal('pretvori("2ACBD04", 36)', 4978911892)
-            Check.equal('pretvori("AB", 30)', 311)
-            Check.equal('pretvori("101", 30)', 901)
-            for b in range(3, 36 + 1):
-                Check.secret(pretvori("101010111101", b))
-            for b in range(30, 36 + 1):
-                Check.secret(pretvori("PLANICA", b))
-                Check.secret(pretvori("MIHEC01267", b))
+            test_data = [
+                ("""vsota_produktov_sosednjih(1)""", 2),
+                ("""vsota_produktov_sosednjih(3)""", 20),
+                ("""vsota_produktov_sosednjih(10)""", 440),
+                ("""vsota_produktov_sosednjih(20)""", 3080),
+                ("""vsota_produktov_sosednjih(100)""", 343400),
+            ]
+            for td in test_data:
+                if not Check.equal(*td):
+                    break
         except TimeoutError:
             Check.error("Dovoljen čas izvajanja presežen")
         except Exception:
@@ -753,14 +740,20 @@ def _validate_current_file():
     if Check.part():
         Check.current_part[
             "token"
-        ] = "eyJwYXJ0IjoyNzQ4OSwidXNlciI6MTE1MTR9:1vyvM1:n1MMq81P4jTF4uex_QcxyhWLj6eo_6V08O6CGiiG9e0"
+        ] = "eyJwYXJ0IjoxNDc2LCJ1c2VyIjoxMTUxNH0:1x1mvU:aoOua7CbRtsth-lx1YchqyhXiMKhAYgkFPnzVpdl6ME"
         try:
-            Check.equal('izbrisi_podvojene("abaab")', "abb")
-            Check.equal('izbrisi_podvojene("abab")', "abab")
-            Check.equal('izbrisi_podvojene("aaaabaaaa")', "b")
-            Check.secret(izbrisi_podvojene("10000010001010101010002"))
-            Check.secret(izbrisi_podvojene("10000010sxsXXXs01010101010002"))
-            Check.secret(izbrisi_podvojene("asdhaskbbbsna,,sjnansd"))
+            test_data = [
+                ("""stevilo_clenov(2)""", 1),
+                ("""stevilo_clenov(19)""", 2),
+                ("""stevilo_clenov(20)""", 3),
+                ("""stevilo_clenov(1)""", 0),
+                ("""stevilo_clenov(-20)""", 0),
+                ("""stevilo_clenov(3079)""", 19),
+                ("""stevilo_clenov(3080)""", 20),
+            ]
+            for td in test_data:
+                if not Check.equal(*td):
+                    break
         except TimeoutError:
             Check.error("Dovoljen čas izvajanja presežen")
         except Exception:
@@ -772,30 +765,17 @@ def _validate_current_file():
     if Check.part():
         Check.current_part[
             "token"
-        ] = "eyJwYXJ0IjoyNzQ4NywidXNlciI6MTE1MTR9:1vyvM1:zNYPMeryVTY25sHdGtiqAZ5uj9KlH4aeZPYHdRLxrTU"
+        ] = "eyJwYXJ0IjoxNDc3LCJ1c2VyIjoxMTUxNH0:1x1mvU:rIo6YSlYYnqMRRsfTu-82Amk8b4uaqae40FehrQHIUQ"
         try:
-            Check.equal('vsak_k_ti("abcdefghijk", 0)', "")
-            Check.equal('vsak_k_ti("abcdefghijk", 3)', "adgj")
-            Check.secret(vsak_k_ti("abcdefghijk", 5))
-            Check.secret(vsak_k_ti("abcdefghijk", -3))
-            Check.secret(vsak_k_ti("abcdefghihvjdksa s asčdhaglsda saasč jk", 5))
-            Check.secret(vsak_k_ti("abcdefghihvjdksa s asčdhaglsda saasč jk", 8))
-        except TimeoutError:
-            Check.error("Dovoljen čas izvajanja presežen")
-        except Exception:
-            Check.error(
-                "Testi sprožijo izjemo\n  {0}",
-                "\n  ".join(traceback.format_exc().split("\n"))[:-2],
-            )
-
-    if Check.part():
-        Check.current_part[
-            "token"
-        ] = "eyJwYXJ0IjoyNzQ4OCwidXNlciI6MTE1MTR9:1vyvM1:8yq1knvHM8e3xEKzbsW73dGKVe4kdV86HjPSKZx3QH8"
-        try:
-            Check.equal('zaporedje("0123456789X")', "0136X")
-            Check.secret(zaporedje("".join([str(x) for x in range(100)])))
-            Check.secret(zaporedje("".join([str(x) for x in range(150)])))
+            test_data = [
+                ("""najblizje(10, 20, 10000)""", 14),
+                ("""najblizje(20, 30, 10000)""", 21),
+                ("""najblizje(30, 40, 10000)""", 38),
+                ("""najblizje(1, 40, 10000)""", 14),
+            ]
+            for td in test_data:
+                if not Check.equal(*td):
+                    break
         except TimeoutError:
             Check.error("Dovoljen čas izvajanja presežen")
         except Exception:

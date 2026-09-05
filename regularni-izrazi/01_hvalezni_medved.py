@@ -1,107 +1,71 @@
 # =============================================================================
-# Rezine in rekurzija
-# =====================================================================@027486=
+# Hvaležni medved
+#
+# Gori nekje v gorah, ne ve se več, ali je bilo pri Macigoju ali
+# Naravniku, je šivala gospodinja v senci pod drevesom in zibala otroka. Naenkrat
+# prilomasti - pa prej ni ničesar opazila - medved in ji moli taco, v kateri je
+# tičal velik, debel trn. Žena se je prestrašila, a medved le milo in pohlevno
+# godrnja. Zato se žena ojunači in mu izdere trn iz tace. Mrcina kosmata pa zvrne
+# zibel, jo pobaše in oddide. Čez nekaj časa pa ji zopet prinese zibel, a zvhano
+# napolnjeno s sladkimi hruškami. Postavil jo je na tla pred začudeno mater in
+# odracal nazaj v goščavo. "Poglej no", se je razveselila mati, "kakšen hvaležen
+# medved. Zvrhano zibelko sladkih hrušk mi je prinesel za en sam izdrt trn."
+# 
+# Povzeto po [github: programiranje1](https://github.com/matijapretnar/programiranje-1/blob/master/01-regularni-izrazi/vaje/hvalezni_medved.py).
+# =====================================================================@033397=
 # 1. podnaloga
-# Sestavite funkcijo `filtriraj`, ki sprejme dva niza in vrne nov niz sestavljen
-# zgolj iz znakov prvega niza, ki so hkrati tudi v drugem nizu, preostale znake
-# pa zamenja z _
-# Velikost črk je nepomembna.
+# Sestavite funkcijo `najdi_besede(niz, podniz)`, ki vrne množico besed v
+# besedilu `niz`, ki vsebujejo dani `podniz`.
 # 
-#     >>> filtriraj("Ne gremo še domov", "ngm")
-#     "N__g__m_______m__"
+# Namig: pomagajte si z regex znakom za mejo `[\b]`.
+# 
+#     >>> najdi_besede("Naj da denar, preden pojde", "de")
+#     {"denar", "preden", "pojde"}
 # =============================================================================
-def filtriraj(niz1, niz2):
-    if niz1 == "":
-        return ""
-    elif niz1[0].lower() in niz2.lower():
-        return niz1[0] + filtriraj(niz1[1:], niz2)
-    else :
-        return "_" + filtriraj(niz1[1:], niz2)
-#def filtriraj(s, f):
-#    if not s:
-#        return s
-#    if s[0].lower() in f.lower():
-#        return s[0] + filtriraj(s[1:], f)
-#    else:
-#        return "_" + filtriraj(s[1:], f)
-# =====================================================================@027490=
+def najdi_besede(niz, podniz):
+    vzorec = r'\b\w*' + podniz + r'\w*\b'
+    return set(re.findall(vzorec, niz))
+# =====================================================================@033399=
 # 2. podnaloga
-# Sestavite funkcijo `pretvori`, ki sprejme niz in bazo ter vrne podano število
-# v desetiškem zapisu. Ko zmanjka števil si znaki sledijo po angleški abecedi
-# `0123456789ABC...`. Primer vrstnega reda lahko najdete v
-# `string.ascii_uppercase`. Lahko predpostavite, da bo baza vedno med 2 in 36.
+# Sestavite funkcijo `besede_s_predpono(niz, predpona)`, ki vrne množico
+# vseh besed, ki se pojavijo v nizu in imajo dano predpono.
 # 
-#     >>> pretvori("10001", 2)
-#     17
-#     >>> pretvori("2ACBD04", 36)
-#     4978911892
+#     >>> besede_s_predpono(hvalezni_medved, 'zi')
+#     {'zibala', 'zibel', 'zibelko'}
 # =============================================================================
-def pretvori(niz, baza):
-    import string
-    znaki = "0123456789" + string.ascii_uppercase 
-    if niz == "":
-        return 0
-    else:
-        return znaki.index(niz[-1].upper()) + baza * pretvori(niz[:-1], baza)
-
-#def pretvori_leno(s, b):
-#    return int(s, b)
-# =====================================================================@027489=
+def besede_s_predpono(niz, predpona):
+    vzorec = r'\b' + predpona + r'\w*\b'
+    return set(re.findall(vzorec, niz))
+# =====================================================================@033401=
 # 3. podnaloga
-# Sestavite funkcijo `izbrisi_podvojene`, ki sprejme niz in odstrani vse
-# zaporedno enake znake, kjer velikost črk ni pomembna. Če se po izbrisu pojavijo
-# nove podvojitve, naj jih funkcija ne izbriše.
+# Sestavite funkcijo `besede_s_pripono(niz, pripona)`, ki vrne množico
+# vseh besed, ki se pojavijo v nizu in imajo dano pripono.
 # 
-#     >>> izbrisi_podvojene("aaab")
-#     "b"
-#     >>> izbrisi_podvojene("abaab")
-#     "abb"
+#     >>> besede_s_pripono(hvalezni_medved, 'la')
+#     {'zibala', 'razveselila', 'prestrašila', 'šivala', 'opazila', 'tla'}
 # =============================================================================
-def izbrisi_podvojene(s, last=None):
-    if s == "":
-        return ""
-    elif s[0] == last:
-        return izbrisi_podvojene(s[1:], last)
-    elif len(s) >= 2 and s[0] == s[1]:
-        return izbrisi_podvojene(s[2:], s[0])
-    else:
-        return s[0] + izbrisi_podvojene(s[1:], None)
-# =====================================================================@027487=
+def besede_s_pripono(niz, pripona):
+    vzorec = r'\w*' + pripona + r'\b'
+    return set(re.findall(vzorec, niz))
+# =====================================================================@033400=
 # 4. podnaloga
-# Sestavite funkcijo `vsak_k_ti`, ki sprejme niz in parameter `k` ter vrne nov
-# niz, kjer iz vhodnega niza vzame vsak `k`-ti znak. Za nesmiselne parametre
-# naj funkcija vrne prazen niz
+# Sestavite funkcijo `dvojne_crke(niz)`, ki vrne množico vseh besed v
+# nizu `niz`, ki vsebujejo kakšno dvojno črko.
 # 
-#     >>> vsak_k_ti("abcdefghijk", 3)
-#     "adgj"
-#     >>> vsak_k_ti("abcdefghijk", 0)
-#     ""
+#     >>> dvojne_crke("Res dobra oddaja!")
+#     {"oddaja"}
+#     >>> dvojne_crke("'A volunteer is worth twenty pressed men.'")
+#     {'volunteer', 'pressed'}
+#     >>> dvojne_crke(hvalezni_medved)
+#     {"oddide"}
 # =============================================================================
-def vsak_k_ti(s, k):
-    if k <= 0:
-        return ""
-    else:
-        return s[::k]
-# =====================================================================@027488=
-# 5. podnaloga
-# Sestavitev funkcijo `zaporedje`, ki sprejme niz in vrne nov niz sestavljen iz
-# znakov na indeksih 0, 1, 3, 6, 10, ...
-# Namig: Ali razlike med indeksi sledijo kakemu preprostemu zaporedju?
-# 
-#     >>> zaporedje("0123456789X")
-#     "0136X"
-# =============================================================================
-def zaporedje(niz, indeks=0, korak=1):
-    if indeks >= len(niz):
-        return ""
-    else:
-        return niz[indeks] + zaporedje(niz, indeks + korak, korak + 1)
+def dvojne_crke(niz):
+    vzorec = r'\b(\w*(.)\1\w*)\b'
+    return {beseda for beseda, _ in re.findall(vzorec, niz)}
 
-
-
-
-
-
+def dvojne_crke(niz):
+    vzorec = r"\b(\w*(\w)\2\w*)\b"
+    return {x.group() for x in re.finditer(vzorec, niz)}
 
 
 
@@ -713,13 +677,26 @@ def _validate_current_file():
     if Check.part():
         Check.current_part[
             "token"
-        ] = "eyJwYXJ0IjoyNzQ4NiwidXNlciI6MTE1MTR9:1vyvM1:ZP-3bADoPBCX6zzIdOTYLTFaaf1zM6e8xzd7bgfdLTc"
+        ] = "eyJwYXJ0IjozMzM5NywidXNlciI6MTE1MTR9:1x2pDO:pLag19OOUGKyJ6XYB_L4DtSRJeIXZzj3g5JcX0Cv8qE"
         try:
-            Check.equal('filtriraj("Ne gremo še domov", "ngm")', "N__g__m_______m__")
-            Check.secret(filtriraj("Planica!! planica!!, snežena kraljica", "Planica!"))
-            
-            # =============================================================================
-            # Nizi
+            Check.equal(
+                'najdi_besede("Naj da denar, preden pojde", "de")', {"denar", "preden", "pojde"}
+            )
+            hvalezni_medved = """Gori nekje v gorah, ne ve se več, ali je bilo pri Macigoju ali
+            Naravniku, je šivala gospodinja v senci pod drevesom in zibala otroka. Naenkrat
+            prilomasti - pa prej ni ničesar opazila - medved in ji moli taco, v kateri je
+            tičal velik, debel trn. Žena se je prestrašila, a medved le milo in pohlevno
+            godrnja. Zato se žena ojunači in mu izdere trn iz tace. Mrcina kosmata pa zvrne
+            zibel, jo pobaše in oddide. Čez nekaj časa pa ji zopet prinese zibel, a zvhano
+            napolnjeno s sladkimi hruškami. Postavil jo je na tla pred začudeno mater in
+            odracal nazaj v goščavo. "Poglej no", se je razveselila mati, "kakšen hvaležen
+            medved. Zvrhano zibelko sladkih hrušk mi je prinesel za en sam izdrt trn".
+            """
+            Check.equal(
+                'najdi_besede(hvalezni_medved, "de")',
+                {"izdere", "debel", "oddide", "začudeno"},
+                env={"hvalezni_medved": hvalezni_medved},
+            )
         except TimeoutError:
             Check.error("Dovoljen čas izvajanja presežen")
         except Exception:
@@ -731,17 +708,23 @@ def _validate_current_file():
     if Check.part():
         Check.current_part[
             "token"
-        ] = "eyJwYXJ0IjoyNzQ5MCwidXNlciI6MTE1MTR9:1vyvM1:bMGuujGfsq216TWS4TLE1ss1xGJJQQ8Dr4AN_qYhHSc"
+        ] = "eyJwYXJ0IjozMzM5OSwidXNlciI6MTE1MTR9:1x2pDO:iSisAoqi3i6L1YB9OyYUwV9KYFZ5DjeQmWsRAB92tGk"
         try:
-            Check.equal('pretvori("10001", 2)', 17)
-            Check.equal('pretvori("2ACBD04", 36)', 4978911892)
-            Check.equal('pretvori("AB", 30)', 311)
-            Check.equal('pretvori("101", 30)', 901)
-            for b in range(3, 36 + 1):
-                Check.secret(pretvori("101010111101", b))
-            for b in range(30, 36 + 1):
-                Check.secret(pretvori("PLANICA", b))
-                Check.secret(pretvori("MIHEC01267", b))
+            hvalezni_medved = """Gori nekje v gorah, ne ve se več, ali je bilo pri Macigoju ali
+            Naravniku, je šivala gospodinja v senci pod drevesom in zibala otroka. Naenkrat
+            prilomasti - pa prej ni ničesar opazila - medved in ji moli taco, v kateri je
+            tičal velik, debel trn. Žena se je prestrašila, a medved le milo in pohlevno
+            godrnja. Zato se žena ojunači in mu izdere trn iz tace. Mrcina kosmata pa zvrne
+            zibel, jo pobaše in oddide. Čez nekaj časa pa ji zopet prinese zibel, a zvhano
+            napolnjeno s sladkimi hruškami. Postavil jo je na tla pred začudeno mater in
+            odracal nazaj v goščavo. "Poglej no", se je razveselila mati, "kakšen hvaležen
+            medved. Zvrhano zibelko sladkih hrušk mi je prinesel za en sam izdrt trn".
+            """
+            Check.equal(
+                'besede_s_predpono(hvalezni_medved, "zi")',
+                {"zibala", "zibel", "zibelko"},
+                env={"hvalezni_medved": hvalezni_medved},
+            )
         except TimeoutError:
             Check.error("Dovoljen čas izvajanja presežen")
         except Exception:
@@ -753,14 +736,23 @@ def _validate_current_file():
     if Check.part():
         Check.current_part[
             "token"
-        ] = "eyJwYXJ0IjoyNzQ4OSwidXNlciI6MTE1MTR9:1vyvM1:n1MMq81P4jTF4uex_QcxyhWLj6eo_6V08O6CGiiG9e0"
+        ] = "eyJwYXJ0IjozMzQwMSwidXNlciI6MTE1MTR9:1x2pDO:o4Eq1c9v9cEa9VFKN73V46KfTkCWCvj3IEZQ1CS9-YE"
         try:
-            Check.equal('izbrisi_podvojene("abaab")', "abb")
-            Check.equal('izbrisi_podvojene("abab")', "abab")
-            Check.equal('izbrisi_podvojene("aaaabaaaa")', "b")
-            Check.secret(izbrisi_podvojene("10000010001010101010002"))
-            Check.secret(izbrisi_podvojene("10000010sxsXXXs01010101010002"))
-            Check.secret(izbrisi_podvojene("asdhaskbbbsna,,sjnansd"))
+            hvalezni_medved = """Gori nekje v gorah, ne ve se več, ali je bilo pri Macigoju ali
+            Naravniku, je šivala gospodinja v senci pod drevesom in zibala otroka. Naenkrat
+            prilomasti - pa prej ni ničesar opazila - medved in ji moli taco, v kateri je
+            tičal velik, debel trn. Žena se je prestrašila, a medved le milo in pohlevno
+            godrnja. Zato se žena ojunači in mu izdere trn iz tace. Mrcina kosmata pa zvrne
+            zibel, jo pobaše in oddide. Čez nekaj časa pa ji zopet prinese zibel, a zvhano
+            napolnjeno s sladkimi hruškami. Postavil jo je na tla pred začudeno mater in
+            odracal nazaj v goščavo. "Poglej no", se je razveselila mati, "kakšen hvaležen
+            medved. Zvrhano zibelko sladkih hrušk mi je prinesel za en sam izdrt trn".
+            """
+            Check.equal(
+                'besede_s_pripono(hvalezni_medved, "la")',
+                {"zibala", "razveselila", "prestrašila", "šivala", "opazila", "tla"},
+                env={"hvalezni_medved": hvalezni_medved},
+            )
         except TimeoutError:
             Check.error("Dovoljen čas izvajanja presežen")
         except Exception:
@@ -772,30 +764,25 @@ def _validate_current_file():
     if Check.part():
         Check.current_part[
             "token"
-        ] = "eyJwYXJ0IjoyNzQ4NywidXNlciI6MTE1MTR9:1vyvM1:zNYPMeryVTY25sHdGtiqAZ5uj9KlH4aeZPYHdRLxrTU"
+        ] = "eyJwYXJ0IjozMzQwMCwidXNlciI6MTE1MTR9:1x2pDO:C4Mtm0CDwbpQWXQyr3yjL_3pvrzLABkYSrwXFaaSKYo"
         try:
-            Check.equal('vsak_k_ti("abcdefghijk", 0)', "")
-            Check.equal('vsak_k_ti("abcdefghijk", 3)', "adgj")
-            Check.secret(vsak_k_ti("abcdefghijk", 5))
-            Check.secret(vsak_k_ti("abcdefghijk", -3))
-            Check.secret(vsak_k_ti("abcdefghihvjdksa s asčdhaglsda saasč jk", 5))
-            Check.secret(vsak_k_ti("abcdefghihvjdksa s asčdhaglsda saasč jk", 8))
-        except TimeoutError:
-            Check.error("Dovoljen čas izvajanja presežen")
-        except Exception:
-            Check.error(
-                "Testi sprožijo izjemo\n  {0}",
-                "\n  ".join(traceback.format_exc().split("\n"))[:-2],
+            hvalezni_medved = """Gori nekje v gorah, ne ve se več, ali je bilo pri Macigoju ali
+            Naravniku, je šivala gospodinja v senci pod drevesom in zibala otroka. Naenkrat
+            prilomasti - pa prej ni ničesar opazila - medved in ji moli taco, v kateri je
+            tičal velik, debel trn. Žena se je prestrašila, a medved le milo in pohlevno
+            godrnja. Zato se žena ojunači in mu izdere trn iz tace. Mrcina kosmata pa zvrne
+            zibel, jo pobaše in oddide. Čez nekaj časa pa ji zopet prinese zibel, a zvhano
+            napolnjeno s sladkimi hruškami. Postavil jo je na tla pred začudeno mater in
+            odracal nazaj v goščavo. "Poglej no", se je razveselila mati, "kakšen hvaležen
+            medved. Zvrhano zibelko sladkih hrušk mi je prinesel za en sam izdrt trn".
+            """
+            Check.equal('dvojne_crke("Res dobra oddaja!")', {"oddaja"})
+            Check.equal(
+                'dvojne_crke("A volunteer is worth twenty pressed men.")', {"volunteer", "pressed"}
             )
-
-    if Check.part():
-        Check.current_part[
-            "token"
-        ] = "eyJwYXJ0IjoyNzQ4OCwidXNlciI6MTE1MTR9:1vyvM1:8yq1knvHM8e3xEKzbsW73dGKVe4kdV86HjPSKZx3QH8"
-        try:
-            Check.equal('zaporedje("0123456789X")', "0136X")
-            Check.secret(zaporedje("".join([str(x) for x in range(100)])))
-            Check.secret(zaporedje("".join([str(x) for x in range(150)])))
+            Check.equal(
+                "dvojne_crke(hvalezni_medved)", {"oddide"}, env={"hvalezni_medved": hvalezni_medved}
+            )
         except TimeoutError:
             Check.error("Dovoljen čas izvajanja presežen")
         except Exception:

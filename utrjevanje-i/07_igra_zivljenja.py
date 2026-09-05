@@ -1,102 +1,158 @@
 # =============================================================================
-# Rezine in rekurzija
-# =====================================================================@027486=
+# Igra življenja
+#
+# [Igra življenja](https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life)
+# gre takole: Imamo matriko, katere elementi sta logični vrednosti `True`
+# in `False`. Vrednost `True` pomeni, da je celica živa, vrednost `False`
+# pa pomeni, da je celica mrtva. Celice (razen robnih) imajo po 8 sosedov:
+# dva horizontalna, dve vertikalna in štiri diagonalne. Čas teče v
+# diskretnih korakih. S trenutnim stanjem sveta je tudi stanje sveta
+# v naslednjem koraku natanko določeno in sicer po naslednjih pravilih:
+# 
+# - Živa celica, ki ima manj kot 2 živa soseda, umre (zaradi osamljenosti).
+# - Živa celica, ki ima 2 ali 3 žive sosede, preživi.
+# - Živa celica, ki ima več kot 3 žive sosede, umre (zaradi prenaseljenosti).
+# - Mrtva celica, ki ima natanko 3 žive sosede, oživi (reprodukcija).
+# 
+# Primeri matrik, ki predstavljajo stanje sveta:
+# 
+#     svet_1 = [
+#         [False, False, False, False, False, False],
+#         [False, False, False, True, False, False],
+#         [False, True, False, False, True, False],
+#         [False, True, False, False, True, False],
+#         [False, False, True, False, False, False],
+#         [False, False, False, False, False, False]
+#     ]
+# 
+#     svet_2 = [
+#         [False, False, False, False],
+#         [False, True, True, False],
+#         [False, True, True, False],
+#         [False, False, False, False]
+#     ]
+# 
+# Tukaj si lahko ogledate 
+# [simulacijo](http://pmav.eu/stuff/javascript-game-of-life-v3.1.1/).
+# =====================================================================@027813=
 # 1. podnaloga
-# Sestavite funkcijo `filtriraj`, ki sprejme dva niza in vrne nov niz sestavljen
-# zgolj iz znakov prvega niza, ki so hkrati tudi v drugem nizu, preostale znake
-# pa zamenja z _
-# Velikost črk je nepomembna.
+# Napišite funkcijo `zivi(svet, i, j)`, ki v svetu `svet` prešteje in
+# vrne število živih sosedov celice v $i$-ti vrstici in $j$-tem stolpcu.
+# Zgled (naj bo `svet_1` matrika, kot je definirana zgoraj):
 # 
-#     >>> filtriraj("Ne gremo še domov", "ngm")
-#     "N__g__m_______m__"
+#     >>> zivi(svet_1, 2, 0)
+#     2
+# 
+# _Opomba_: Kot je za Python običajno, se stolpci in vrstice začnejo
+# številčiti pri 0.
 # =============================================================================
-def filtriraj(niz1, niz2):
-    if niz1 == "":
-        return ""
-    elif niz1[0].lower() in niz2.lower():
-        return niz1[0] + filtriraj(niz1[1:], niz2)
-    else :
-        return "_" + filtriraj(niz1[1:], niz2)
-#def filtriraj(s, f):
-#    if not s:
-#        return s
-#    if s[0].lower() in f.lower():
-#        return s[0] + filtriraj(s[1:], f)
-#    else:
-#        return "_" + filtriraj(s[1:], f)
-# =====================================================================@027490=
+
+def zivi(svet, i, j):
+    št_vrstic = len(svet)
+    št_stolpcev = len(svet[0])
+    št_živih_sosedov = 0
+    sosedje = [
+        (i - 1, j - 1), (i - 1, j), (i - 1, j + 1),
+        (i,     j - 1),             (i,     j + 1),
+        (i + 1, j - 1), (i + 1, j), (i + 1, j + 1)
+    ]
+    for si, sj in sosedje:
+        if 0 <= si < št_vrstic and 0 <= sj < št_stolpcev:
+            if svet[si][sj] is True:
+                št_živih_sosedov += 1
+    return št_živih_sosedov
+    
+    
+
+
+# =====================================================================@027814=
 # 2. podnaloga
-# Sestavite funkcijo `pretvori`, ki sprejme niz in bazo ter vrne podano število
-# v desetiškem zapisu. Ko zmanjka števil si znaki sledijo po angleški abecedi
-# `0123456789ABC...`. Primer vrstnega reda lahko najdete v
-# `string.ascii_uppercase`. Lahko predpostavite, da bo baza vedno med 2 in 36.
+# Napišite funkcijo `igra(svet)`, ki sestavi in vrne matriko, ki
+# predstavlja novo stanje sveta. Štiri pravila, ki določajo novo stanje
+# sveta, so opisana zgoraj.
 # 
-#     >>> pretvori("10001", 2)
-#     17
-#     >>> pretvori("2ACBD04", 36)
-#     4978911892
+# Zgled (matrika `svet_1` naj bo enaka kot zgoraj):
+# 
+#     >>> igra(svet_1)
+#     [[False, False, False, False, False, False],
+#      [False, False, False, False, False, False],
+#      [False, False, True, True, True, False],
+#      [False, True, True, True, False, False],
+#      [False, False, False, False, False, False],
+#      [False, False, False, False, False, False]]
 # =============================================================================
-def pretvori(niz, baza):
-    import string
-    znaki = "0123456789" + string.ascii_uppercase 
-    if niz == "":
-        return 0
-    else:
-        return znaki.index(niz[-1].upper()) + baza * pretvori(niz[:-1], baza)
+def igra(svet):
+    št_vrstic = len(svet)
+    št_stolpcev = len(svet[0])
+    nova_igra = []
+    for i in range(št_vrstic):
+        vrstica = []
+        for j in range(št_stolpcev):
+            sosedi = zivi(svet, i, j)
+            if svet[i][j] == True:
+                if sosedi < 2:
+                    vrstica.append(False)
+                elif sosedi == 2 or sosedi == 3:
+                    vrstica.append(True)
+                else:
+                    vrstica.append(False)
+            else:
+                if sosedi == 3:
+                    vrstica.append(True)
+                else:
+                    vrstica.append(False)
+        nova_igra.append(vrstica)
+    return nova_igra
 
-#def pretvori_leno(s, b):
-#    return int(s, b)
-# =====================================================================@027489=
+
+
+# =====================================================================@027815=
 # 3. podnaloga
-# Sestavite funkcijo `izbrisi_podvojene`, ki sprejme niz in odstrani vse
-# zaporedno enake znake, kjer velikost črk ni pomembna. Če se po izbrisu pojavijo
-# nove podvojitve, naj jih funkcija ne izbriše.
+# Napišite funkcijo `populacija(svet, n)`, ki naredi `n` korakov igre
+# življenje in na vsakem koraku prešteje število živih celic. Ta
+# števila naj vrne v obliki seznama, ki ima $n + 1$ elementov – prvo
+# število v seznamu naj bo število živih celic v začetnem svetu. Zgled
+# (matrika `svet_1` naj bo enaka kot zgoraj):
 # 
-#     >>> izbrisi_podvojene("aaab")
-#     "b"
-#     >>> izbrisi_podvojene("abaab")
-#     "abb"
-# =============================================================================
-def izbrisi_podvojene(s, last=None):
-    if s == "":
-        return ""
-    elif s[0] == last:
-        return izbrisi_podvojene(s[1:], last)
-    elif len(s) >= 2 and s[0] == s[1]:
-        return izbrisi_podvojene(s[2:], s[0])
-    else:
-        return s[0] + izbrisi_podvojene(s[1:], None)
-# =====================================================================@027487=
-# 4. podnaloga
-# Sestavite funkcijo `vsak_k_ti`, ki sprejme niz in parameter `k` ter vrne nov
-# niz, kjer iz vhodnega niza vzame vsak `k`-ti znak. Za nesmiselne parametre
-# naj funkcija vrne prazen niz
+#     >>> populacija(svet_1, 3)
+#     [6, 6, 6, 6]
 # 
-#     >>> vsak_k_ti("abcdefghijk", 3)
-#     "adgj"
-#     >>> vsak_k_ti("abcdefghijk", 0)
-#     ""
-# =============================================================================
-def vsak_k_ti(s, k):
-    if k <= 0:
-        return ""
-    else:
-        return s[::k]
-# =====================================================================@027488=
-# 5. podnaloga
-# Sestavitev funkcijo `zaporedje`, ki sprejme niz in vrne nov niz sestavljen iz
-# znakov na indeksih 0, 1, 3, 6, 10, ...
-# Namig: Ali razlike med indeksi sledijo kakemu preprostemu zaporedju?
+# Funkcijo bomo testirali še na naslednjih svetovih (poleg tistih dveh,
+# ki sta podana zgoraj):
 # 
-#     >>> zaporedje("0123456789X")
-#     "0136X"
+#     svet_3 = [
+#         [False, False, False, False, False, False],
+#         [False, True, True, False, False, False],
+#         [False, True, True, False, False, False],
+#         [False, False, False, True, True, False],
+#         [False, False, False, True, True, False],
+#         [False, False, False, False, False, False]
+#     ]
+# 
+#     svet_4 = [
+#         [True, True, True],
+#         [True, True, True],
+#         [True, True, True]
+#     ]
+# 
+# _Nasvet_: Najprej napišite pomožno funkcijo, ki prešteje število živih
+# celic v matriki.
 # =============================================================================
-def zaporedje(niz, indeks=0, korak=1):
-    if indeks >= len(niz):
-        return ""
-    else:
-        return niz[indeks] + zaporedje(niz, indeks + korak, korak + 1)
+def zive_celice(matrika):
+    število = 0
+    for vrstica in matrika:
+        for i in vrstica:
+            if i == True:
+                število += 1
+    return število
 
+def populacija(svet, n):
+    seznam = []
+    seznam.append(zive_celice(svet))
+    for korak in range(1, n + 1):
+        svet = igra(svet)
+        seznam.append(zive_celice(svet))
+    return seznam
 
 
 
@@ -713,13 +769,21 @@ def _validate_current_file():
     if Check.part():
         Check.current_part[
             "token"
-        ] = "eyJwYXJ0IjoyNzQ4NiwidXNlciI6MTE1MTR9:1vyvM1:ZP-3bADoPBCX6zzIdOTYLTFaaf1zM6e8xzd7bgfdLTc"
+        ] = "eyJwYXJ0IjoyNzgxMywidXNlciI6MTE1MTR9:1x1mvU:cnGaBJe4yQ1AkUuYW5by6YAHBc83cSBepThRYY2E7jw"
         try:
-            Check.equal('filtriraj("Ne gremo še domov", "ngm")', "N__g__m_______m__")
-            Check.secret(filtriraj("Planica!! planica!!, snežena kraljica", "Planica!"))
-            
-            # =============================================================================
-            # Nizi
+            svet_1 = [
+                [False, False, False, False, False, False],
+                [False, False, False, True, False, False],
+                [False, True, False, False, True, False],
+                [False, True, False, False, True, False],
+                [False, False, True, False, False, False],
+                [False, False, False, False, False, False]
+            ]
+            Check.equal("""zivi(svet_1, 5, 5)""", 0, env={'svet_1': svet_1})
+            Check.equal("""zivi(svet_1, 2, 0)""", 2, env={'svet_1': svet_1})
+            Check.equal("""zivi(svet_1, 3, 1)""", 2, env={'svet_1': svet_1})
+            Check.equal("""zivi(svet_1, 3, 3)""", 3, env={'svet_1': svet_1})
+            Check.equal("""zivi(svet_1, 3, 4)""", 1, env={'svet_1': svet_1})
         except TimeoutError:
             Check.error("Dovoljen čas izvajanja presežen")
         except Exception:
@@ -731,17 +795,33 @@ def _validate_current_file():
     if Check.part():
         Check.current_part[
             "token"
-        ] = "eyJwYXJ0IjoyNzQ5MCwidXNlciI6MTE1MTR9:1vyvM1:bMGuujGfsq216TWS4TLE1ss1xGJJQQ8Dr4AN_qYhHSc"
+        ] = "eyJwYXJ0IjoyNzgxNCwidXNlciI6MTE1MTR9:1x1mvU:m34Ap8Oecue8goz9KIWVPaT5EAryJOMxh82_ZjJ6kp4"
         try:
-            Check.equal('pretvori("10001", 2)', 17)
-            Check.equal('pretvori("2ACBD04", 36)', 4978911892)
-            Check.equal('pretvori("AB", 30)', 311)
-            Check.equal('pretvori("101", 30)', 901)
-            for b in range(3, 36 + 1):
-                Check.secret(pretvori("101010111101", b))
-            for b in range(30, 36 + 1):
-                Check.secret(pretvori("PLANICA", b))
-                Check.secret(pretvori("MIHEC01267", b))
+            svet_1 = [
+                [False, False, False, False, False, False],
+                [False, False, False, True, False, False],
+                [False, True, False, False, True, False],
+                [False, True, False, False, True, False],
+                [False, False, True, False, False, False],
+                [False, False, False, False, False, False]
+            ]
+            vse_ok = Check.equal("""igra(svet_1)""", [
+                [False, False, False, False, False, False],
+                [False, False, False, False, False, False],
+                [False, False, True, True, True, False],
+                [False, True, True, True, False, False],
+                [False, False, False, False, False, False],
+                [False, False, False, False, False, False]], env={'svet_1': svet_1})
+            if vse_ok:
+                vse_ok = Check.equal("""igra(igra(svet_1))""", svet_1, env={'svet_1': svet_1})
+            svet_2 = [
+                [False, False, False, False],
+                [False, True, True, False],
+                [False, True, True, False],
+                [False, False, False, False]
+            ]
+            if vse_ok:
+                vse_ok = Check.equal("""igra(svet_2)""", svet_2, env={'svet_2': svet_2})
         except TimeoutError:
             Check.error("Dovoljen čas izvajanja presežen")
         except Exception:
@@ -753,49 +833,44 @@ def _validate_current_file():
     if Check.part():
         Check.current_part[
             "token"
-        ] = "eyJwYXJ0IjoyNzQ4OSwidXNlciI6MTE1MTR9:1vyvM1:n1MMq81P4jTF4uex_QcxyhWLj6eo_6V08O6CGiiG9e0"
+        ] = "eyJwYXJ0IjoyNzgxNSwidXNlciI6MTE1MTR9:1x1mvU:Qlln6cG_UfIiM-kbhMQvFUEJ9WF4iV2rQ6MKhFdt9Wk"
         try:
-            Check.equal('izbrisi_podvojene("abaab")', "abb")
-            Check.equal('izbrisi_podvojene("abab")', "abab")
-            Check.equal('izbrisi_podvojene("aaaabaaaa")', "b")
-            Check.secret(izbrisi_podvojene("10000010001010101010002"))
-            Check.secret(izbrisi_podvojene("10000010sxsXXXs01010101010002"))
-            Check.secret(izbrisi_podvojene("asdhaskbbbsna,,sjnansd"))
-        except TimeoutError:
-            Check.error("Dovoljen čas izvajanja presežen")
-        except Exception:
-            Check.error(
-                "Testi sprožijo izjemo\n  {0}",
-                "\n  ".join(traceback.format_exc().split("\n"))[:-2],
-            )
-
-    if Check.part():
-        Check.current_part[
-            "token"
-        ] = "eyJwYXJ0IjoyNzQ4NywidXNlciI6MTE1MTR9:1vyvM1:zNYPMeryVTY25sHdGtiqAZ5uj9KlH4aeZPYHdRLxrTU"
-        try:
-            Check.equal('vsak_k_ti("abcdefghijk", 0)', "")
-            Check.equal('vsak_k_ti("abcdefghijk", 3)', "adgj")
-            Check.secret(vsak_k_ti("abcdefghijk", 5))
-            Check.secret(vsak_k_ti("abcdefghijk", -3))
-            Check.secret(vsak_k_ti("abcdefghihvjdksa s asčdhaglsda saasč jk", 5))
-            Check.secret(vsak_k_ti("abcdefghihvjdksa s asčdhaglsda saasč jk", 8))
-        except TimeoutError:
-            Check.error("Dovoljen čas izvajanja presežen")
-        except Exception:
-            Check.error(
-                "Testi sprožijo izjemo\n  {0}",
-                "\n  ".join(traceback.format_exc().split("\n"))[:-2],
-            )
-
-    if Check.part():
-        Check.current_part[
-            "token"
-        ] = "eyJwYXJ0IjoyNzQ4OCwidXNlciI6MTE1MTR9:1vyvM1:8yq1knvHM8e3xEKzbsW73dGKVe4kdV86HjPSKZx3QH8"
-        try:
-            Check.equal('zaporedje("0123456789X")', "0136X")
-            Check.secret(zaporedje("".join([str(x) for x in range(100)])))
-            Check.secret(zaporedje("".join([str(x) for x in range(150)])))
+            svet_1 = [
+                [False, False, False, False, False, False],
+                [False, False, False, True, False, False],
+                [False, True, False, False, True, False],
+                [False, True, False, False, True, False],
+                [False, False, True, False, False, False],
+                [False, False, False, False, False, False]
+            ]
+            vse_ok = Check.equal("""populacija(svet_1, 3)""", [6, 6, 6, 6], env={'svet_1': svet_1})
+            svet_2 = [
+                [False, False, False, False],
+                [False, True, True, False],
+                [False, True, True, False],
+                [False, False, False, False]
+            ]
+            if vse_ok:
+                vse_ok = Check.equal("""populacija(svet_2, 0)""", [4], env={'svet_2': svet_2})
+            if vse_ok:
+                vse_ok = Check.equal("""populacija(svet_2, 5)""", [4, 4, 4, 4, 4, 4], env={'svet_2': svet_2})
+            svet_3 = [
+                [False, False, False, False, False, False],
+                [False, True, True, False, False, False],
+                [False, True, True, False, False, False],
+                [False, False, False, True, True, False],
+                [False, False, False, True, True, False],
+                [False, False, False, False, False, False]
+            ]
+            if vse_ok:
+                vse_ok = Check.equal("""populacija(svet_3, 5)""", [8, 6, 8, 6, 8, 6], env={'svet_3': svet_3})
+            svet_4 = [
+                [True, True, True],
+                [True, True, True],
+                [True, True, True]
+            ]
+            if vse_ok:
+                vse_ok = Check.equal("""populacija(svet_4, 5)""", [9, 4, 0, 0, 0, 0], env={'svet_4': svet_4})
         except TimeoutError:
             Check.error("Dovoljen čas izvajanja presežen")
         except Exception:

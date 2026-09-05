@@ -1,101 +1,89 @@
 # =============================================================================
-# Rezine in rekurzija
-# =====================================================================@027486=
+# Ljubezen nam je vsem v pogubo
+#
+# Socialno omrežje zaljubljenosti podamo s slovarjem, ki ime osebe preslika v
+# množico vseh, v katere je oseba zaljubljena (ena oseba je lahko zaljubljena v
+# več oseb). Na primer, slovar
+# 
+#     {
+#         'Ana': {'Bine', 'Cene'},
+#         'Bine': set(),
+#         'Cene': {'Bine'},
+#         'Davorka': {'Davorka'},
+#         'Eva': {'Bine'}
+#     }
+# 
+# nam pove, da je Ana zaljubljena v Bineta in Ceneta, Bine ni zaljubljen, Cene
+# ljubi Bineta, Davorka samo sebe in Eva Bineta.
+# =====================================================================@001384=
 # 1. podnaloga
-# Sestavite funkcijo `filtriraj`, ki sprejme dva niza in vrne nov niz sestavljen
-# zgolj iz znakov prvega niza, ki so hkrati tudi v drugem nizu, preostale znake
-# pa zamenja z _
-# Velikost črk je nepomembna.
-# 
-#     >>> filtriraj("Ne gremo še domov", "ngm")
-#     "N__g__m_______m__"
+# Sestavite funkcijo `narcisoidi`, ki sprejme slovar zaljubljenih in vrne
+# _množico_ tistih, ki ljubijo same sebe.
 # =============================================================================
-def filtriraj(niz1, niz2):
-    if niz1 == "":
-        return ""
-    elif niz1[0].lower() in niz2.lower():
-        return niz1[0] + filtriraj(niz1[1:], niz2)
-    else :
-        return "_" + filtriraj(niz1[1:], niz2)
-#def filtriraj(s, f):
-#    if not s:
-#        return s
-#    if s[0].lower() in f.lower():
-#        return s[0] + filtriraj(s[1:], f)
-#    else:
-#        return "_" + filtriraj(s[1:], f)
-# =====================================================================@027490=
+def narcisoidi(slovar):
+    množica = set()
+    for k, v in slovar.items():
+        if k in v:
+            množica.add(k)
+    return množica
+# =====================================================================@001385=
 # 2. podnaloga
-# Sestavite funkcijo `pretvori`, ki sprejme niz in bazo ter vrne podano število
-# v desetiškem zapisu. Ko zmanjka števil si znaki sledijo po angleški abecedi
-# `0123456789ABC...`. Primer vrstnega reda lahko najdete v
-# `string.ascii_uppercase`. Lahko predpostavite, da bo baza vedno med 2 in 36.
-# 
-#     >>> pretvori("10001", 2)
-#     17
-#     >>> pretvori("2ACBD04", 36)
-#     4978911892
+# Sestavite funkcijo `ljubljeni`, ki sprejme slovar zaljubljenih in vrne
+# _množico_ tistih, ki so ljubljeni.
 # =============================================================================
-def pretvori(niz, baza):
-    import string
-    znaki = "0123456789" + string.ascii_uppercase 
-    if niz == "":
-        return 0
-    else:
-        return znaki.index(niz[-1].upper()) + baza * pretvori(niz[:-1], baza)
-
-#def pretvori_leno(s, b):
-#    return int(s, b)
-# =====================================================================@027489=
+def ljubljeni(slovar):
+    množica = set()
+    for k, v in slovar.items():
+        množica.update(v)
+    return množica
+# =====================================================================@001386=
 # 3. podnaloga
-# Sestavite funkcijo `izbrisi_podvojene`, ki sprejme niz in odstrani vse
-# zaporedno enake znake, kjer velikost črk ni pomembna. Če se po izbrisu pojavijo
-# nove podvojitve, naj jih funkcija ne izbriše.
-# 
-#     >>> izbrisi_podvojene("aaab")
-#     "b"
-#     >>> izbrisi_podvojene("abaab")
-#     "abb"
+# Sestavite funkcijo `pari`, ki sprejme slovar zaljubljenih in vrne _množico_
+# vseh parov, ki so srečno zaljubljeni. Vsak par naj se pojavi samo enkrat in
+# sicer tako, da sta zaljubljenca našteta po abecedi. Na primer, če sta Ana in
+# Bine zaljubljena, dodamo par `('Ana', 'Bine')`.
 # =============================================================================
-def izbrisi_podvojene(s, last=None):
-    if s == "":
-        return ""
-    elif s[0] == last:
-        return izbrisi_podvojene(s[1:], last)
-    elif len(s) >= 2 and s[0] == s[1]:
-        return izbrisi_podvojene(s[2:], s[0])
-    else:
-        return s[0] + izbrisi_podvojene(s[1:], None)
-# =====================================================================@027487=
+def pari(slovar):
+    mnozica = set()
+    for oseba1 in slovar:
+        for oseba2 in slovar[oseba1]:
+            if oseba1 in slovar.get(oseba2, set()):
+                par = tuple(sorted([oseba1, oseba2]))
+                mnozica.add(par)
+    return mnozica
+# =====================================================================@001387=
 # 4. podnaloga
-# Sestavite funkcijo `vsak_k_ti`, ki sprejme niz in parameter `k` ter vrne nov
-# niz, kjer iz vhodnega niza vzame vsak `k`-ti znak. Za nesmiselne parametre
-# naj funkcija vrne prazen niz
+# Sestavite funkcijo `ustrezljivi(oseba, zaljubljeni)`, ki sprejme ime osebe
+# ter slovar zaljubljenih, vrne pa _množico_ vseh ljudi, ki so do dane osebe še
+# posebej ustrežljivi. Posebej ustrežljivi so seveda zato, ker so bodisi
+# zaljubljeni v dano osebo, bodisi so zaljubljeni v osebo, ki je posebej
+# ustrežljiva do nje, in tako naprej.
 # 
-#     >>> vsak_k_ti("abcdefghijk", 3)
-#     "adgj"
-#     >>> vsak_k_ti("abcdefghijk", 0)
-#     ""
-# =============================================================================
-def vsak_k_ti(s, k):
-    if k <= 0:
-        return ""
-    else:
-        return s[::k]
-# =====================================================================@027488=
-# 5. podnaloga
-# Sestavitev funkcijo `zaporedje`, ki sprejme niz in vrne nov niz sestavljen iz
-# znakov na indeksih 0, 1, 3, 6, 10, ...
-# Namig: Ali razlike med indeksi sledijo kakemu preprostemu zaporedju?
+# Na primer, če imamo slovar
 # 
-#     >>> zaporedje("0123456789X")
-#     "0136X"
+#     {
+#         'Ana': {'Bine', 'Cene'},
+#         'Bine': {'Ana'},
+#         'Cene': {'Bine'},
+#         'Davorka': {'Davorka'},
+#         'Eva': {'Bine'}
+#     }
+# 
+# so do Ceneta posebej ustrežljivi Ana (ki je zaljubljena vanj), Bine (ki je
+# zaljubljen v Ano) ter Cene in Eva (ki sta zaljubljena v Bineta).
 # =============================================================================
-def zaporedje(niz, indeks=0, korak=1):
-    if indeks >= len(niz):
-        return ""
-    else:
-        return niz[indeks] + zaporedje(niz, indeks + korak, korak + 1)
+def ustrezljivi(oseba, zaljubljeni):
+    ustrezljivi = set()
+    # najprej dodamo tiste, ki ljubijo prvo osebo
+    dodani = {o for o in zaljubljeni if oseba in zaljubljeni[o]}
+    # dokler smo koga dodali, dodajamo ustrežljive
+    while dodani:
+        ustrezljivi.update(dodani)
+        # sedaj pa dodajamo tiste, ki ljubijo nazadnje dodane osebe
+        dodani = {o for o in zaljubljeni for dodan in dodani
+                  if dodan in zaljubljeni[o] and o not in ustrezljivi}
+    return ustrezljivi
+
 
 
 
@@ -713,13 +701,20 @@ def _validate_current_file():
     if Check.part():
         Check.current_part[
             "token"
-        ] = "eyJwYXJ0IjoyNzQ4NiwidXNlciI6MTE1MTR9:1vyvM1:ZP-3bADoPBCX6zzIdOTYLTFaaf1zM6e8xzd7bgfdLTc"
+        ] = "eyJwYXJ0IjoxMzg0LCJ1c2VyIjoxMTUxNH0:1x15iH:snA1prTVH_5QzL96e8X3KrEFZZ0AyyfqoOPGsubT1Ig"
         try:
-            Check.equal('filtriraj("Ne gremo še domov", "ngm")', "N__g__m_______m__")
-            Check.secret(filtriraj("Planica!! planica!!, snežena kraljica", "Planica!"))
-            
-            # =============================================================================
-            # Nizi
+            Check.equal("""narcisoidi({'Ana' : {'Bine', 'Cene'},
+                                      'Bine' : set(),
+                                      'Cene' : {'Bine'},
+                                      'Davorka' : {'Davorka'},
+                                      'Eva' : {'Bine'}})\n""", {'Davorka'})
+            Check.equal('narcisoidi({})', set())
+            Check.equal("narcisoidi({'Ana':{'Ana', 'Bine'}})", {'Ana'})
+            Check.secret(narcisoidi({'Ana' : {'Bine', 'Ana', 'Cene'},
+                                        'Bine' : set(),
+                                        'Cene' : {'Bine'},
+                                        'Davorka' : {'Davorka'},
+                                        'Eva' : {'Bine'}}))
         except TimeoutError:
             Check.error("Dovoljen čas izvajanja presežen")
         except Exception:
@@ -731,17 +726,20 @@ def _validate_current_file():
     if Check.part():
         Check.current_part[
             "token"
-        ] = "eyJwYXJ0IjoyNzQ5MCwidXNlciI6MTE1MTR9:1vyvM1:bMGuujGfsq216TWS4TLE1ss1xGJJQQ8Dr4AN_qYhHSc"
+        ] = "eyJwYXJ0IjoxMzg1LCJ1c2VyIjoxMTUxNH0:1x15iH:9D_h-0Gn-cFvJC5hqbvuoiTygZi9iooTTnwk3GOKvSI"
         try:
-            Check.equal('pretvori("10001", 2)', 17)
-            Check.equal('pretvori("2ACBD04", 36)', 4978911892)
-            Check.equal('pretvori("AB", 30)', 311)
-            Check.equal('pretvori("101", 30)', 901)
-            for b in range(3, 36 + 1):
-                Check.secret(pretvori("101010111101", b))
-            for b in range(30, 36 + 1):
-                Check.secret(pretvori("PLANICA", b))
-                Check.secret(pretvori("MIHEC01267", b))
+            Check.equal("""ljubljeni({'Ana' : {'Bine','Cene'},
+                                      'Bine' : set(),
+                                      'Cene' : {'Bine'},
+                                      'Davorka' : {'Davorka'},
+                                      'Eva' : {'Bine'}})""",
+                        {'Bine', 'Davorka', 'Cene'})
+            Check.equal('ljubljeni({})', set())
+            Check.secret(ljubljeni({'Ana' : {'Bine', 'Cene'},
+                                       'Bine' : set(),
+                                       'Cene' : {'Bine'},
+                                       'Davorka' : {'Davorka'},
+                                       'Eva' : {'Bine'}}))
         except TimeoutError:
             Check.error("Dovoljen čas izvajanja presežen")
         except Exception:
@@ -753,14 +751,20 @@ def _validate_current_file():
     if Check.part():
         Check.current_part[
             "token"
-        ] = "eyJwYXJ0IjoyNzQ4OSwidXNlciI6MTE1MTR9:1vyvM1:n1MMq81P4jTF4uex_QcxyhWLj6eo_6V08O6CGiiG9e0"
+        ] = "eyJwYXJ0IjoxMzg2LCJ1c2VyIjoxMTUxNH0:1x15iH:W2heSt7fGE8mOaShDw-n9elHyAVtAvtBoADVBrrRAVM"
         try:
-            Check.equal('izbrisi_podvojene("abaab")', "abb")
-            Check.equal('izbrisi_podvojene("abab")', "abab")
-            Check.equal('izbrisi_podvojene("aaaabaaaa")', "b")
-            Check.secret(izbrisi_podvojene("10000010001010101010002"))
-            Check.secret(izbrisi_podvojene("10000010sxsXXXs01010101010002"))
-            Check.secret(izbrisi_podvojene("asdhaskbbbsna,,sjnansd"))
+            Check.equal("""pari({'Ana' : {'Bine','Cene'},
+                                 'Bine' : set(),
+                                 'Cene' : {'Bine', 'Ana'},
+                                 'Davorka' : {'Davorka'},
+                                 'Eva' : {'Bine'}})\n""",
+                        {('Ana', 'Cene'), ('Davorka', 'Davorka')})
+            Check.equal("pari({})", set())
+            Check.secret(pari({'Ana' : {'Bine'},
+                                  'Bine' : {'Eva', 'Davorka'},
+                                  'Cene' : {'Bine', 'Ana'},
+                                  'Davorka' : {'Bine'},
+                                  'Eva' : {'Bine'}}))
         except TimeoutError:
             Check.error("Dovoljen čas izvajanja presežen")
         except Exception:
@@ -772,30 +776,24 @@ def _validate_current_file():
     if Check.part():
         Check.current_part[
             "token"
-        ] = "eyJwYXJ0IjoyNzQ4NywidXNlciI6MTE1MTR9:1vyvM1:zNYPMeryVTY25sHdGtiqAZ5uj9KlH4aeZPYHdRLxrTU"
+        ] = "eyJwYXJ0IjoxMzg3LCJ1c2VyIjoxMTUxNH0:1x15iH:g9SvAbWuNkV4d2ncOtHlEtooVMw2r2IYuKBnwAqboXM"
         try:
-            Check.equal('vsak_k_ti("abcdefghijk", 0)', "")
-            Check.equal('vsak_k_ti("abcdefghijk", 3)', "adgj")
-            Check.secret(vsak_k_ti("abcdefghijk", 5))
-            Check.secret(vsak_k_ti("abcdefghijk", -3))
-            Check.secret(vsak_k_ti("abcdefghihvjdksa s asčdhaglsda saasč jk", 5))
-            Check.secret(vsak_k_ti("abcdefghihvjdksa s asčdhaglsda saasč jk", 8))
-        except TimeoutError:
-            Check.error("Dovoljen čas izvajanja presežen")
-        except Exception:
-            Check.error(
-                "Testi sprožijo izjemo\n  {0}",
-                "\n  ".join(traceback.format_exc().split("\n"))[:-2],
-            )
-
-    if Check.part():
-        Check.current_part[
-            "token"
-        ] = "eyJwYXJ0IjoyNzQ4OCwidXNlciI6MTE1MTR9:1vyvM1:8yq1knvHM8e3xEKzbsW73dGKVe4kdV86HjPSKZx3QH8"
-        try:
-            Check.equal('zaporedje("0123456789X")', "0136X")
-            Check.secret(zaporedje("".join([str(x) for x in range(100)])))
-            Check.secret(zaporedje("".join([str(x) for x in range(150)])))
+            Check.equal("""ustrezljivi('Cene', {'Ana' : {'Bine', 'Cene'},
+                                       'Bine' : {'Ana'},
+                                       'Cene' : {'Bine'},
+                                       'Davorka' : {'Davorka'},
+                                       'Eva' : {'Bine'}})\n""", {'Ana', 'Bine', 'Cene', 'Eva'})
+            Check.equal("ustrezljivi('Cene', {})", set())
+            Check.equal("""ustrezljivi('Cene', {'Ana' : {'Bine', 'Cene'},
+                                       'Bine' : set(),
+                                       'Cene' : {'Bine'},
+                                       'Davorka' : {'Davorka'},
+                                       'Eva' : {'Bine'}})\n""", {'Ana'})
+            Check.secret(sorted(ustrezljivi('Davorka', {'Ana' : {'Bine'},
+                                         'Bine' : {'Eva', 'Davorka'},
+                                         'Cene' : {'Bine', 'Ana'},
+                                         'Davorka' : {'Bine'},
+                                         'Eva' : {'Bine'}})))
         except TimeoutError:
             Check.error("Dovoljen čas izvajanja presežen")
         except Exception:

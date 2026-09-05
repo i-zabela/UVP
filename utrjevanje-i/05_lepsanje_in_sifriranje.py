@@ -1,101 +1,163 @@
 # =============================================================================
-# Rezine in rekurzija
-# =====================================================================@027486=
+# Lepšanje in šifriranje
+#
+# [Klodovik /papiga/](http://skab612.com/AlanFord/af_likovi.html) in ne
+# [Klodvik /frankofonski kralj/](https://sl.wikipedia.org/wiki/Seznam_frankovskih_kraljev)
+# bi rad zašifriral svoja besedila, da jih nepoklicane osebe
+# ne bodo mogle prebrati.
+# =====================================================================@001492=
 # 1. podnaloga
-# Sestavite funkcijo `filtriraj`, ki sprejme dva niza in vrne nov niz sestavljen
-# zgolj iz znakov prvega niza, ki so hkrati tudi v drugem nizu, preostale znake
-# pa zamenja z _
-# Velikost črk je nepomembna.
+# To stori tako, da najprej v besedilu vse male črke spremeni v velike in
+# odstrani vse znake, ki niso črke. (Klodovik vsa pomembna besedila piše v
+# angleščini. Uporabljali bomo angleško abecedo.) Na primer iz besedila
+# `'Attack at dawn!'` dobi besedilo `'ATTACKATDAWN'`. Nato ga zapiše cik-cak
+# v treh vrsticah, kot prikazuje primer:
 # 
-#     >>> filtriraj("Ne gremo še domov", "ngm")
-#     "N__g__m_______m__"
-# =============================================================================
-def filtriraj(niz1, niz2):
-    if niz1 == "":
-        return ""
-    elif niz1[0].lower() in niz2.lower():
-        return niz1[0] + filtriraj(niz1[1:], niz2)
-    else :
-        return "_" + filtriraj(niz1[1:], niz2)
-#def filtriraj(s, f):
-#    if not s:
-#        return s
-#    if s[0].lower() in f.lower():
-#        return s[0] + filtriraj(s[1:], f)
-#    else:
-#        return "_" + filtriraj(s[1:], f)
-# =====================================================================@027490=
-# 2. podnaloga
-# Sestavite funkcijo `pretvori`, ki sprejme niz in bazo ter vrne podano število
-# v desetiškem zapisu. Ko zmanjka števil si znaki sledijo po angleški abecedi
-# `0123456789ABC...`. Primer vrstnega reda lahko najdete v
-# `string.ascii_uppercase`. Lahko predpostavite, da bo baza vedno med 2 in 36.
+#     A...C...D...
+#     .T.A.K.T.A.N
+#     ..T...A...W.
 # 
-#     >>> pretvori("10001", 2)
-#     17
-#     >>> pretvori("2ACBD04", 36)
-#     4978911892
+# Sestavite funkcijo `cik_cak`, ki sprejme niz in  vrne trojico nizov
+# (torej `tuple`) in sicer prvo, drugo in tretjo vrstico v tem zapisu. Primer:
+# 
+#     >>> cik_cak('Attack at dawn!')
+#     ('A...C...D...', '.T.A.K.T.A.N', '..T...A...W.')
 # =============================================================================
-def pretvori(niz, baza):
-    import string
-    znaki = "0123456789" + string.ascii_uppercase 
-    if niz == "":
-        return 0
-    else:
-        return znaki.index(niz[-1].upper()) + baza * pretvori(niz[:-1], baza)
+def cik_cak(niz):
+    nov = ""
+    for x in niz:
+        if x.isalpha():
+            nov += x.upper()
 
-#def pretvori_leno(s, b):
-#    return int(s, b)
-# =====================================================================@027489=
+    prva = ""
+    druga = ""
+    tretja = ""
+
+    for i in range(len(nov)):
+        if i % 4 == 0:
+            prva += nov[i]
+            druga += "."
+            tretja += "."
+        elif i % 4 == 2:
+            tretja += nov[i]
+            prva += "."
+            druga += "."
+        else:
+            druga += nov[i]
+            prva += "."
+            tretja += "."
+
+    return (prva, druga, tretja)
+
+# =====================================================================@001493=
+# 2. podnaloga
+# Zašifrirano besedilo dobi tako, da najprej prepiše vse znake iz prve
+# vrstice, nato vse znake iz druge vrstice in na koncu še vse znake iz
+# tretje vrstice. V zgornjem primeru bi tako dobil `'ACDTAKTANTAW'`.
+# Sestavite funkcijo `cik_cak_sifra`, ki dobi kot argument niz
+# in vrne zašifrirano besedilo. Primer:
+# 
+#     >>> cik_cak_sifra('Attack at dawn!')
+#     'ACDTAKTANTAW'
+# =============================================================================
+def cik_cak_sifra(niz):
+    praznniz = ''
+    cikcak = cik_cak(niz)
+    nevekdajevažn = list(cikcak)
+    for beseda in nevekdajevažn:
+        for črka in beseda:
+            if črka != '.':
+                praznniz+= črka
+    return praznniz
+
+# =====================================================================@001494=
 # 3. podnaloga
-# Sestavite funkcijo `izbrisi_podvojene`, ki sprejme niz in odstrani vse
-# zaporedno enake znake, kjer velikost črk ni pomembna. Če se po izbrisu pojavijo
-# nove podvojitve, naj jih funkcija ne izbriše.
+# Klodovik se zelo razjezi, ko dobi elektronsko pošto v takšni obliki:
 # 
-#     >>> izbrisi_podvojene("aaab")
-#     "b"
-#     >>> izbrisi_podvojene("abaab")
-#     "abb"
+#     Kar sva  si obljubljala    že leta,  si   želiva potrditi tudi   pred prijatelji in   celo
+#     žlahto. Vabiva te na
+#     
+#          poročno slovesnost,        ki bo
+#        10.   maja 2016 ob    15.    uri na gradu Otočec.   Prijetno   druženje bomo 
+#     nadaljevali v    hotelu   Mons.   Tjaša in  Pavle
+# 
+# Nepopisno mu gre na živce, da je med besedami po več presledkov. Še
+# bolj pa ga nervira, ker so nekatere vrstice precej daljše od drugih.
+# Ker je Klodovik vaš dober prijatelj, mu boste pomagali in napisali
+# funkcije, s katerimi bo lahko olepšal besedila.
+# 
+# 
+# Najprej napišite funkcijo `razrez`, ki kot argument dobi niz in vrne
+# seznam besed v tem nizu. Besede so med seboj ločene z enim ali večimi
+# praznimi znaki: `' '` (presledek), `'\t'` (tabulator) in `'\n'` (skok
+# v novo vrstico). Pri tej nalogi ločilo obravnavamo kot del besede.
+# Primer:
+# 
+#     >>> razrez('   Kakšen\t pastir, \n\ntakšna  čreda. ')
+#     ['Kakšen', 'pastir,', 'takšna', 'čreda.']
 # =============================================================================
-def izbrisi_podvojene(s, last=None):
-    if s == "":
-        return ""
-    elif s[0] == last:
-        return izbrisi_podvojene(s[1:], last)
-    elif len(s) >= 2 and s[0] == s[1]:
-        return izbrisi_podvojene(s[2:], s[0])
-    else:
-        return s[0] + izbrisi_podvojene(s[1:], None)
-# =====================================================================@027487=
+def razrez(niz):
+    return niz.split()
+
+def razrez(s):
+    '''Niz s razreže na podnize, ki jih ločijo "beli" presledki'''
+    seznam = []
+    beseda = '' # trenutna beseda, ki jo sestavljamo
+    for znak in s:
+        if znak in ' \n\t':  # znak ni del besede
+            if len(beseda) > 0: # če je ta znak zaključil besedo, jo dodamo v seznam
+                seznam.append(beseda)
+            beseda = '' # in nato bomo začeli sestavljati novo
+        else:
+            beseda += znak # smo "znotraj" besede
+    if len(beseda) > 0: # ne pozabimo na morebitno besedo na koncu!
+        seznam.append(beseda)
+    return seznam
+# =====================================================================@001495=
 # 4. podnaloga
-# Sestavite funkcijo `vsak_k_ti`, ki sprejme niz in parameter `k` ter vrne nov
-# niz, kjer iz vhodnega niza vzame vsak `k`-ti znak. Za nesmiselne parametre
-# naj funkcija vrne prazen niz
+# Sedaj, ko že imate funkcijo `razrez`, bo lažje napisati tisto funckijo, ki
+# jo Klodovik zares potrebuje. To je
+# funkcija `olepsanoBesedilo(s, sir)`, ki kot argumenta dobi niz
+# `s` in naravno število `sir`. Funkcija vrne olepšano besedilo, kar
+# pomeni naslednje:
 # 
-#     >>> vsak_k_ti("abcdefghijk", 3)
-#     "adgj"
-#     >>> vsak_k_ti("abcdefghijk", 0)
-#     ""
-# =============================================================================
-def vsak_k_ti(s, k):
-    if k <= 0:
-        return ""
-    else:
-        return s[::k]
-# =====================================================================@027488=
-# 5. podnaloga
-# Sestavitev funkcijo `zaporedje`, ki sprejme niz in vrne nov niz sestavljen iz
-# znakov na indeksih 0, 1, 3, 6, 10, ...
-# Namig: Ali razlike med indeksi sledijo kakemu preprostemu zaporedju?
+# * Funkcija naj odstrani odvečne prazne znake.
+# * Vsaka vrstica naj bo kar se le da dolga.
+# * Nobena vrstica naj ne vsebuje več kot `sir` znakov (pri čemer znaka
+#   `'\n'` na koncu vrstice ne štejemo).
+# * Besede znotraj iste vrstice naj bodo ločene s po enim presledkom
+#   (ne glede na to, s katerimi in koliko praznimi znaki so ločene v
+#   originalnem besedilu).
 # 
-#     >>> zaporedje("0123456789X")
-#     "0136X"
+# Predpostavite, da dolžina nobene besede ni več kot `sir` in da je niz
+# `s` neprazen. Primer:
+# 
+#     >>> s2 = olepsanoBesedilo('  Jasno in   svetlo \t\tna sveti \t\n\nvečer,  dobre\t\t letine je dost, če pa je\t  oblačno in   temno,        žita ne bo.', 20)
+#     >>> print(s2)
+#     Jasno in svetlo na
+#     sveti večer, dobre
+#     letine je dost, če
+#     pa je oblačno in
+#     temno, žita ne bo.
 # =============================================================================
-def zaporedje(niz, indeks=0, korak=1):
-    if indeks >= len(niz):
-        return ""
-    else:
-        return niz[indeks] + zaporedje(niz, indeks + korak, korak + 1)
+
+def olepsanoBesedilo(s, sir):
+    seznam = razrez(s)
+    vrstice = []
+    trenutna = ''
+    for beseda in seznam:
+        if len(trenutna) == 0:
+                    trenutna += beseda
+        elif len(trenutna + " " + beseda) <= sir:
+            trenutna += " " + beseda     
+        else:
+            vrstice.append(trenutna)
+            trenutna = beseda
+    vrstice.append(trenutna)
+    return "\n".join(vrstice)
+        
+        
+
 
 
 
@@ -713,13 +775,10 @@ def _validate_current_file():
     if Check.part():
         Check.current_part[
             "token"
-        ] = "eyJwYXJ0IjoyNzQ4NiwidXNlciI6MTE1MTR9:1vyvM1:ZP-3bADoPBCX6zzIdOTYLTFaaf1zM6e8xzd7bgfdLTc"
+        ] = "eyJwYXJ0IjoxNDkyLCJ1c2VyIjoxMTUxNH0:1x1mvU:PhzRDWIyau91j5kxkyXNjylST6khBiCDodOITFcjWik"
         try:
-            Check.equal('filtriraj("Ne gremo še domov", "ngm")', "N__g__m_______m__")
-            Check.secret(filtriraj("Planica!! planica!!, snežena kraljica", "Planica!"))
-            
-            # =============================================================================
-            # Nizi
+            Check.equal("""cik_cak('Attack at dawn!')""", ('A...C...D...', '.T.A.K.T.A.N', '..T...A...W.'))
+            Check.equal("""cik_cak('We are discovered. Flee at once!')""", ('W...E...C...R...L...T...E', '.E.R.D.S.O.E.E.F.E.A.O.C.', '..A...I...V...D...E...N..'))
         except TimeoutError:
             Check.error("Dovoljen čas izvajanja presežen")
         except Exception:
@@ -731,17 +790,10 @@ def _validate_current_file():
     if Check.part():
         Check.current_part[
             "token"
-        ] = "eyJwYXJ0IjoyNzQ5MCwidXNlciI6MTE1MTR9:1vyvM1:bMGuujGfsq216TWS4TLE1ss1xGJJQQ8Dr4AN_qYhHSc"
+        ] = "eyJwYXJ0IjoxNDkzLCJ1c2VyIjoxMTUxNH0:1x1mvU:u1x0-y2-pySucIiMRAeXRXPCf0qcqKUYuxt5pzCt4YI"
         try:
-            Check.equal('pretvori("10001", 2)', 17)
-            Check.equal('pretvori("2ACBD04", 36)', 4978911892)
-            Check.equal('pretvori("AB", 30)', 311)
-            Check.equal('pretvori("101", 30)', 901)
-            for b in range(3, 36 + 1):
-                Check.secret(pretvori("101010111101", b))
-            for b in range(30, 36 + 1):
-                Check.secret(pretvori("PLANICA", b))
-                Check.secret(pretvori("MIHEC01267", b))
+            Check.equal("""cik_cak_sifra('Attack at dawn!')""", 'ACDTAKTANTAW')
+            Check.equal("""cik_cak_sifra('We are discovered. Flee at once!')""", 'WECRLTEERDSOEEFEAOCAIVDEN')
         except TimeoutError:
             Check.error("Dovoljen čas izvajanja presežen")
         except Exception:
@@ -753,14 +805,34 @@ def _validate_current_file():
     if Check.part():
         Check.current_part[
             "token"
-        ] = "eyJwYXJ0IjoyNzQ4OSwidXNlciI6MTE1MTR9:1vyvM1:n1MMq81P4jTF4uex_QcxyhWLj6eo_6V08O6CGiiG9e0"
+        ] = "eyJwYXJ0IjoxNDk0LCJ1c2VyIjoxMTUxNH0:1x1mvU:uafG4kRfvSa_bsNp4LOAe9MIvS30qP6CkgsrjwmKJ3U"
         try:
-            Check.equal('izbrisi_podvojene("abaab")', "abb")
-            Check.equal('izbrisi_podvojene("abab")', "abab")
-            Check.equal('izbrisi_podvojene("aaaabaaaa")', "b")
-            Check.secret(izbrisi_podvojene("10000010001010101010002"))
-            Check.secret(izbrisi_podvojene("10000010sxsXXXs01010101010002"))
-            Check.secret(izbrisi_podvojene("asdhaskbbbsna,,sjnansd"))
+            Check.equal("""razrez('Osamelec')""",
+                        ['Osamelec'])
+            Check.equal("""razrez('Dve besedi')""",
+                        ['Dve', 'besedi'])
+            Check.equal("""razrez('Dve        besedi')""",
+                        ['Dve', 'besedi'])
+            Check.equal("""razrez('    Dve besedi')""",
+                        ['Dve', 'besedi'])
+            Check.equal("""razrez('Dve besedi         ')""",
+                        ['Dve', 'besedi'])
+            Check.equal("""razrez(' Dve  besedi ')""",
+                        ['Dve', 'besedi'])
+            Check.equal("""razrez('\\n\\n\\nDve\\n besedi\t ')""",
+                        ['Dve', 'besedi'])
+            Check.equal("""razrez('N\\na\\nv\\np\\ni\\nk')""",
+                        ['N', 'a', 'v', 'p', 'i', 'k'])
+            Check.equal("""razrez('N\\na\\n             v\\np\\ni\\nk')""",
+                        ['N', 'a', 'v', 'p', 'i', 'k'])
+            Check.equal("""razrez('   Kakšen\\t pastir, \\n\\ntakšna  čreda. ')""",
+                        ['Kakšen', 'pastir,', 'takšna', 'čreda.'])
+            Check.equal("""razrez('Drevo se po sadu spozna.')""",
+                        ['Drevo', 'se', 'po', 'sadu', 'spozna.'])
+            Check.equal("""razrez('    Drevo se    po sadu    spozna.    ')""",
+                        ['Drevo', 'se', 'po', 'sadu', 'spozna.'])
+            Check.equal("""razrez('\\t\\nDrevo \\t\\tse\\t\\tpo\\n\\nsadu spozna.\\n\\n')""",
+                        ['Drevo', 'se', 'po', 'sadu', 'spozna.'])
         except TimeoutError:
             Check.error("Dovoljen čas izvajanja presežen")
         except Exception:
@@ -772,30 +844,34 @@ def _validate_current_file():
     if Check.part():
         Check.current_part[
             "token"
-        ] = "eyJwYXJ0IjoyNzQ4NywidXNlciI6MTE1MTR9:1vyvM1:zNYPMeryVTY25sHdGtiqAZ5uj9KlH4aeZPYHdRLxrTU"
+        ] = "eyJwYXJ0IjoxNDk1LCJ1c2VyIjoxMTUxNH0:1x1mvU:t7JcMh-qWMkrovMhbK07VoVnkP8hs4Eb-vr9kiXgCvo"
         try:
-            Check.equal('vsak_k_ti("abcdefghijk", 0)', "")
-            Check.equal('vsak_k_ti("abcdefghijk", 3)', "adgj")
-            Check.secret(vsak_k_ti("abcdefghijk", 5))
-            Check.secret(vsak_k_ti("abcdefghijk", -3))
-            Check.secret(vsak_k_ti("abcdefghihvjdksa s asčdhaglsda saasč jk", 5))
-            Check.secret(vsak_k_ti("abcdefghihvjdksa s asčdhaglsda saasč jk", 8))
-        except TimeoutError:
-            Check.error("Dovoljen čas izvajanja presežen")
-        except Exception:
-            Check.error(
-                "Testi sprožijo izjemo\n  {0}",
-                "\n  ".join(traceback.format_exc().split("\n"))[:-2],
-            )
-
-    if Check.part():
-        Check.current_part[
-            "token"
-        ] = "eyJwYXJ0IjoyNzQ4OCwidXNlciI6MTE1MTR9:1vyvM1:8yq1knvHM8e3xEKzbsW73dGKVe4kdV86HjPSKZx3QH8"
-        try:
-            Check.equal('zaporedje("0123456789X")', "0136X")
-            Check.secret(zaporedje("".join([str(x) for x in range(100)])))
-            Check.secret(zaporedje("".join([str(x) for x in range(150)])))
+            Check.equal("""olepsanoBesedilo('Dve besedi', 6)""",
+                        'Dve\nbesedi')
+            Check.equal("""olepsanoBesedilo('Dve besedi', 16)""",
+                        'Dve besedi')
+            Check.equal("""olepsanoBesedilo('\\nDve                besedi   \\t  ', 16)""",
+                        'Dve besedi')
+            Check.equal("""olepsanoBesedilo('   Dve besedi', 100)""",
+                        'Dve besedi')
+            Check.equal("""olepsanoBesedilo('N\\na\\nv\\np\\ni\\nk', 3)""",
+                        'N a\nv p\ni k')
+            Check.equal("""olepsanoBesedilo('N\\na\\nv\\np\\ni\\nk', 6)""",
+                        'N a v\np i k')
+            Check.equal("""olepsanoBesedilo('N\\na\\nv\\np\\ni\\nk', 5)""",
+                        'N a v\np i k')
+            Check.equal("""olepsanoBesedilo('N\\na\\nv\\np\\ni', 5)""",
+                        'N a v\np i')
+            Check.equal("""olepsanoBesedilo('N\\na\\nv\\np\\ni', 6)""",
+                        'N a v\np i')
+            Check.equal("""olepsanoBesedilo('  Jasno in   svetlo \\t\\tna sveti \\t\\n\\nvečer,  dobre\\t\\t letine je dost, če pa je\\t  oblačno in   temno,        žita ne bo.', 20)""",
+                        'Jasno in svetlo na\nsveti večer, dobre\nletine je dost, če\npa je oblačno in\ntemno, žita ne bo.')
+            Check.equal("""olepsanoBesedilo('  Jasno in   svetlo \\t\\tna sveti \\t\\n\\nvečer,  dobre\\t\\t letine je dost, če pa je\\t  oblačno in   temno,        žita ne bo.', 7)""",
+                        'Jasno\nin\nsvetlo\nna\nsveti\nvečer,\ndobre\nletine\nje\ndost,\nče pa\nje\noblačno\nin\ntemno,\nžita ne\nbo.')
+            Check.equal("""olepsanoBesedilo('  Jasno in   svetlo \\t\\tna sveti \\t\\n\\nvečer,  dobre\\t\\t letine je dost, če pa je\\t  oblačno in   temno,        žita ne bo.', 30)""",
+                        'Jasno in svetlo na sveti\nvečer, dobre letine je dost,\nče pa je oblačno in temno,\nžita ne bo.')
+            Check.equal("""olepsanoBesedilo('  Jasno in   svetlo \\t\\tna sveti \\t\\n\\nvečer,  dobre\\t\\t letine je dost, če pa je\\t  oblačno in   temno,        žita ne bo.', 45)""",
+                        'Jasno in svetlo na sveti večer, dobre letine\nje dost, če pa je oblačno in temno, žita ne\nbo.')
         except TimeoutError:
             Check.error("Dovoljen čas izvajanja presežen")
         except Exception:
